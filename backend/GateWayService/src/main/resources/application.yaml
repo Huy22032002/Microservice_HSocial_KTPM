@@ -1,0 +1,16 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: API-GATEWAY-SERVICE
+  cloud:
+    gateway:
+      routes:
+        - id: AuthService
+          uri: http://localhost:8081
+          predicates:
+            - Path=/**
+        - id: ChatService
+          uri: http://localhost:8082
+          predicates:
+            - Path=/**
