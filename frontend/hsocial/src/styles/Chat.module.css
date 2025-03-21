@@ -1,0 +1,125 @@
+.chatContainer {
+  display: flex;
+  height: 100vh;
+  background-color: #2c3e50;
+}
+
+.listChat {
+  width: 25%;
+  background: #34495e;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.headerListChat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.filterListChat {
+  display: flex;
+  align-items: center;
+  background: #2c3e50;
+  padding: 5px;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.containerBtnList {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btnFilter {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.mainListChat {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.lstCon {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.chatBox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #2c3e50;
+  color: white;
+}
+
+.chatBoxHeader {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: #34495e;
+}
+
+.chatBoxContent {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.chatBoxFooter {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: #34495e;
+}
+
+.inputSearch {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+}
+
+.btnSendMessage {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+}
+
+.myMessage {
+  text-align: right;
+  background: #3498db;
+  color: white;
+  padding: 8px;
+  border-radius: 10px;
+  margin: 5px 0;
+  align-self: flex-end;
+}
+
+.otherMessage {
+  text-align: left;
+  background: #7f8c8d;
+  color: white;
+  padding: 8px;
+  border-radius: 10px;
+  margin: 5px 0;
+  align-self: flex-start;
+}
