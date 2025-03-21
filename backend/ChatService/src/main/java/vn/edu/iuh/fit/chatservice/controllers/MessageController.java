@@ -2,10 +2,7 @@ package vn.edu.iuh.fit.chatservice.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.edu.iuh.fit.chatservice.models.*;
 import vn.edu.iuh.fit.chatservice.services.ConversationService;
 import vn.edu.iuh.fit.chatservice.services.MessageService;
@@ -13,6 +10,7 @@ import vn.edu.iuh.fit.chatservice.services.MessageService;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -24,32 +22,22 @@ public class MessageController {
 
     @PostMapping("/save-message")
     public ResponseEntity<Message> saveMessage(@RequestBody Message message) {
-        //check conversation da co chua
-        List<String> participants = new ArrayList<>(message.getReceivers());
-        participants.add(message.getSender());
-        Conversation conversation = conversationService.checkConversationExist(participants);
-        if (conversation == null) {
-            conversation = new Conversation();
-            conversation.setParticipants(participants);
 
+            Conversation conversation = conversationService.getConversationById(message.getConversationId());
             //cap nhat lastMessage
             LastMessage lastMessage = new LastMessage(message.getContent(), Instant.now());
             conversation.setLastMessage(lastMessage);
-            //xac dinh loai conversation
-            if(participants.size() > 2){
-                conversation.setType(ConversationType.GROUP);
-            } else {
-                conversation.setType(ConversationType.SINGLE);
-            }
             conversation.setUpdatedAt(Instant.now());
-            conversation.setStatus(ConversationStatus.ACTIVE);
 
-            conversationService.createConversation(conversation);
-        }
-        message.setConversationId(conversation.getId());
-        message.setCreatedAt(Instant.now());
-        Message savedMessage = messageService.save(message);
+            conversationService.updateConversation(conversation);
 
-        return ResponseEntity.ok(savedMessage);
+            message.setCreatedAt(Instant.now());
+            messageService.save(message);
+
+            return ResponseEntity.ok(message);
+    }
+    @GetMapping("{id}")
+    public ResponseEntity<List<Message>> getMessageByConversationId(@PathVariable String id){
+        return ResponseEntity.ok(messageService.getAllMessagesByConversationId(id));
     }
 }

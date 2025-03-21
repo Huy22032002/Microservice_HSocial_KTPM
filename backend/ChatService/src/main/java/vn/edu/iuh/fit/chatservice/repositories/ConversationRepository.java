@@ -7,7 +7,7 @@ import vn.edu.iuh.fit.chatservice.models.Conversation;
 import java.util.List;
 
 public interface ConversationRepository extends MongoRepository<Conversation, String> {
-    @Query("{ 'participants': { $all: ?0 } }")
+//    @Query("{ 'participants': { $all: ?0 } }")
     Conversation findByParticipants(List<String> participants);
 
     @Query("{ 'participants' : ?0  }")

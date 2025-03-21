@@ -26,8 +26,12 @@ public class ConversationService {
         return conversationRepository.findByParticipants(participants);
     }
 
-    public Optional<Conversation> getConversationById(String id){
-        return conversationRepository.findById(id);
+    public Conversation updateConversation(Conversation conversation) {
+        return conversationRepository.save(conversation);
+    }
+
+    public Conversation getConversationById(String id){
+        return conversationRepository.findById(id).orElse(null);
     }
 
     public void updateConversationStatus(String id, String status){
