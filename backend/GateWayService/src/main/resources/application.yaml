@@ -14,3 +14,13 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/**
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: noti-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
