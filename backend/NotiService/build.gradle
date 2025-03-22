@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.3'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'vn.edu.iuh.fit'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.17'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.12.6'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.4.3'
+    //web client
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '3.4.3'
+    //validation
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.4.3'
+    //oauth2
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '3.4.3'
+    //kafka
+    implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '3.1.2'
+    //spring kafka 4.0s
+//    implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '4.0.0'
+    //mongodb
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '3.4.3'
+    //netty-http
+    implementation 'io.projectreactor.netty:reactor-netty-http'
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
