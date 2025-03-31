@@ -5,6 +5,7 @@ import Login from './components/login';
 import SignUp from './components/signup';
 import Home from './components/home';
 import Chat from './components/ChatWebSocket'
+import PostHome from './components/PostHome';
 import { Provider } from 'react-redux';
 import { store } from './redux/userSlice';
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<SignUp />} /> 
           <Route path='chat' element={<Chat />}/>
+          <Route path='post' element={<PostHome />}/>
       </Routes>
     </BrowserRouter>
     </Provider>
