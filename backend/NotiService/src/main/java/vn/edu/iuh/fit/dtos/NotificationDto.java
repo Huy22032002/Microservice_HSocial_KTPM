@@ -10,22 +10,26 @@ import lombok.NoArgsConstructor;
 import vn.edu.iuh.fit.models.Notification;
 import vn.edu.iuh.fit.models.NotificationType;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonSerialize
-@JsonDeserialize
+//@JsonSerialize
+//@JsonDeserialize
 public class NotificationDto {
     private Long userId;
     private String message;
     @Enumerated(EnumType.STRING)
     private NotificationType type;
+    private Long ContentId;
+    private LocalDateTime createdAt;
 
-    public Notification toEntity() {
-        Notification notification = new Notification();
-        notification.setUserId(userId);
-        notification.setMessage(message);
-        notification.setType(type);
+    public Notification toEntity(
+//            Long userId, String message, NotificationType type, Long ContentId, LocalDateTime createdAt
+    ) {
+        Notification notification = new Notification(userId, message, ContentId,type, false,createdAt);
+
         return notification;
     }
 }
