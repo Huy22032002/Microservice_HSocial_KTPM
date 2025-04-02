@@ -1,5 +1,6 @@
 package vn.edu.iuh.fit.services;
 
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +15,7 @@ import vn.edu.iuh.fit.models.Token;
 import vn.edu.iuh.fit.models.User;
 import vn.edu.iuh.fit.utils.JwtTokenUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,23 +36,34 @@ public class AuthService {
     private AuthenticationManager authenticationManager;
 
 public ResponseEntity<?> login(String username, String password) {
+    Map<String, String> errors = new HashMap<>();
+
+    if(StringUtils.isBlank(username)) {
+        errors.put("username", "Username is required");
+    }
+    if(StringUtils.isBlank(password)) {
+        errors.put("password", "Password is required");
+    }
+    if(!errors.isEmpty()) {
+        return ResponseEntity.badRequest().body(Map.of("errors", errors));
+    }
+
+    // 2. Tìm user từ database
+    User user = userService.findByUsername(username);
+    if (user == null) {
+        return ResponseEntity.status(404).body(Map.of("error", "No User Found in DB"));
+    }
+
+    // 3. Kiểm tra password
+    if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+        return ResponseEntity.status(401).body(Map.of("error", "Wrong Password"));
+    }
+
     try {
-        // Tìm user từ database
-        User user = userService.findByUsername(username);
-        if (user == null) {
-            return ResponseEntity.status(401).body("Invalid username");
-        }
-
-        // Kiểm tra password
-        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            return ResponseEntity.status(401).body("Invalid password");
-        }
-
         // Xác thực người dùng
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
-
         // Lưu vào SecurityContext
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -72,8 +85,8 @@ public ResponseEntity<?> login(String username, String password) {
 
         return ResponseEntity.ok(response);
 
-    } catch (BadCredentialsException e) {
-        return ResponseEntity.status(401).body("Invalid username or password");
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body(Map.of("error", "Server error while authenticating"));
     }
 }
 

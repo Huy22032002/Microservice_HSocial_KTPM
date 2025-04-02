@@ -1,12 +1,12 @@
 .chatContainer {
   display: flex;
   height: 100vh;
-  background-color: #2c3e50;
+  background-color: #252728;
 }
 
 .listChat {
   width: 25%;
-  background: #34495e;
+  background: #252728;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -22,9 +22,9 @@
 .filterListChat {
   display: flex;
   align-items: center;
-  background: #2c3e50;
-  padding: 5px;
-  border-radius: 5px;
+  background: #333334;
+  padding: 8px;
+  border-radius: 16px;
   margin: 10px 0;
 }
 
@@ -42,6 +42,16 @@
   cursor: pointer;
 }
 
+.btnFilter:hover {
+  background-color: #333334;
+  border-radius: 15px;
+}
+
+.btnFilter:active {
+  background-color: #61a0ff;
+  border-radius: 15px;
+}
+
 .mainListChat {
   flex-grow: 1;
   overflow-y: auto;
@@ -51,13 +61,39 @@
   display: flex;
   align-items: center;
   padding: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #252728;
   cursor: pointer;
 }
 
+.lstCon:hover {
+  background: rgb(25, 51, 139);
+  border-radius: 20px;
+}
+
+.conversation {
+  margin: 0;
+  padding-top: 10px;
+  font-size: 18px;
+  color: #fff;
+}
+
+.userName {
+  margin: 0;
+}
+
+.messageContainer {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  line-height: 14px;
+  justify-content: space-evenly;
+}
+
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   margin-right: 10px;
 }
@@ -73,6 +109,7 @@
 .chatBoxHeader {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   padding: 10px;
   background: #34495e;
 }
@@ -94,7 +131,9 @@
   flex: 1;
   padding: 10px;
   border: none;
-  border-radius: 5px;
+  outline: none;
+  background: #333334;
+  border-radius: 16px;
 }
 
 .btnSendMessage {

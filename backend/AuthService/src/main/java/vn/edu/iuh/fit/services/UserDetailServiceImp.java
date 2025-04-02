@@ -24,27 +24,27 @@ public class UserDetailServiceImp implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-@Override
-public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    User user = userRepository.findByUsername(username);
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
 
-    if(user == null) {
-        throw new UsernameNotFoundException("User not found: " + username);
+        if(user == null) {
+            throw new UsernameNotFoundException("User not found: " + username);
+        }
+
+        if (user.getPasswordHash() == null || user.getPasswordHash().trim().isEmpty()) {
+            throw new IllegalStateException("Password in database is empty or null!");
+        }
+
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        if (user.getRole() != null) {
+            authorities.add(new SimpleGrantedAuthority( user.getRole().name()));
+            System.out.println("UserDetailServiceImp get role: "  + user.getRole().name());
+            System.out.println("UserDetailServiceImp get authorities: " + authorities);
+        }
+
+        return new UserPrincipal(user.getId(), user.getUsername(), user.getPasswordHash(), user.getEmail(), authorities, user.isEnabled());
     }
-
-    if (user.getPasswordHash() == null || user.getPasswordHash().trim().isEmpty()) {
-        throw new IllegalStateException("Password in database is empty or null!");
-    }
-
-    Collection<GrantedAuthority> authorities = new ArrayList<>();
-    if (user.getRole() != null) {
-        authorities.add(new SimpleGrantedAuthority( user.getRole().name()));
-        System.out.println("UserDetailServiceImp get role: "  + user.getRole().name());
-        System.out.println("UserDetailServiceImp get authorities: " + authorities);
-    }
-
-    return new UserPrincipal(user.getId(), user.getUsername(), user.getPasswordHash(), user.getEmail(), authorities, user.isEnabled());
-}
 
 
 }

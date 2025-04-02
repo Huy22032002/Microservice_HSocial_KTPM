@@ -2,8 +2,15 @@ package vn.edu.iuh.fit.chatservice.services;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
+import vn.edu.iuh.fit.chatservice.dtos.UserDTO;
 
 import java.util.Map;
 
@@ -13,20 +20,39 @@ public class AuthServiceClient {
     private final WebClient webClient;
     @Autowired
     public AuthServiceClient(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:8081/auth").build();
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8081").build();
     }
 
     @PostConstruct
     public void init() {
-        System.out.println("✅ Auth Service URL: http://localhost:8080/auth");
+        System.out.println("Auth Service URL: http://localhost:8080/auth");
     }
 
     public String getPublicKey() {
         return webClient.get()
-                .uri("/getPublicKey")
+                .uri("/auth/getPublicKey")
                 .retrieve()
                 .bodyToMono(Map.class)
                 .map(response -> (String) response.get("publicKey"))
                 .block();
     }
+
+    public UserDTO getUser(String userId, String token) {
+        return webClient
+                .get()
+                .uri("/api/users/{id}", userId)
+                .header(HttpHeaders.AUTHORIZATION,  token)
+                .retrieve()
+                .bodyToMono(Map.class)
+                .map(response -> {
+                    Map<String, Object> userMap = (Map<String, Object>) response.get("user");
+                    return new UserDTO(
+                            (int) userMap.get("id"),
+                            (String) userMap.get("username")
+                    );
+                })
+                .block();
+    }
+
+
 }

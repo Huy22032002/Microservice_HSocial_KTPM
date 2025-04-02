@@ -175,7 +175,7 @@ export default function Chat() {
   const sendMessageToSocket = async () => {
     if (message.trim() !== "" && socket && user) {
       const messageData = {
-        sender: userId, //doi userId thanh sender thi ko realtime dc
+        sender: userId,
         content: message,
       };
       try {
@@ -183,8 +183,54 @@ export default function Chat() {
         await postMessage(message);
         setMessage("");
       } catch (error) {
-        console.log("Error sending message github:", error);
+        console.log("Error sending message:", error);
       }
+    } else {
+    }
+  };
+
+  //neu user offline(socket == null) thi gui qua message queue
+  const sendMessageToQueue = async () => {
+    if (!currentConversationId) {
+      console.log("No conversation selected");
+      return;
+    }
+    // Lấy cuộc trò chuyện hiện tại
+    const currentConversation = conversations.find(
+      (conv) => conv.id === currentConversationId
+    );
+    if (!currentConversation) {
+      console.log("Conversation not found");
+      return;
+    }
+    // Lọc danh sách người nhận, loại bỏ chính mình
+    const receivers = currentConversation.participants.filter(
+      (id) => id !== userId
+    );
+    const response = await axios.post(
+      "http://localhost:8082/api/messages/send",
+      {
+        conversationId: currentConversationId,
+        sender: userId,
+        receivers: receivers,
+        type: "CHAT",
+        content: message,
+        status: "ACTIVE",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  };
+
+  const handleSend = () => {
+    if (socket) {
+      sendMessageToSocket();
+    } else {
+      sendMessageToQueue();
     }
   };
 
@@ -253,6 +299,7 @@ export default function Chat() {
                   <p className={styles.messageContent}>
                     {conver.lastMessage?.content || "No messages"}
                   </p>
+                  <p>---</p>
                   <p className={styles.timestamp}>
                     {conver.lastMessage?.timestamp || ""}
                   </p>
@@ -334,10 +381,7 @@ export default function Chat() {
 
           <button
             className={styles.btnSendMessage}
-            onClick={sendMessageToSocket}
-            onKeyDown={(event) =>
-              event.key === "Enter" && sendMessageToSocket()
-            }
+            onClick={handleSend}
             tabIndex={0}
             autoFocus
           >

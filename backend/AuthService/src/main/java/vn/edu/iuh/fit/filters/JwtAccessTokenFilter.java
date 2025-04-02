@@ -41,7 +41,7 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (request.getRequestURI().equals("/login") ||
-                request.getRequestURI().equals("/signup") || request.getRequestURI().equals("/auth/getPublicKey") ){
+                request.getRequestURI().equals("/signup") || request.getRequestURI().equals("/auth/getPublicKey") ) {
             filterChain.doFilter(request, response);
             return;
         }
