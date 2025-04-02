@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 public enum Privacy {
     PUBLIC,
     FRIENDS,
-    ONLY_ME
+    PRIVATE
 
 }

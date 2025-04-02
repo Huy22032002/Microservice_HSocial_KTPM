@@ -2,6 +2,7 @@ package vn.edu.iuh.fit.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vn.edu.iuh.fit.enums.Privacy;
 import vn.edu.iuh.fit.models.Post;
 import vn.edu.iuh.fit.repositories.PostRepository;
 
@@ -43,5 +44,13 @@ public class PostService {
 
     public Post getLastestPost() {
         return postRepository.findFirstByOrderByCreatedAtDesc();
+    }
+
+//    public List<Post> getAllPublicPosts() {
+//        return postRepository.findAllPublicPosts();
+//    }
+
+    public List<Post> getAllPublicPosts() {
+        return postRepository.findByPostPrivacy(Privacy.PUBLIC);
     }
 }
