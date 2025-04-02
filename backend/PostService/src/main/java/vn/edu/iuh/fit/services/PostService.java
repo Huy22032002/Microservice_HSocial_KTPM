@@ -16,10 +16,6 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public Post findPostById(Long postId) {
-        return postRepository.findById(postId).orElse(null);
-    }
-
     public Post savePost(Post post) {
         return postRepository.save(post);
     }
@@ -28,13 +24,24 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public void deletePost(Long postId) {
-        postRepository.deleteById(postId);
-    }
-
     public List<Post> getAllPosts() {
         return postRepository.findAll();
     }
 
+    public List<Post> getAllPostsByUserId(Long userId) {
+        return postRepository.findAllByUserId(userId);
+    }
 
+
+    public Post getPostById(Long id) {
+        return postRepository.findById(id).orElse(null);
+    }
+
+    public void deletePostById(Long id) {
+        postRepository.deleteById(id);
+    }
+
+    public Post getLastestPost() {
+        return postRepository.findFirstByOrderByCreatedAtDesc();
+    }
 }

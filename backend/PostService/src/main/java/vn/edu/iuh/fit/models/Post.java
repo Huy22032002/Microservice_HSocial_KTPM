@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
+import vn.edu.iuh.fit.enums.Privacy;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,15 +22,15 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    private long postId;
 
     @Column(nullable = false)
-    private int userId;
+    private long userId;
 
     @OneToMany(mappedBy = "post")
     private List<PostReaction> postReactions;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Content content;
 
     @OneToMany(mappedBy = "post")
@@ -38,26 +39,12 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private List<SharedPost> sharedPosts;
 
-    private LocalDateTime postTime;
+    private LocalDateTime createdAt;
 
     private boolean isStory;
 
-    @OneToOne
-    private PostPrivacy postPrivacy;
+    @Enumerated(EnumType.STRING)
+    private Privacy postPrivacy;
 
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        Post post = (Post) o;
-        return getPostId() != null && Objects.equals(getPostId(), post.getPostId());
-    }
 
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
 }

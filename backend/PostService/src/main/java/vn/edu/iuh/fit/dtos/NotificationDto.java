@@ -7,8 +7,7 @@ import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vn.edu.iuh.fit.models.Notification;
-import vn.edu.iuh.fit.models.NotificationType;
+import vn.edu.iuh.fit.enums.NotificationType;
 
 import java.time.LocalDateTime;
 
@@ -20,16 +19,9 @@ import java.time.LocalDateTime;
 public class NotificationDto {
     private Long userId;
     private String message;
-    @Enumerated(EnumType.STRING)
-    private NotificationType type;
+//    @Enumerated(EnumType.STRING)
+//    private NotificationType type;
     private Long ContentId;
     private LocalDateTime createdAt;
 
-    public Notification toEntity(
-//            Long userId, String message, NotificationType type, Long ContentId, LocalDateTime createdAt
-    ) {
-        Notification notification = new Notification(userId, message, ContentId,type, false,createdAt);
-
-        return notification;
-    }
 }

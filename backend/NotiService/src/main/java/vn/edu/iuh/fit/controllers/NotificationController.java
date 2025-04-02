@@ -20,8 +20,8 @@ public class NotificationController {
     // Gửi thông báo mới
     @PostMapping
     public ResponseEntity<Notification> sendNotification(@RequestBody NotificationDto notificationDto) {
-        Notification notification = notificationService.saveNotification(notificationDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(notification);
+        notificationService.saveNotification(notificationDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(notificationDto.toEntity());
     }
 
     // Lấy danh sách thông báo của người dùng

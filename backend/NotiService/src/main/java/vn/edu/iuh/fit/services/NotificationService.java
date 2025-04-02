@@ -30,7 +30,7 @@ public class NotificationService {
         notificationRepository.updateAllNotificationIsReadByUserId(userId, status);
     }
 
-    public Notification saveNotification(NotificationDto dto) {
+    public void saveNotification(NotificationDto dto) {
         Notification notification = new Notification();
         notification.setUserId(dto.getUserId());
         notification.setMessage(dto.getMessage());
@@ -38,7 +38,6 @@ public class NotificationService {
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
         notificationRepository.save(notification);
-        return notification;
     }
 
     public List<Notification> getNotificationsByUserId(Long userId) {

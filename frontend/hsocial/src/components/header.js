@@ -17,6 +17,9 @@ export default function Header() {
                 <Link to='/chat'>
                         Chat
                 </Link>
+                <Link to='/post'>
+                        Post
+                </Link>
             </div>
         </header>
     );

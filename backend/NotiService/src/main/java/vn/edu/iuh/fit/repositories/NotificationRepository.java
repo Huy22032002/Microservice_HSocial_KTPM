@@ -20,11 +20,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("UPDATE Notification n SET n.isRead = :status WHERE n.userId = :userId")
     void updateAllNotificationIsReadByUserId(@Param("userId") Long userId, @Param("status") boolean status);
 
-    @Modifying
-    @Query("INSERT INTO Notification (userId, message) VALUES (:userId, :message)")
-    void saveNotification(@Param("userId") Long userId, @Param("message") String message);
+//    @Modifying
+//    @Query("INSERT INTO Notification (userId, content, isRead) VALUES (:userId, :content, :isRead)")
+//    void saveNotification(Notification notification);
 
-//    void saveNotification()
+    Notification save(Notification notification);
 
     List<Notification> findByUserId(Long userId);
 }

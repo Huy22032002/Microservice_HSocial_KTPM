@@ -31,4 +31,13 @@ public class Notification {
     private boolean isRead;
 
     private LocalDateTime createdAt;
+
+    public Notification(Long userId, String message, Long contentId, NotificationType type, boolean isRead, LocalDateTime createdAt) {
+        this.userId = userId;
+        this.message = message;
+        this.contentId = contentId;
+        this.type = type;
+        this.isRead = isRead;
+        this.createdAt = createdAt;
+    }
 }
