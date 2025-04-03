@@ -25,8 +25,6 @@ public class User {
     private String email;
 
     private String phone;
-    @Column(columnDefinition = "TEXT")
-    private String avatar;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
