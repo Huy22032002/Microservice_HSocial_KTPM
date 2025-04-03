@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class.getName());
 
@@ -40,6 +41,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        logger.info("Login request received: {}", loginRequest);
         return authService.login(loginRequest.getUsername(), loginRequest.getPassword());
     }
 
@@ -60,12 +62,13 @@ public class AuthController {
             return ResponseEntity.ok(user);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
 
     }
 
-    @GetMapping("/auth/getPublicKey")
+    @GetMapping("/getPublicKey")
     public ResponseEntity<?> getPublicKey() {
         try {
             ClassPathResource resource = new ClassPathResource("certs/public.pem");

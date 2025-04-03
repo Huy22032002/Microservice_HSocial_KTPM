@@ -80,7 +80,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain signUpSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .securityMatcher((new AntPathRequestMatcher("/signup")))
+                .securityMatcher((new AntPathRequestMatcher("/auth/signup")))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults());
@@ -92,7 +92,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .securityMatcher((new AntPathRequestMatcher("/login")))
+                .securityMatcher((new AntPathRequestMatcher("/auth/login")))
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())

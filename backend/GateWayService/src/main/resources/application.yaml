@@ -5,15 +5,39 @@ spring:
     name: API-GATEWAY-SERVICE
   cloud:
     gateway:
+      globalCors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allowedMethods: "GET, POST, PUT, DELETE"
+            allowedHeaders: "*"
+            allowCredentials: true
       routes:
         - id: AuthService
           uri: http://localhost:8081
           predicates:
-            - Path=/**
+            - Path=/auth/**, /api/users/**
+          filters:
+            - AddRequestHeader=X-Request-Foo, Bar
+
         - id: ChatService
           uri: http://localhost:8082
           predicates:
-            - Path=/**
+            - Path=/api/conversations/**, /api/messages/**
+
+        - id: PostService
+          uri: http://localhost:8083
+          predicates:
+            - Path=/posts/**
+          filters:
+            - AddRequestHeader=X-Request-Foo, Bar
+
+        - id: NotiService
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - AddRequestHeader=X-Request-Foo, Bar
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -24,3 +48,8 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
