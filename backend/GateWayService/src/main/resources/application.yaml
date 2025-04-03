@@ -25,6 +25,11 @@ spring:
           predicates:
             - Path=/api/conversations/**, /api/messages/**
 
+        - id: UserService
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/userdetails/**, /api/userstatus/**, /api/friends/**
+
         - id: PostService
           uri: http://localhost:8083
           predicates:
