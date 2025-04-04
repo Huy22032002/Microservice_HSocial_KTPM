@@ -19,7 +19,6 @@ public class UserService {
 
     public User createUser(UserDTO userDTO) {
         if(userRepository.findByUsername(userDTO.getUsername()) != null || userRepository.findByEmail(userDTO.getEmail()) != null) {
-            System.out.println("User already exists");
             throw new RuntimeException("User already exists");
         }
 

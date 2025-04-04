@@ -13,6 +13,12 @@ import {
 import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import {
+  fetchUser,
+  fetchConversations,
+  fetchMessages,
+  postMessage,
+} from "../api/chatApi";
 
 export default function Chat() {
   const [message, setMessage] = useState("");
@@ -27,66 +33,25 @@ export default function Chat() {
   const [conversations, setConversations] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState(null);
 
-  async function fetchUser(userId) {
-    try {
-      const response = await fetch(
-        `http://localhost:8081/api/users/${userId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  // const fetchMessages = async (id) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `http://localhost:8082/api/messages/${id}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     console.log("fetch All Messages data: ", response.data);
+  //     setMessages(response.data);
+  //   } catch (error) {
+  //     console.log(`error fetch messages: ${error}`);
+  //   }
+  // };
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch User: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setUser(data);
-      console.log(data);
-    } catch (error) {
-      console.log("Error fetch user", error);
-    }
-  }
-  async function fetchConversations(userId) {
-    try {
-      const response = await axios.get(
-        `http://localhost:8082/api/conversations/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = response.data;
-      setConversations(data);
-      console.log("data fetching conversations: ", data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  const fetchMessages = async (id) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8082/api/messages/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("fetch All Messages data: ", response.data);
-      setMessages(response.data);
-    } catch (error) {
-      console.log(`error fetch messages: ${error}`);
-    }
-  };
-
-  async function postMessage(message) {
+  async function handlePostMessage(message) {
     try {
       if (!currentConversationId) {
         console.log("No conversation selected");
@@ -104,25 +69,13 @@ export default function Chat() {
       const receivers = currentConversation.participants.filter(
         (id) => id !== userId
       );
-
-      const response = await axios.post(
-        "http://localhost:8082/api/messages/save-message",
-        {
-          conversationId: currentConversationId,
-          sender: userId,
-          receivers: receivers,
-          type: "CHAT",
-          content: message,
-          status: "ACTIVE",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+      const data = await postMessage(
+        message,
+        currentConversationId,
+        conversations,
+        userId
       );
-      console.log("Message saved successfully:", response.data);
+      console.log("Message saved successfully:", data);
     } catch (e) {
       console.log(`Error save message ${e}`);
     }
@@ -132,8 +85,10 @@ export default function Chat() {
     if (!userId) return;
 
     async function fetchData() {
-      await fetchUser(userId);
-      await fetchConversations(userId);
+      const data = await fetchUser(userId);
+      if (data) setUser(data);
+      const lstConvers = await fetchConversations(userId);
+      if (lstConvers) setConversations(lstConvers);
     }
     fetchData();
 
@@ -175,16 +130,62 @@ export default function Chat() {
   const sendMessageToSocket = async () => {
     if (message.trim() !== "" && socket && user) {
       const messageData = {
-        sender: userId, //doi userId thanh sender thi ko realtime dc
+        sender: userId,
         content: message,
       };
       try {
         socket.send(JSON.stringify(messageData));
-        await postMessage(message);
+        await handlePostMessage(message);
         setMessage("");
       } catch (error) {
-        console.log("Error sending message github:", error);
+        console.log("Error sending message:", error);
       }
+    } else {
+    }
+  };
+
+  //neu user offline(socket == null) thi gui qua message queue
+  const sendMessageToQueue = async () => {
+    if (!currentConversationId) {
+      console.log("No conversation selected");
+      return;
+    }
+    // Lấy cuộc trò chuyện hiện tại
+    const currentConversation = conversations.find(
+      (conv) => conv.id === currentConversationId
+    );
+    if (!currentConversation) {
+      console.log("Conversation not found");
+      return;
+    }
+    // Lọc danh sách người nhận, loại bỏ chính mình
+    const receivers = currentConversation.participants.filter(
+      (id) => id !== userId
+    );
+    const response = await axios.post(
+      "http://localhost:8082/api/messages/send",
+      {
+        conversationId: currentConversationId,
+        sender: userId,
+        receivers: receivers,
+        type: "CHAT",
+        content: message,
+        status: "ACTIVE",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  };
+
+  const handleSend = () => {
+    if (socket) {
+      sendMessageToSocket();
+    } else {
+      sendMessageToQueue();
     }
   };
 
@@ -233,8 +234,9 @@ export default function Chat() {
         <div className={styles.mainListChat}>
           {conversations.map((conver, index) => (
             <div
-              onClick={() => {
-                fetchMessages(conver.id);
+              onClick={async () => {
+                const messages = await fetchMessages(conver.id);
+                setMessages(messages);
                 setCurrentConversationId(conver.id);
               }}
               key={index}
@@ -253,6 +255,7 @@ export default function Chat() {
                   <p className={styles.messageContent}>
                     {conver.lastMessage?.content || "No messages"}
                   </p>
+                  <p>---</p>
                   <p className={styles.timestamp}>
                     {conver.lastMessage?.timestamp || ""}
                   </p>
@@ -334,10 +337,7 @@ export default function Chat() {
 
           <button
             className={styles.btnSendMessage}
-            onClick={sendMessageToSocket}
-            onKeyDown={(event) =>
-              event.key === "Enter" && sendMessageToSocket()
-            }
+            onClick={handleSend}
             tabIndex={0}
             autoFocus
           >

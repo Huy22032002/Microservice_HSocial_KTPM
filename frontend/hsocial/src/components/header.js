@@ -1,26 +1,78 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {Link} from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
+import styles from "../styles/Header.module.css";
+import { fetchUserDetail } from "../api/userApi";
 
 export default function Header() {
+  const userId = useSelector((state) => state.user.userId);
+  const [avatar, setAvatar] = useState("");
+  const [fullname, setFullname] = useState("Unknown");
+  const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
+  useEffect(() => {
+    const getAvatarAndNameFromUserDetail = async () => {
+      if (userId) {
+        const userDetail = await fetchUserDetail(userId);
+        if (userDetail) {
+          setAvatar(userDetail.avatar);
+          setFullname(userDetail.fullname);
+        }
+      }
+    };
 
-    const userId = useSelector((state) => state.user.userId);
-    return (
-        <header>
-            <h2>Trang chu</h2>
-            <p> Hello User: {userId} </p>
-            <div>
-                <Link to='/signup'>dang ky</Link>
-                <Link to='/login'>Dang Nhap</Link>
-                <Link to='/chat'>
-                        Chat
-                </Link>
-                <Link to='/post'>
-                        Post
-                </Link>
-            </div>
-        </header>
-    );
+    getAvatarAndNameFromUserDetail();
+  }, [userId]);
+
+  return (
+    <header className={styles.header}>
+      <div className={styles.navContainer}>
+        <h3 className={styles.logo}>HSocial</h3>
+        <h3>
+          <Link to="/profile">Profile</Link>
+        </h3>
+        <nav className={styles.nav}>
+          {userId ? (
+            <>
+              <div
+                className={styles.userInfo}
+                onClick={() => setShowPopup(!showPopup)}
+              >
+                <img src={avatar} alt="avatar" className={styles.avatar} />
+                <span className={styles.fullname}>{fullname}</span>
+              </div>
+
+              {/* Popup chứa thông tin cá nhân và đăng xuất */}
+              {showPopup && (
+                <div className={styles.popup}>
+                  <Link to="/userDetail" className={styles.popupLink}>
+                    Thông tin cá nhân
+                  </Link>
+                  <button onClick={handleLogout} className={styles.popupLink}>
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <Link to="/signup" className={styles.link}>
+                Sign Up
+              </Link>
+              <Link to="/login" className={styles.link}>
+                Sign In
+              </Link>
+            </>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
 }

@@ -15,7 +15,6 @@ const userSlice = createSlice({
       state.userId = null;
     },
     login: (state, action) => {
-      // Thêm action login
       state.userId = action.payload.userId;
     },
   },

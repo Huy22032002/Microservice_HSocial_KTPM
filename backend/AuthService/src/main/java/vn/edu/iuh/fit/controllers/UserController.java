@@ -1,18 +1,25 @@
 package vn.edu.iuh.fit.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.iuh.fit.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.models.User;
 import vn.edu.iuh.fit.services.UserService;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserService userService;
 
@@ -21,14 +28,6 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_ROLE_USER')")
-    @GetMapping("/test")
-    public ResponseEntity<String> getFirstWelcomeMessage(Authentication authentication) {
-
-        return ResponseEntity.ok(
-                "Welcome to user service: " + authentication.getName()  +
-                        " with scope: " + authentication.getAuthorities());
-    }
     @GetMapping("/check-auth")
     public ResponseEntity<?> checkAuth(Authentication authentication) {
         System.out.println("Authorities: " + authentication.getAuthorities());
@@ -36,12 +35,16 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getUser(@PathVariable int userId) {
+    public ResponseEntity<?> getUser(@PathVariable int userId) {
+        System.out.println("User ID: " + userId);
         User user = userService.getUser(userId);
+
         if (user == null) {
-            System.out.println("User not found");
-            return ResponseEntity.notFound().build();
+            logger.warn("User {} not found", userId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse(404, "Not Found", "User not found", Instant.now()));
         }
-        return ResponseEntity.ok(user);
+
+        return ResponseEntity.ok(Map.of("user" , user));
     }
 }
