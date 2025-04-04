@@ -17,8 +17,6 @@ spring:
           uri: http://localhost:8085
           predicates:
             - Path=/api/userdetails/**, /api/userstatus/**, /api/friends/**
-          filters:
-            - AddRequestHeader=X-Request-Foo, Bar
 
         - id: AuthService
           uri: http://localhost:8081

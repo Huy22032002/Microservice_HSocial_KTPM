@@ -6,9 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import vn.edu.iuh.fit.models.UserDetail;
 import vn.edu.iuh.fit.services.UserDetailService;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/userdetails")
 public class UserDetailController {
@@ -24,6 +21,17 @@ public class UserDetailController {
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateUserDetail(@RequestBody UserDetail userDetail, @PathVariable int id) {
+        try {
+            UserDetail updatedUserDetail = userDetailService.update(id, userDetail);
+            return ResponseEntity.status(201).body(updatedUserDetail);
+        }catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserDetailById(@PathVariable int id) {
         UserDetail userDetail = userDetailService.findById(id);

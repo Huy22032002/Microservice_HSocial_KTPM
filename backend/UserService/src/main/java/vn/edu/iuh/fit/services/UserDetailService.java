@@ -20,4 +20,19 @@ public class UserDetailService {
     public UserDetail findById(int id) {
         return userDetailRepositories.findById(id).orElse(null);
     }
+
+    public UserDetail update(int userId, UserDetail userDetail) {
+        UserDetail checkExistUserDetail = userDetailRepositories.findById(userId).orElse(null);
+        if (checkExistUserDetail == null) {
+            return null;
+        }
+        checkExistUserDetail.setFullname(userDetail.getFullname());
+        checkExistUserDetail.setAddress(userDetail.getAddress());
+        checkExistUserDetail.setId(userId);
+        checkExistUserDetail.setAge(userDetail.getAge());
+        checkExistUserDetail.setAvatar(userDetail.getAvatar());
+        checkExistUserDetail.setGender(userDetail.isGender());
+
+        return userDetailRepositories.save(checkExistUserDetail);
+    }
 }

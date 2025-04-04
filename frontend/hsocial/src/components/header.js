@@ -52,7 +52,7 @@ export default function Header() {
               {/* Popup chứa thông tin cá nhân và đăng xuất */}
               {showPopup && (
                 <div className={styles.popup}>
-                  <Link to="/profile" className={styles.popupLink}>
+                  <Link to="/userDetail" className={styles.popupLink}>
                     Thông tin cá nhân
                   </Link>
                   <button onClick={handleLogout} className={styles.popupLink}>

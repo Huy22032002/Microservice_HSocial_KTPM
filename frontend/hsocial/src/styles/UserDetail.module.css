@@ -1,0 +1,102 @@
+.profileContainer {
+  width: 80%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.avatarSection {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.detailsSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.field {
+  margin-bottom: 15px;
+}
+
+.field label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #4f8dff;
+  outline: none;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.editButton,
+.saveButton,
+.cancelButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.editButton {
+  background-color: #4f8dff;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #3a76d3;
+}
+
+.saveButton {
+  background-color: #4caf50;
+  color: white;
+}
+
+.saveButton:hover {
+  background-color: #45a049;
+}
+
+.cancelButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #da190b;
+}
