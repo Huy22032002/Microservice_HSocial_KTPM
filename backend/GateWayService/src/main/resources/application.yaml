@@ -9,10 +9,17 @@ spring:
         cors-configurations:
           '[/**]':
             allowedOrigins: "http://localhost:3000"
-            allowedMethods: "GET, POST, PUT, DELETE"
+            allowedMethods: "GET, POST, PUT, DELETE, OPTIONS"
             allowedHeaders: "*"
             allowCredentials: true
       routes:
+        - id: UserService
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/userdetails/**, /api/userstatus/**, /api/friends/**
+          filters:
+            - AddRequestHeader=X-Request-Foo, Bar
+
         - id: AuthService
           uri: http://localhost:8081
           predicates:
@@ -24,11 +31,6 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/api/conversations/**, /api/messages/**
-
-        - id: UserService
-          uri: http://localhost:8085
-          predicates:
-            - Path=/api/userdetails/**, /api/userstatus/**, /api/friends/**
 
         - id: PostService
           uri: http://localhost:8083

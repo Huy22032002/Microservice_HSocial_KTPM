@@ -1,0 +1,95 @@
+.main {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.leftPanel {
+  flex: 2;
+  margin-right: 20px;
+}
+
+.rightPanel {
+  flex: 1;
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.postBox {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.postActions {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+button {
+  background: #0073b1;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #005f8c;
+}
+
+.post {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+}
+
+.userInfo h4 {
+  margin: 0 10px;
+}
+
+.suggestions,
+.profileView,
+.premiumBanner,
+.events {
+  background: white;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 10px;
+}
+
+.userSuggestion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
