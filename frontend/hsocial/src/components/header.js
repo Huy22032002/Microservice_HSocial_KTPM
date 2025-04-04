@@ -9,6 +9,7 @@ export default function Header() {
   const [avatar, setAvatar] = useState("");
   const [fullname, setFullname] = useState("Unknown");
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -29,26 +30,36 @@ export default function Header() {
 
     getAvatarAndNameFromUserDetail();
   }, [userId]);
+
   return (
     <header className={styles.header}>
       <div className={styles.navContainer}>
         <h3 className={styles.logo}>HSocial</h3>
+        <h3>
+          <Link to="/profile">Profile</Link>
+        </h3>
         <nav className={styles.nav}>
           {userId ? (
             <>
-              <Link to="/chat" className={styles.link}>
-                Chat Screen
-              </Link>
-              <Link to="/post" className={styles.link}>
-                Post
-              </Link>
-              <span>{fullname}</span>
-              <Link to="/userDetail">
-                <img src={avatar} alt="avatar" />
-              </Link>
-              <button onClick={handleLogout} className={styles.logoutButton}>
-                Sign Out
-              </button>
+              <div
+                className={styles.userInfo}
+                onClick={() => setShowPopup(!showPopup)}
+              >
+                <img src={avatar} alt="avatar" className={styles.avatar} />
+                <span className={styles.fullname}>{fullname}</span>
+              </div>
+
+              {/* Popup chứa thông tin cá nhân và đăng xuất */}
+              {showPopup && (
+                <div className={styles.popup}>
+                  <Link to="/profile" className={styles.popupLink}>
+                    Thông tin cá nhân
+                  </Link>
+                  <button onClick={handleLogout} className={styles.popupLink}>
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
             </>
           ) : (
             <>
