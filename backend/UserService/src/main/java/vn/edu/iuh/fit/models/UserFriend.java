@@ -8,17 +8,26 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "friends")
-public class Friend {
+@Document(collection = "user_friends")
+public class UserFriend {
+
     @Id
-    private String id;
     private int userId;
-    private int friendId;
-    private FriendStatus friendStatus;
-    private LocalDateTime createdAt;
+    private List<Friend> friends;
+
+    @Setter
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Friend {
+        private int friendId;
+        private FriendStatus friendStatus;
+        private LocalDateTime createdAt;
+    }
 }
