@@ -18,3 +18,12 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+
+
+aws:
+  s3:
+    bucket-name: hoang.nodejs.bucket
+  credentials:
+    access-key: AKIAUFFAGTHBBIKJ45FL
+    secret-key: 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
+    region: ap-southeast-1
