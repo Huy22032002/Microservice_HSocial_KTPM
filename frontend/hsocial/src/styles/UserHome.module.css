@@ -1,0 +1,86 @@
+.profileContainer {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profileHeader {
+  text-align: center;
+}
+
+.avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileHeader h2 {
+  margin-top: 10px;
+  font-size: 24px;
+}
+
+.profileHeader p {
+  font-size: 18px;
+  color: gray;
+}
+
+.profileBody {
+  margin-top: 30px;
+}
+
+.friendsSection,
+.postsSection {
+  margin-bottom: 30px;
+}
+
+.friendsSection h3,
+.postsSection h3 {
+  font-size: 22px;
+  color: #007bff;
+}
+
+.friendList {
+  list-style: none;
+  padding: 0;
+}
+
+.friendItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.friendAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.postsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.postItem {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.postItem h4 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.postItem p {
+  font-size: 14px;
+}
+
+.postItem small {
+  color: gray;
+}
