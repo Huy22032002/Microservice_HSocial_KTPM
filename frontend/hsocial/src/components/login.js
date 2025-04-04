@@ -1,18 +1,24 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import styles from "../styles/Login.module.css";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/userSlice";
 
 import { loginApi } from "../api/authApi";
+
 const Login = () => {
   const [username, setUserName] = useState("");
   const [pass, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.username) {
+      setUserName(location.state.username);
+    }
+  }, [location.state]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -22,9 +28,15 @@ const Login = () => {
       localStorage.setItem("token", data.token);
 
       dispatch(login({ userId: data.user.id }));
-      console.log(dispatch(login({ userId: data.user.id })));
+
+      if (!error) {
+        alert("Sign in successfully!");
+      }
 
       navigate("/");
+    } else {
+      setError("Sign in failed");
+      alert(error);
     }
   };
 
@@ -63,9 +75,13 @@ const Login = () => {
             Login
           </button>
         </form>
-        <button className={styles.btnGoogleLogin}>
-          <FontAwesomeIcon icon={faGoogle} className={styles.googleIcon} />
-          Login with Google
+        <button
+          onClick={() => {
+            navigate("/signup");
+          }}
+          className={styles.signup}
+        >
+          Sign Up Here!
         </button>
       </div>
     </div>

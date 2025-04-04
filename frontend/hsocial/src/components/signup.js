@@ -19,12 +19,14 @@ function SignUp() {
 
     if (!username || !email || !password || !phone) {
       setError("All fields are required.");
+      alert(error);
       return;
     }
 
     const data = await signUp(username, email, password, phone);
     if (data) {
-      navigate("/login");
+      alert("Sign Up Successfully!");
+      navigate("/login", { state: { username: username } });
     } else {
       setError("Sign up failed. Please try again later.");
     }
@@ -93,6 +95,9 @@ function SignUp() {
         <button className={styles.btnSignUp} id="btnSignUp" type="submit">
           Sign Up
         </button>
+
+        {/* Hiển thị lỗi nếu có */}
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
     </div>
   );

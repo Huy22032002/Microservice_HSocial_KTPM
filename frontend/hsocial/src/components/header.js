@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Header.module.css";
 import { fetchUserDetail } from "../api/userApi";
 
@@ -8,8 +8,13 @@ export default function Header() {
   const userId = useSelector((state) => state.user.userId);
   const [avatar, setAvatar] = useState("");
   const [fullname, setFullname] = useState("Unknown");
+  const navigate = useNavigate();
 
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
   useEffect(() => {
     const getAvatarAndNameFromUserDetail = async () => {
@@ -32,26 +37,26 @@ export default function Header() {
           {userId ? (
             <>
               <Link to="/chat" className={styles.link}>
-                Nhắn tin
+                Chat Screen
               </Link>
               <Link to="/post" className={styles.link}>
-                Đăng bài
+                Post
               </Link>
               <span>{fullname}</span>
               <Link to="/userDetail">
                 <img src={avatar} alt="avatar" />
               </Link>
               <button onClick={handleLogout} className={styles.logoutButton}>
-                Đăng xuất
+                Sign Out
               </button>
             </>
           ) : (
             <>
               <Link to="/signup" className={styles.link}>
-                Đăng ký
+                Sign Up
               </Link>
               <Link to="/login" className={styles.link}>
-                Đăng nhập
+                Sign In
               </Link>
             </>
           )}
