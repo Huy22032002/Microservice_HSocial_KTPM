@@ -1,6 +1,8 @@
 import axios from "axios";
 
 const USER_DETAIL_API_URL = process.env.REACT_APP_USER_DETAIL_API_URL;
+const USER_STATUS_API_URL = process.env.REACT_APP_USER_STATUS_API_URL;
+
 const token = localStorage.getItem("token");
 
 export async function fetchUserDetail(userId) {
@@ -17,12 +19,33 @@ export async function fetchUserDetail(userId) {
     return null;
   }
 }
-
 export async function updateUserDetail(id, userDetail) {
   try {
     const response = await axios.put(
       `${USER_DETAIL_API_URL}/update/${id}`,
       userDetail,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("Friend response data:", response.data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+export async function setUserStatus(id, status) {
+  console.log(USER_STATUS_API_URL);
+  console.log("token setStatus:", token);
+
+  try {
+    const response = await axios.post(
+      `${USER_STATUS_API_URL}/${id}?status=${status}`,
+      {}, // body trống
       {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -16,7 +16,7 @@ spring:
         - id: UserService
           uri: http://localhost:8085
           predicates:
-            - Path=/api/userdetails/**, /api/userstatus/**, /api/friends/**
+            - Path=/api/userdetails/**, /api/userStatus/**, /api/friends/**
 
         - id: AuthService
           uri: http://localhost:8081

@@ -7,4 +7,5 @@ import vn.edu.iuh.fit.models.UserStatus;
 @Repository
 public interface UserStatusRepositories extends MongoRepository<UserStatus, String> {
 
+    UserStatus findByUserId(int userId);
 }

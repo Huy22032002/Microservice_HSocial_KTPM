@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../redux/userSlice";
 
 import { loginApi } from "../api/authApi";
+import { setUserStatus } from "../api/userApi";
 
 const Login = () => {
   const [username, setUserName] = useState("");
@@ -29,6 +30,8 @@ const Login = () => {
 
       dispatch(login({ userId: data.user.id }));
 
+      //luu trang thai online
+      await setUserStatus(data.user.id, "ONLINE");
       if (!error) {
         alert("Sign in successfully!");
       }
@@ -36,7 +39,7 @@ const Login = () => {
       navigate("/");
     } else {
       setError("Sign in failed");
-      alert(error);
+      alert("Sign in failed");
     }
   };
 
