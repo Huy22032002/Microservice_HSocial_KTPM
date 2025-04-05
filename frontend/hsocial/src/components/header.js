@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Header.module.css";
-import { fetchUserDetail } from "../api/userApi";
+import { fetchUserDetail, setUserStatus } from "../api/userApi";
 
 export default function Header() {
   const userId = useSelector((state) => state.user.userId);
@@ -11,10 +11,19 @@ export default function Header() {
   const navigate = useNavigate();
   const [showPopup, setShowPopup] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      if (userId) {
+        await setUserStatus(userId, "OFFLINE");
+      }
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("Có lỗi xảy ra khi đăng xuất!");
+    }
   };
 
   useEffect(() => {
@@ -35,9 +44,14 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.navContainer}>
         <h3 className={styles.logo}>HSocial</h3>
-        <h3>
-          <Link to="/profile">Profile</Link>
-        </h3>
+        {userId ? (
+          <h3>
+            <Link to="/profile">Profile</Link>
+          </h3>
+        ) : (
+          <p>Please Login</p>
+        )}
+
         <nav className={styles.nav}>
           {userId ? (
             <>
