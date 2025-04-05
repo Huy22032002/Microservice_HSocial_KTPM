@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import styles from "../styles/UserHome.module.css";
 import { fetchUserDetail } from "../api/userApi";
-
+import { getListFriend } from "../api/friendApi";
 const UserHome = () => {
   const userId = useSelector((state) => state.user.userId);
   const [userDetails, setUserDetails] = useState(null);
   const [friends, setFriends] = useState([]);
   const [posts, setPosts] = useState([]);
 
-  // Lấy thông tin người dùng
+  const fetchDetails = async () => {
+    const userData = await fetchUserDetail(userId);
+    setUserDetails(userData);
+  };
+  const fetchFriends = async () => {
+    const lstFriend = await getListFriend(userId);
+    //loc theo Status = Accepted
+    const acceptedFriends = lstFriend
+      .filter((f) => f.friendStatus === "ACCEPTED")
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    setFriends(acceptedFriends);
+  };
   useEffect(() => {
-    const fetchDetails = async () => {
-      const userData = await fetchUserDetail(userId);
-      setUserDetails(userData);
-
-      // Giả lập fetch danh sách bạn bè và bài viết
-      setFriends(userData.friends || []);
-      setPosts(userData.posts || []);
-    };
-
     fetchDetails();
+    fetchFriends();
   }, [userId]);
 
   return (
@@ -48,16 +51,16 @@ const UserHome = () => {
         <div className={styles.friendsSection}>
           <h3>Danh sách bạn bè</h3>
           <ul className={styles.friendList}>
-            {friends.map((friend) => (
-              <li key={friend._id} className={styles.friendItem}>
-                <img
-                  src={friend.avatar}
-                  alt={friend.fullname}
-                  className={styles.friendAvatar}
-                />
-                <span>{friend.fullname}</span>
-              </li>
-            ))}
+            {Array.isArray(friends) && friends.length > 0 ? (
+              friends.map((friend) => (
+                <li key={friend.friendId} className={styles.friendItem}>
+                  <p>Id: {friend.friendId} - </p>
+                  <span>{friend.createdAt}</span>
+                </li>
+              ))
+            ) : (
+              <p>Chưa có bạn bè nào.</p>
+            )}
           </ul>
         </div>
 
