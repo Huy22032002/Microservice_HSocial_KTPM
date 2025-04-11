@@ -19,13 +19,14 @@ export async function fetchUserDetail(userId) {
     return null;
   }
 }
-export async function updateUserDetail(id, userDetail) {
+export async function updateUserDetail(id, data) {
   const token = localStorage.getItem("token");
+  console.log(token);
 
   try {
     const response = await axios.put(
       `${USER_DETAIL_API_URL}/update/${id}`,
-      userDetail,
+      data,
       {
         headers: {
           Authorization: `Bearer ${token}`,

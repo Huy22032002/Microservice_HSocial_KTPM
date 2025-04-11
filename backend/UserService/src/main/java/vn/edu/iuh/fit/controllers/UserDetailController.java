@@ -29,6 +29,7 @@ public class UserDetailController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUserDetail(@RequestBody UserDetail userDetail, @PathVariable int id) {
+        System.out.println("update: " + userDetail.getAddress());
         try {
             UserDetail updatedUserDetail = userDetailService.update(id, userDetail);
             return ResponseEntity.status(201).body(updatedUserDetail);

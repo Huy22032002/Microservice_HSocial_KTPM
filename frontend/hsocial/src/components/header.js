@@ -3,7 +3,8 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Header.module.css";
 import { fetchUserDetail, setUserStatus } from "../api/userApi";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 export default function Header() {
   const userId = useSelector((state) => state.user.userId);
   const [avatar, setAvatar] = useState("");
@@ -44,6 +45,24 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.navContainer}>
         <h3 className={styles.logo}>HSocial</h3>
+        <div className={styles.filterListChat}>
+          <input
+            type="text"
+            placeholder="Tìm kiếm bạn bè hoặc ai đó..."
+            style={{
+              width: "80%",
+              background: "none",
+              color: "rgba(255, 255, 255, 0.8)",
+              outline: "none",
+              border: "none",
+              margin: "0 6px",
+            }}
+          />
+          <FontAwesomeIcon
+            icon={faSearch}
+            style={{ color: "rgba(255, 255, 255, 0.8)", marginRight: "10px" }}
+          />
+        </div>
         {userId ? (
           <div style={{ display: "flex", flexDirection: "row" }}>
             <h3 style={{ marginRight: "30px" }}>
