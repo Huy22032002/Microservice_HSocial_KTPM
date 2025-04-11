@@ -3,9 +3,9 @@ import axios from "axios";
 const USER_DETAIL_API_URL = process.env.REACT_APP_USER_DETAIL_API_URL;
 const USER_STATUS_API_URL = process.env.REACT_APP_USER_STATUS_API_URL;
 
-const token = localStorage.getItem("token");
-
 export async function fetchUserDetail(userId) {
+  const token = localStorage.getItem("token");
+
   try {
     const response = await axios.get(`${USER_DETAIL_API_URL}/${userId}`, {
       headers: {
@@ -20,6 +20,8 @@ export async function fetchUserDetail(userId) {
   }
 }
 export async function updateUserDetail(id, userDetail) {
+  const token = localStorage.getItem("token");
+
   try {
     const response = await axios.put(
       `${USER_DETAIL_API_URL}/update/${id}`,
@@ -39,6 +41,8 @@ export async function updateUserDetail(id, userDetail) {
   }
 }
 export async function setUserStatus(id, status) {
+  const token = localStorage.getItem("token");
+
   console.log(USER_STATUS_API_URL);
   console.log("token setStatus:", token);
 

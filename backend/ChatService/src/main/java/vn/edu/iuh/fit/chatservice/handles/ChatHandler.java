@@ -7,61 +7,77 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ChatHandler extends TextWebSocketHandler {
 
-    //map userId -> WebSocket session
-    private final Map<String, WebSocketSession> userSessions = new ConcurrentHashMap<>();
+    // Map userId -> List of sessions (support multi-tab or multi-device)
+    private final Map<String, Set<WebSocketSession>> userSessions = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    private static final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        //lay userId tu query param (vd: ws://localhost:8080/chat?userId=user1))
         String userId = getUserIdFromSession(session);
-        if(userId != null) {
-            userSessions.put(userId, session);
-            System.out.println(userId + " connected");
+        if (userId != null) {
+            userSessions.computeIfAbsent(userId, k -> new CopyOnWriteArraySet<>()).add(session);
+            System.out.println("User " + userId + " connected with session " + session.getId());
         }
-        sessions.add(session);
-        System.out.println("Session " + session.getId() + " established");
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        System.out.println("Message received: " + message.getPayload());
-
         JsonNode jsonNode = objectMapper.readTree(message.getPayload());
-        String senderId = jsonNode.get("senderId").asText();
-        String receiverId = jsonNode.get("userId").asText();
+        String senderId = jsonNode.get("sender").asText();
+        String receiverId = jsonNode.get("receiver").asText();
         String content = jsonNode.get("content").asText();
+        String conversationId = jsonNode.get("conversationId").asText();
 
-        WebSocketSession receiverSession = userSessions.get(receiverId);
-        if(receiverSession != null && receiverSession.isOpen()) {
-            String jsonResponse = objectMapper.writeValueAsString(Map.of(
-                    "from", senderId,
-                    "message", content
-            ));
-            receiverSession.sendMessage(new TextMessage(jsonResponse));
-        }else {
-            System.out.println("Receiver " + receiverId + " is not connected");
+        String jsonResponse = objectMapper.writeValueAsString(Map.of(
+                "sender", senderId,
+                "receiver", receiverId,
+                "content", content,
+                "conversationId", conversationId
+        ));
+        // Send to sender
+        sendToUser(senderId, jsonResponse);
+        // Send to receiver
+        sendToUser(receiverId, jsonResponse);
+    }
+
+    private void sendToUser(String userId, String message) {
+        Set<WebSocketSession> sessions = userSessions.get(userId);
+        if (sessions != null) {
+            for (WebSocketSession sess : sessions) {
+                if (sess.isOpen()) {
+                    try {
+                        sess.sendMessage(new TextMessage(message));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } else {
+            System.out.println("User " + userId + " is not connected.");
         }
     }
+
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         String userId = getUserIdFromSession(session);
-        if(userId != null) {
-            userSessions.remove(userId);
-            System.out.println(userId + " disconnected");
+        if (userId != null) {
+            Set<WebSocketSession> sessions = userSessions.get(userId);
+            if (sessions != null) {
+                sessions.remove(session);
+                if (sessions.isEmpty()) {
+                    userSessions.remove(userId);
+                }
+            }
+            System.out.println("User " + userId + " disconnected from session " + session.getId());
         }
     }
 
-    // Lấy userId từ query param
     private String getUserIdFromSession(WebSocketSession session) {
         String query = session.getUri().getQuery(); // ?userId=abc
         if (query != null && query.startsWith("userId=")) {

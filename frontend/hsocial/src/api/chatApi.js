@@ -1,13 +1,14 @@
 import axios from "axios";
 
 //lay userId tu Redux
-const token = localStorage.getItem("token");
 
 const USER_API = process.env.REACT_APP_USER_API_URL;
 const CONVER_API = process.env.REACT_APP_CONVER_API_URL;
 const MESSAGE_API = process.env.REACT_APP_MESSAGE_API_URL;
 
 export async function fetchUser(userId) {
+  const token = localStorage.getItem("token");
+
   try {
     const response = await fetch(`${USER_API}/${userId}`, {
       headers: {
@@ -26,6 +27,8 @@ export async function fetchUser(userId) {
   }
 }
 export async function fetchConversations(userId) {
+  const token = localStorage.getItem("token");
+
   try {
     const response = await axios.get(`${CONVER_API}/${userId}`, {
       headers: {
@@ -41,6 +44,8 @@ export async function fetchConversations(userId) {
   }
 }
 export const fetchMessages = async (id) => {
+  const token = localStorage.getItem("token");
+
   try {
     const response = await axios.get(`${MESSAGE_API}/${id}`, {
       headers: {
@@ -60,6 +65,8 @@ export async function postMessage(
   conversations,
   userId
 ) {
+  const token = localStorage.getItem("token");
+
   try {
     if (!currentConversationId) {
       console.log("No conversation selected");
@@ -95,7 +102,6 @@ export async function postMessage(
         },
       }
     );
-    console.log("Message saved successfully:", response.data);
     return response.data;
   } catch (e) {
     console.log(`Error save message ${e}`);
