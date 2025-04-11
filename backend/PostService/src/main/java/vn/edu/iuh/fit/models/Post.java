@@ -25,10 +25,10 @@ public class Post {
     private long postId;
 
     @Column(nullable = false)
-    private long userId;
+    private int userId;
 
-    @OneToMany(mappedBy = "post")
-    private List<PostReaction> postReactions;
+    @ElementCollection
+    private List<Integer> likedUsers;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Content content;

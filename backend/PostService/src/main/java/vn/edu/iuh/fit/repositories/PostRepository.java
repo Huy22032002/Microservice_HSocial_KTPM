@@ -11,7 +11,9 @@ import vn.edu.iuh.fit.models.Post;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> , JpaSpecificationExecutor<Post> {
-    List<Post> findAllByUserId(Long userId);
+    List<Post> findAllByUserId(int userId);
+
+    List<Post> findAllByUserIdAndPostPrivacy(int userId, Privacy postPrivacy);
 
     //get lastest post
     Post findFirstByOrderByCreatedAtDesc();

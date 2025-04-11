@@ -6,7 +6,9 @@ import vn.edu.iuh.fit.enums.Privacy;
 import vn.edu.iuh.fit.models.Post;
 import vn.edu.iuh.fit.repositories.PostRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -29,7 +31,7 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public List<Post> getAllPostsByUserId(Long userId) {
+    public List<Post> getAllPostsByUserId(int userId) {
         return postRepository.findAllByUserId(userId);
     }
 
@@ -46,11 +48,20 @@ public class PostService {
         return postRepository.findFirstByOrderByCreatedAtDesc();
     }
 
-//    public List<Post> getAllPublicPosts() {
-//        return postRepository.findAllPublicPosts();
-//    }
-
     public List<Post> getAllPublicPosts() {
         return postRepository.findByPostPrivacy(Privacy.PUBLIC);
+    }
+
+    public List<Post> getFriendPosts(List<Integer> friendIds) {
+        List<Post> allFriendsPosts = new ArrayList<>();
+        friendIds.forEach(friendId -> {
+            List<Post> posts = postRepository.findAllByUserIdAndPostPrivacy(friendId, Privacy.FRIENDS );
+            allFriendsPosts.addAll(posts);
+        });
+        return allFriendsPosts;
+    }
+
+    public Optional<Post> findById(Long postId) {
+        return postRepository.findById(postId);
     }
 }

@@ -1,20 +1,24 @@
 // PostHome.js
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import "./PostHome.css";
+import { fetchUserDetail } from "../api/userApi";
 
 const PostHome = () => {
+  const [friends, setFriends] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
-  const [events, setEvents] = useState([]);
+  // const [suggestions, setSuggestions] = useState([]);
+  // const [events, setEvents] = useState([]); // Commented out instead of removed
   const [loading, setLoading] = useState(true);
   const [newContent, setNewContent] = useState("");
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [user, setUser] = useState({});
+  const [postPrivacy, setPostPrivacy] = useState("PUBLIC"); // Thêm biến trạng thái cho quyền riêng tư bài viết
+  const [comment, setComment] = useState(""); // Thêm biến trạng thái cho bình luận
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const userId = useSelector((state) => state.user.userId);
 
   // Sử dụng biến môi trường cho API (ví dụ: REACT_APP_API_URL)
@@ -32,119 +36,188 @@ const PostHome = () => {
     }
   };
 
-  // ---------------------------------------------------------
-  // CHÈN THÊM HÀM CỦA BẠN Ở VỊ TRÍ HỢP LÝ
-  // Lấy avatar người dùng
-  const userAvatar = user.avatar || "https://via.placeholder.com/150";
-  // Lấy danh sách bài viết của người dùng
-  const userPosts = posts.filter((post) => post.userId === userId);
-  // Lấy username người dùng
-  const userName = user.name || "Người dùng";
-  // ---------------------------------------------------------
+  //lấy danh sách bạn bè
+  const fetchFriends = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/users/friends/${userId}`, {
+         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+       });
+       setFriends(response.data);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách bạn bè:", error);
+    }
+  };
+
 
   // Lấy danh sách bài viết
   const fetchPosts = async () => {
+    fetchFriends(); // Gọi hàm lấy danh sách bạn bè trước khi lấy bài viết
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/posts/listPost/${userId}`);
-      if (!response.ok) throw new Error("Lỗi khi lấy dữ liệu");
-      const data = await response.json();
-      setPosts(data);
+      const response = await axios.post(`${API_URL}/posts/listPost`, {
+        userId,
+        friendIds: friends.map(f => f.id), // Lấy danh sách id bạn bè
+      });
+      setPosts(response.data);
     } catch (error) {
-      console.error("Lỗi:", error);
+      console.error("Lỗi khi lấy danh sách bài viết:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Tạo bài viết mới (upload kèm media nếu có)
-//   const createPost = async () => {
-//     if (!newContent) return alert("Vui lòng nhập nội dung bài viết");
+      // Adding the fetchUserDetail function
+      // async function fetchUserDetail(userId) {
+      //   try {
+      //     const response = await axios.get(`${API_URL}/users/${userId}`, {
+      //       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      //     });
+      //     const userDetail = {
+      //       avatar: response.data.avatar || "https://via.placeholder.com/150",
+      //       fullname: response.data.fullname || "Unknown User"
+      //     };
+      //     return userDetail;
+      //   } catch (error) {
+      //     console.error("Error fetching user details:", error);
+      //     return {
+      //       avatar: "https://via.placeholder.com/150",
+      //       fullname: "Unknown User"
+      //     };
+      //   }
+      // }
 
-//     const formData = new FormData();
-//     formData.append("content", newContent);
-//     formData.append("userId", userId);
-//     formData.append("postTime", new Date().toISOString());
-//     formData.append("isStory", false);
-//     formData.append("postPrivacy", "PUBLIC");
-//     if (file) {
-//       formData.append("media", file);
-//     }
-
-//     try {
-//       await axios.post(`${API_URL}/posts/create`, formData, {
-//         headers: {
-//           "Content-Type": "multipart/form-data",
-//         },
-//       });
-//       setNewContent("");
-//       setFile(null);
-//       fetchPosts();
-//     } catch (error) {
-//       console.error("Lỗi khi tạo bài viết:", error);
-//     }
-//   };
-
-  const createPost = async () => {
-    if (!newContent) return alert("Vui lòng nhập nội dung bài viết");
   
-    let mediaUrl = null;
+  const createPost = async () => {
+    if (!newContent.trim()) {
+      alert("Vui lòng nhập nội dung bài viết");
+      return;
+    }
     
-    // Nếu có file, upload lên S3 trước
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      
-      try {
-        const uploadResponse = await axios.post(`${API_URL}/s3/upload`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+    
+    let mediaUrls=[]; // Mảng lưu trữ URL của các file đã upload
+    if (files && files.length > 0) {
+      const uploadPromises = files.map(async (file) => {
+        const formData = new FormData();
+        files.forEach((file) => {
+          formData.append("files", file);
         });
-        mediaUrl = uploadResponse.data; // Lấy URL từ S3
-      } catch (error) {
-        console.error("Lỗi khi upload file lên S3:", error);
-        return;
-      }
+        console.log("Đang upload file:", file.name);
+        try {
+          const response = await axios.post(`${API_URL}/posts/s3upload`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          console.log(response.data);
+          // mediaUrls = (await Promise.all(uploadPromises)).filter((url) => url !== null);
+          // mediaUrls = response.data; // Lưu URLs từ response.data (danh sách string)
+          return response.data; // URL từ S3
+        } catch (error) {
+          console.error("Lỗi khi upload file lên S3:", error);
+          return null;
+        }
+      });
+      mediaUrls = (await Promise.all(uploadPromises)).filter((url) => url !== null);
+      console.log("Media URLs received:", mediaUrls);
+
+    }else{
+      console.log("Không có file nào được chọn.");
     }
   
-    // Gửi bài viết lên API
     const postData = {
+      post: {
+        userId,
+        postPrivacy,
+        createdAt: new Date().toISOString(),
+        
+      },
       content: newContent,
-      userId,
-      postTime: new Date().toISOString(),
-      isStory: false,
-      postPrivacy: "PUBLIC",
-      mediaUrl, // Lưu URL file từ S3
+      mediaUrls // Lưu danh sách URL file
     };
   
     try {
-      await axios.post(`${API_URL}/posts/create`, postData);
+      await axios.post(`${API_URL}/posts/create`, postData, {
+        headers: { "Content-Type": "application/json" },
+      });
+  
       setNewContent("");
-      setFile(null);
+      setFiles([]);
       fetchPosts();
     } catch (error) {
       console.error("Lỗi khi tạo bài viết:", error);
     }
   };
   
-  // Thả cảm xúc cho bài viết
-  const reactToPost = async (postId, reaction) => {
-    try {
-      await axios.post(`${API_URL}/posts/${postId}/react`, { reaction });
-      fetchPosts();
-    } catch (error) {
-      console.error("Lỗi khi thả cảm xúc:", error);
+  
+  const handleFileChange = (event) => {
+    const files = event.target.files;
+    const maxSize = 10 * 1024 * 1024;
+    const validFiles = [];
+  
+    if (files.length > 3) {
+      alert("Chỉ được chọn tối đa 3 file.");
+      return;
+    }
+  
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.size > maxSize) {
+        alert(`File "${file.name}" quá lớn! Vui lòng chọn file nhỏ hơn 10MB.`);
+      } else {
+        validFiles.push(file);
+      }
+    }
+  
+    if (validFiles.length > 0) {
+      setFiles(validFiles);
     }
   };
+  
+  
 
-  // Gửi yêu cầu kết bạn
-  const sendFriendRequest = async (targetUserId) => {
+  // const sendFriendRequest = async (targetUserId) => {
+  //   try {
+  //     await axios.post(`${API_URL}/users/connect`, { targetUserId });
+  //     alert("Yêu cầu kết bạn đã được gửi!");
+  //     // Xoá gợi ý sau khi gửi yêu cầu (tuỳ chọn)
+  //     setSuggestions(suggestions.filter((usr) => usr.id !== targetUserId));
+  //   } catch (error) {
+  //     console.error("Lỗi khi gửi yêu cầu kết bạn:", error);
+  //   }
+  // };
+
+  const likePost = async (postId, userId) => {
+    try{
+      await axios.post(`${API_URL}/posts/${postId}/like/${userId}`);
+      console.log(`Liked post ${postId}`);
+    // Implementation here
+      // const updatedPosts = posts.map((post) => {
+      //   if (post.id === postId) {
+      //     return {
+      //       ...post,
+      //       reactions: [...(post.reactions || []), userId], // Thêm userId vào danh sách reactions
+      //     };
+      //   }
+      //   return post;
+      // });
+      fetchPosts(); // Cập nhật lại danh sách bài viết sau khi thích
+    }catch (error) {
+      console.error("Lỗi khi gửi phản ứng:", error);
+    }
+    
+  };
+  const addComment = async (postId, comment) => {
+    if (!comment.trim()) {
+      alert("Vui lòng nhập bình luận");
+      return;
+    }
     try {
-      await axios.post(`${API_URL}/users/connect`, { targetUserId });
-      alert("Yêu cầu kết bạn đã được gửi!");
-      // Xoá gợi ý sau khi gửi yêu cầu (tuỳ chọn)
-      setSuggestions(suggestions.filter((usr) => usr.id !== targetUserId));
+      await axios.post(`${API_URL}/posts/${postId}/comment`, {
+        userId,
+        comment,
+      });
+      setComment(""); // Xoá nội dung input bình luận sau khi gửi
+      fetchPosts(); // Cập nhật lại danh sách bài viết sau khi thêm bình luận
     } catch (error) {
-      console.error("Lỗi khi gửi yêu cầu kết bạn:", error);
+      console.error("Lỗi khi thêm bình luận:", error);
     }
   };
 
@@ -156,28 +229,12 @@ const PostHome = () => {
     // fetchEvents();
   }, []);
 
+  // Temporary events array until backend is connected
+  const events = [];
+
   return (
     <div className="main-container">
       <div className="content-area">
-        {/* Header */}
-        <div className="header">
-          <h2 className="title">
-            📝 Danh sách bài viết
-            {/* Hoặc hiển thị tên user:  `📝 Danh sách bài viết - ${userName}` */}
-          </h2>
-          <img
-            className="avatar"
-            src={userAvatar}
-            alt="Avatar"
-            onClick={() => navigate("/userProfile")}
-          />
-          <img
-            className="messenger-icon"
-            src="https://via.placeholder.com/30"
-            alt="Messenger"
-            onClick={() => navigate("/chat")}
-          />
-        </div>
 
         {/* Form đăng bài */}
         <div className="post-form">
@@ -187,78 +244,116 @@ const PostHome = () => {
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}
           />
+          
+          {/* Input file với giới hạn kích thước và cho phép chọn nhiều file */}
           <input
             className="file-input"
             type="file"
             accept="image/*, video/*"
-            onChange={(e) => setFile(e.target.files[0])}
+            multiple
+            onChange={handleFileChange} // Thêm hàm kiểm tra file
           />
-          <button className="btn" onClick={createPost}>
+          {/* Dropdown chọn quyền riêng tư cho bài viết */}
+          <select className="privacy-select" onChange={(e) => setPostPrivacy(e.target.value)}>
+            <option value="PUBLIC">Công khai</option>
+            <option value="FRIENDS">Bạn bè</option>
+            <option value="PRIVATE">Riêng tư</option>
+          </select>
+          <button className="btn" onClick={() => { createPost(); fetchPosts(); }}>
             ➕ Đăng bài
+          </button>
+          
+          
+        </div>
+
+
+        {/* Danh sách bài viết */}
+{loading ? (
+  <p className="loading">Đang tải...</p>
+) : (
+  posts.map((post) => {
+    const user = fetchUserDetail(post.userId); // Gọi 1 lần thôi
+
+    return (
+      <div className="post-card" key={post.id}>
+        <div className="post-header">
+          <img className="avatar" src={user.avatar} alt="Avatar" />
+          <div className="post-user-info">
+            <span className="post-user-name">{user.fullname}</span>
+            <span className="post-time">
+              {new Date(post.createdAt).toLocaleString()}
+            </span>
+          </div>
+        </div>
+
+        {post.content?.files && post.content.files.length > 0 && (
+          <div className="post-media">
+            {(() => {
+              const mediaElements = [];
+              for (let i = 0; i < post.content.files.length; i++) {
+                const fileUrl = post.content.files[i];
+                const isVideo = fileUrl?.match(/\.(mp4|mov)$/i);
+
+                mediaElements.push(
+                  <div key={i}>
+                    {isVideo ? (
+                      <video controls src={fileUrl} className="media-video" />
+                    ) : (
+                      <img src={fileUrl} alt="Post media" className="media-image" />
+                    )}
+                  </div>
+                );
+              }
+              return mediaElements;
+            })()}
+          </div>
+        )}
+
+        <p className="post-content">
+          {post.content?.text || "Nội dung không có sẵn"}
+        </p>
+
+        {/* 👍 Like */}
+        <div className="reactions">
+          <button onClick={() => likePost(post.id, userId)} className="like-btn">
+            👍 Thích ({post.likedUsers?.length || 0} người đã thích)
           </button>
         </div>
 
-        <button className="btn refresh-btn" onClick={fetchPosts}>
-          🔄 Làm mới
-        </button>
+        {/* 💬 Bình luận */}
+        <div className="comment-section">
+          <strong>💬 Bình luận:</strong>
+          {post.comments?.length > 0 ? (
+            post.comments.map((c, index) => (
+              <p key={index} className="comment">
+                {c.text || c}
+              </p>
+            ))
+          ) : (
+            <p>Chưa có bình luận</p>
+          )}
 
-        {/* Danh sách bài viết */}
-        {loading ? (
-          <p className="loading">Đang tải...</p>
-        ) : (
-          posts.map((post) => (
-            <div className="post-card" key={post.id}>
-              <div className="post-header">
-                <img className="avatar" src={post.userAvatar} alt="Avatar" />
-                <div className="post-user-info">
-                  <span className="post-user-name">{post.userName}</span>
-                  <span className="post-time">
-                    {new Date(post.postTime).toLocaleString()}
-                  </span>
-                </div>
-              </div>
+          <input
+            className="comment-input"
+            type="text"
+            placeholder="Thêm bình luận..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <button className="btn" onClick={() => addComment(post.id, comment)}>
+            Gửi
+          </button>
+        </div>
+      </div>
+    );
+  })
+)}
 
-              {post.mediaUrl && (
-                <div className="post-media">
-                  {post.mediaType === "video" ? (
-                    <video controls src={post.mediaUrl} className="media-video" />
-                  ) : (
-                    <img src={post.mediaUrl} alt="Post media" className="media-image" />
-                  )}
-                </div>
-              )}
-
-              <h3 className="post-title">{post.title || "Bài viết"}</h3>
-              <p className="post-content">{post.content}</p>
-
-              <div className="reactions">
-                {["❤️", "😂", "😮", "😢", "😡"].map((emoji) => (
-                  <span
-                    key={emoji}
-                    className="reaction-emoji"
-                    onClick={() => reactToPost(post.id, emoji)}
-                  >
-                    {emoji}
-                  </span>
-                ))}
-              </div>
-
-              <div className="comment-section">
-                <strong>Bình luận:</strong>
-                {post.comments?.map((c, index) => (
-                  <p key={index} className="comment">
-                    {c}
-                  </p>
-                ))}
-              </div>
-            </div>
-          ))
-        )}
       </div>
 
       {/* Sidebar */}
       <div className="sidebar">
-        <div className="sidebar-section">
+        {/* <div className="sidebar-section">
           <h3>Gợi ý kết bạn</h3>
           {suggestions.map((sug) => (
             <div key={sug.id} className="suggestion-card">
@@ -274,8 +369,8 @@ const PostHome = () => {
               </div>
             </div>
           ))}
-        </div>
-
+        </div> */}
+        
         <div className="sidebar-section">
           <h3>Sự kiện sắp tới</h3>
           {events.map((event) => (
