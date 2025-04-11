@@ -33,24 +33,6 @@ export default function Chat() {
   const [conversations, setConversations] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState(null);
 
-  // const fetchMessages = async (id) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `http://localhost:8082/api/messages/${id}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-  //     console.log("fetch All Messages data: ", response.data);
-  //     setMessages(response.data);
-  //   } catch (error) {
-  //     console.log(`error fetch messages: ${error}`);
-  //   }
-  // };
-
   async function handlePostMessage(message) {
     try {
       if (!currentConversationId) {
@@ -80,7 +62,6 @@ export default function Chat() {
       console.log(`Error save message ${e}`);
     }
   }
-
   useEffect(() => {
     if (!userId) return;
 
@@ -92,7 +73,7 @@ export default function Chat() {
     }
     fetchData();
 
-    const ws = new WebSocket("ws://localhost:8082/chat");
+    const ws = new WebSocket(`ws://localhost:8082/chat?userId=${userId}`);
 
     ws.onopen = () => {
       console.log("Connected WebSocket");
@@ -128,9 +109,19 @@ export default function Chat() {
   }, [userId]);
 
   const sendMessageToSocket = async () => {
+    const currentConversation = conversations.find(
+      (conv) => conv.id === currentConversationId
+    );
+    if (!currentConversation) return;
+
+    const receiverId = currentConversation.participants.find(
+      (id) => id !== userId
+    );
+
     if (message.trim() !== "" && socket && user) {
       const messageData = {
-        sender: userId,
+        senderId: userId,
+        receiverId: receiverId,
         content: message,
       };
       try {
@@ -143,7 +134,6 @@ export default function Chat() {
     } else {
     }
   };
-
   //neu user offline(socket == null) thi gui qua message queue
   const sendMessageToQueue = async () => {
     if (!currentConversationId) {
@@ -180,7 +170,6 @@ export default function Chat() {
       }
     );
   };
-
   const handleSend = () => {
     if (socket) {
       sendMessageToSocket();
@@ -188,7 +177,6 @@ export default function Chat() {
       sendMessageToQueue();
     }
   };
-
   return (
     <div className={styles.chatContainer}>
       <div className={styles.listChat}>

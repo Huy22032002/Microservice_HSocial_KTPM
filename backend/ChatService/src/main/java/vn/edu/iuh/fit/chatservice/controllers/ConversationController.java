@@ -18,8 +18,6 @@ import java.util.List;
 public class ConversationController {
     @Autowired
     private ConversationService conversationService;
-    @Autowired
-    private AuthServiceClient authServiceClient;
 
     @GetMapping
     public ResponseEntity<?> getAll(){
@@ -29,21 +27,35 @@ public class ConversationController {
         }
         return ResponseEntity.ok(lstConversation);
     }
-
+//    @GetMapping("/{userId}")
+//    public ResponseEntity<?> getAllConversationsOfUser( @PathVariable String userId,
+//                                                        @RequestHeader(name="Authorization", required = false) String token) {
+//        try {
+//            UserDTO userDTO = authServiceClient.getUser(userId, token);
+//            if(userDTO == null){
+//                return ResponseEntity
+//                        .status(HttpStatus.NOT_FOUND)
+//                        .body(new ErrorResponse(404, "Not Found", "User Not Found", Instant.now()));
+//            }
+//            List<Conversation> conversations = conversationService.getAllConversationsByUser(userId);
+//            if (conversations.isEmpty())
+//                return ResponseEntity.ok(new ErrorResponse(200, "No Conversations", "User has no conversations", Instant.now()));
+//
+//            return ResponseEntity.ok(conversations);
+//        }
+//        catch (Exception e) {
+//            return ResponseEntity
+//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+//        }
+//
+//    }
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getAllConversationsOfUser( @PathVariable String userId,
-                                                        @RequestHeader(name="Authorization", required = false) String token) {
+    public ResponseEntity<?> getAllConversationsOfUser( @PathVariable String userId) {
         try {
-            UserDTO userDTO = authServiceClient.getUser(userId, token);
-            if(userDTO == null){
-                return ResponseEntity
-                        .status(HttpStatus.NOT_FOUND)
-                        .body(new ErrorResponse(404, "Not Found", "User Not Found", Instant.now()));
-            }
             List<Conversation> conversations = conversationService.getAllConversationsByUser(userId);
             if (conversations.isEmpty())
                 return ResponseEntity.ok(new ErrorResponse(200, "No Conversations", "User has no conversations", Instant.now()));
-
             return ResponseEntity.ok(conversations);
         }
         catch (Exception e) {
@@ -51,6 +63,5 @@ public class ConversationController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
-
     }
 }

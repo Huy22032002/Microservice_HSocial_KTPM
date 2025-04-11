@@ -45,9 +45,14 @@ export default function Header() {
       <div className={styles.navContainer}>
         <h3 className={styles.logo}>HSocial</h3>
         {userId ? (
-          <h3>
-            <Link to="/profile">Profile</Link>
-          </h3>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <h3 style={{ marginRight: "30px" }}>
+              <Link to="/chat">Chat</Link>
+            </h3>
+            <h3>
+              <Link to="/profile">Profile</Link>
+            </h3>
+          </div>
         ) : (
           <p>Please Login</p>
         )}

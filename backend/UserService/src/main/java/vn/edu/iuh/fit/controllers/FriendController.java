@@ -5,8 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.iuh.fit.dtos.FriendRequest;
+import vn.edu.iuh.fit.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.models.UserFriend;
 import vn.edu.iuh.fit.services.UserFriendService;
+
+import java.time.Instant;
 
 
 @RestController
@@ -22,25 +25,42 @@ public class FriendController {
             return ResponseEntity.ok(lstFriend);
         }
         catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
     }
     @PostMapping("/add")
-    public ResponseEntity<UserFriend> addFriend(@RequestBody FriendRequest friendRequest) {
+    public ResponseEntity<?> addFriend(@RequestBody FriendRequest friendRequest) {
+        try {
+            if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
+                return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
+            }
             return ResponseEntity.ok(friendService.addFriend(friendRequest));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
     }
     @PutMapping("/accept")
     public ResponseEntity<?> acceptFriend(@RequestBody FriendRequest friendRequest) {
         try {
+            if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
+                return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
+            }
             UserFriend acceptedFriend = friendService.acceptFriend(friendRequest);
             return ResponseEntity.ok(acceptedFriend);
         }
         catch (RuntimeException  e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(404, "Not Found", e.getMessage(), Instant.now()));
         }
     }
     @DeleteMapping("/removeFriend")
-    public ResponseEntity<String> removeFriend(@RequestBody FriendRequest friendRequest) {
+    public ResponseEntity<?> removeFriend(@RequestBody FriendRequest friendRequest) {
+        if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
+        }
         try {
             boolean rs = friendService.removeFriend(friendRequest);
             if (rs) {
@@ -50,12 +70,23 @@ public class FriendController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể xóa bạn bè.");
             }
         }catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse(404, "Not Found", e.getMessage(), Instant.now()));
         }
     }
     @DeleteMapping("/decline")
     public ResponseEntity<?> declineFriend(@RequestBody FriendRequest friendRequest) {
-        UserFriend userFriend = friendService.declineFriendRequest(friendRequest);
-        return ResponseEntity.ok(userFriend);
+        if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
+        }
+        try {
+            UserFriend userFriend = friendService.declineFriendRequest(friendRequest);
+            return ResponseEntity.ok(userFriend);
+        }catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse(404, "Not Found", e.getMessage(), Instant.now()));
+        }
     }
 }
