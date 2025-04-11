@@ -1,5 +1,5 @@
 import styles from "../styles/Chat.module.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
@@ -28,47 +28,14 @@ export default function Chat() {
   //lay userId tu Redux
   const userId = useSelector((state) => state.user.userId);
   const token = localStorage.getItem("token");
-
   //luu danh sach conversations
   const [conversations, setConversations] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState(null);
 
-  // const fetchMessages = async (id) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `http://localhost:8082/api/messages/${id}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-  //     console.log("fetch All Messages data: ", response.data);
-  //     setMessages(response.data);
-  //   } catch (error) {
-  //     console.log(`error fetch messages: ${error}`);
-  //   }
-  // };
+  const currentConversationIdRef = useRef(null);
 
   async function handlePostMessage(message) {
     try {
-      if (!currentConversationId) {
-        console.log("No conversation selected");
-        return;
-      }
-      // Lấy cuộc trò chuyện hiện tại
-      const currentConversation = conversations.find(
-        (conv) => conv.id === currentConversationId
-      );
-      if (!currentConversation) {
-        console.log("Conversation not found");
-        return;
-      }
-      // Lọc danh sách người nhận, loại bỏ chính mình
-      const receivers = currentConversation.participants.filter(
-        (id) => id !== userId
-      );
       const data = await postMessage(
         message,
         currentConversationId,
@@ -80,8 +47,9 @@ export default function Chat() {
       console.log(`Error save message ${e}`);
     }
   }
-
   useEffect(() => {
+    currentConversationIdRef.current = currentConversationId;
+
     if (!userId) return;
 
     async function fetchData() {
@@ -92,50 +60,64 @@ export default function Chat() {
     }
     fetchData();
 
-    const ws = new WebSocket("ws://localhost:8082/chat");
-
+    const ws = new WebSocket(`ws://localhost:8082/chat?userId=${userId}`);
     ws.onopen = () => {
       console.log("Connected WebSocket");
     };
-
+    //nhan message realtime tu server, luu vao setMessages
     ws.onmessage = (event) => {
       console.log("Received Raw message:", event.data);
       try {
         const messageObj = JSON.parse(event.data); // chuyen JSON String thanh Object
 
-        if (!messageObj || !messageObj.sender) {
+        if (!messageObj || !messageObj.sender || !messageObj.receiver) {
           console.warn("Invalid message format: ", messageObj);
           return;
         }
-        setMessages((prev) => [...prev, messageObj]);
+        // Nếu là tin nhắn của cuộc trò chuyện hiện tại thì thêm vào danh sách
+        if (messageObj.conversationId === currentConversationIdRef.current) {
+          setMessages((prev) => [...prev, messageObj]);
+        }
       } catch (error) {
         console.log("error:", error);
       }
     };
-
     ws.onclose = () => {
       console.log("Disconneced WebSocket");
     };
     ws.onerror = (error) => {
       console.log(`WebSocket error: ${error}`);
     };
-
     setSocket(ws);
 
     return () => {
       ws.close(); //dong ket noi khi unmount
     };
-  }, [userId]);
+  }, [currentConversationId]);
 
   const sendMessageToSocket = async () => {
+    const currentConversation = conversations.find(
+      (conv) => conv.id === currentConversationId
+    );
+    if (!currentConversation) return;
+
+    const receiverId = currentConversation.participants.find(
+      (id) => id.toString() !== userId.toString()
+    );
+    console.log("Current userId:", userId);
+    console.log("Resolved receiverId:", receiverId);
+
     if (message.trim() !== "" && socket && user) {
       const messageData = {
         sender: userId,
+        receiver: receiverId,
         content: message,
+        conversationId: currentConversationId,
       };
       try {
         socket.send(JSON.stringify(messageData));
         await handlePostMessage(message);
+
         setMessage("");
       } catch (error) {
         console.log("Error sending message:", error);
@@ -143,7 +125,6 @@ export default function Chat() {
     } else {
     }
   };
-
   //neu user offline(socket == null) thi gui qua message queue
   const sendMessageToQueue = async () => {
     if (!currentConversationId) {
@@ -180,7 +161,6 @@ export default function Chat() {
       }
     );
   };
-
   const handleSend = () => {
     if (socket) {
       sendMessageToSocket();
@@ -188,7 +168,6 @@ export default function Chat() {
       sendMessageToQueue();
     }
   };
-
   return (
     <div className={styles.chatContainer}>
       <div className={styles.listChat}>
@@ -299,13 +278,7 @@ export default function Chat() {
         </div>
         <div className={styles.chatBoxContent}>
           {messages.map((msg, index) => {
-            const isMyMessage = msg.sender == userId;
-            console.log(
-              `msg.sender: ${msg.sender} && userRedux: ${userId} && ${
-                msg.sender == user.id
-              }`
-            );
-
+            const isMyMessage = msg.sender.toString() === userId.toString();
             return (
               <div
                 key={index}

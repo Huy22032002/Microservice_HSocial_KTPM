@@ -1,8 +1,10 @@
 package vn.edu.iuh.fit.chatservice.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.iuh.fit.chatservice.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.chatservice.handles.RabbitProducer;
 import vn.edu.iuh.fit.chatservice.models.*;
 import vn.edu.iuh.fit.chatservice.services.ConversationService;
@@ -31,24 +33,31 @@ public class MessageController {
     }
 
     @PostMapping("/save-message")
-    public ResponseEntity<Message> saveMessage(@RequestBody Message message) {
-
+    public ResponseEntity<?> saveMessage(@RequestBody Message message) {
+        try {
             Conversation conversation = conversationService.getConversationById(message.getConversationId());
             //cap nhat lastMessagew
             LastMessage lastMessage = new LastMessage(message.getContent(), Instant.now());
             conversation.setLastMessage(lastMessage);
             conversation.setUpdatedAt(Instant.now());
-
             conversationService.updateConversation(conversation);
 
             message.setCreatedAt(Instant.now());
             messageService.save(message);
 
             return ResponseEntity.ok(message);
+        }catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
     }
     @GetMapping("/{id}")
     public ResponseEntity<?> getMessageByConversationId(@PathVariable String id){
-        System.out.println(messageService.getAllMessagesByConversationId(id));
-        return ResponseEntity.ok(messageService.getAllMessagesByConversationId(id));
+        try {
+            return ResponseEntity.ok(messageService.getAllMessagesByConversationId(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
     }
 }

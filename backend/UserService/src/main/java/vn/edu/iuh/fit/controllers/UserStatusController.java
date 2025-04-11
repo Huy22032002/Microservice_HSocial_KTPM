@@ -3,8 +3,10 @@ package vn.edu.iuh.fit.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.service.annotation.GetExchange;
+import vn.edu.iuh.fit.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.services.UserStatusService;
+
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/api/userStatus")
@@ -12,12 +14,26 @@ public class UserStatusController {
     @Autowired
     private UserStatusService userStatusService;
 
-    @PostMapping("/{userId}")
+    @PostMapping("/{userId}/status")
     public ResponseEntity<?> setStatus(@PathVariable int userId, @RequestParam String status) {
-        return ResponseEntity.ok(userStatusService.setStatus(userId, status)) ;
+        if (status == null || status.isBlank()) {
+            return ResponseEntity.badRequest().body("Trạng thái không được để trống");
+        }
+        try {
+            return ResponseEntity.ok(userStatusService.setStatus(userId, status));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(500, "Không thể cập nhật trạng thái", e.getMessage(), Instant.now()));
+        }
     }
+
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserStatus(@PathVariable int userId) {
-        return ResponseEntity.ok(userStatusService.getStatus(userId));
+        try {
+            return ResponseEntity.ok(userStatusService.getStatus(userId));
+        }catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(404)
+                    .body(new ErrorResponse(404, "Không tìm thấy người dùng", e.getMessage(), Instant.now()));
+        }
     }
 }

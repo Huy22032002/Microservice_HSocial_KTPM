@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const FRIEND_API = process.env.REACT_APP_USER_FRIEND_API_URL;
-const token = localStorage.getItem("token");
 
 export async function getListFriend(id) {
+  const token = localStorage.getItem("token");
+
   console.log(FRIEND_API);
   try {
     const response = await axios.get(`${FRIEND_API}/${id}`, {

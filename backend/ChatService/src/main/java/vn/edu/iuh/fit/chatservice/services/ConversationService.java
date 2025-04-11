@@ -33,30 +33,6 @@ public class ConversationService {
     public Conversation getConversationById(String id){
         return conversationRepository.findById(id).orElse(null);
     }
-
-    public void updateConversationStatus(String id, String status){
-        Optional<Conversation> conversation = conversationRepository.findById(id);
-        if(conversation.isPresent()){
-            switch (status){
-                case "Block":
-                    conversation.get().setStatus(ConversationStatus.BLOCKED);
-                    break;
-                case "Unblock":
-                    conversation.get().setStatus(ConversationStatus.ACTIVE);
-                    break;
-                case "Restrict":
-                    conversation.get().setStatus(ConversationStatus.RESTRICT);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid status: " + status);
-            }
-            conversationRepository.save(conversation.get());
-        }
-        else {
-            throw new IllegalArgumentException("Conversation with id " + id + " not found");
-        }
-
-    }
     public void deleteConversation(String id){
         if(conversationRepository.existsById(id)){
             conversationRepository.deleteById(id);
