@@ -19,13 +19,14 @@ export async function fetchUserDetail(userId) {
     return null;
   }
 }
-export async function updateUserDetail(id, userDetail) {
+export async function updateUserDetail(id, data) {
   const token = localStorage.getItem("token");
+  console.log(token);
 
   try {
     const response = await axios.put(
       `${USER_DETAIL_API_URL}/update/${id}`,
-      userDetail,
+      data,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -54,6 +55,24 @@ export async function setUserStatus(id, status) {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+export async function uploadAvatar(id, formData) {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.post(
+      `${USER_DETAIL_API_URL}/upload-avatar/${id}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
       }
     );

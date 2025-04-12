@@ -24,7 +24,15 @@
   flex: 1;
   margin-left: 20px;
 }
-
+.filterListChat {
+  display: flex;
+  align-items: center;
+  background: #777777;
+  padding: 4px;
+  border-radius: 30px;
+  margin: 8px 4px;
+  width: 320px;
+}
 .searchInput {
   width: 100%;
   padding: 8px;
