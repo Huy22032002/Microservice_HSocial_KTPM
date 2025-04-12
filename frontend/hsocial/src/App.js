@@ -1,9 +1,10 @@
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes} from "react-router-dom";
 import "./App.css";
 import React from "react";
 import Login from "./components/login";
 import SignUp from "./components/signup";
 import Home from "./components/home";
+import HomePage from "./components/HomePage";
 import Chat from "./components/ChatWebSocket";
 import PostHome from "./components/PostHome";
 import Profile from "./components/Profile";
@@ -20,6 +21,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="/" element={<Home />} />
+          <Route path="/home" element={<HomePage />} />
           <Route path="chat" element={<Chat />} />
           <Route path="post" element={<PostHome />} />
           <Route path="profile" element={<Profile />} />

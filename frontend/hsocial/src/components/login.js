@@ -36,7 +36,7 @@ const Login = () => {
         alert("Sign in successfully!");
       }
 
-      navigate("/");
+      navigate("/home");
     } else {
       setError("Sign in failed");
       alert("Sign in failed");

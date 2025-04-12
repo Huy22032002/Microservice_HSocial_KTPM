@@ -117,7 +117,7 @@ public class PostController {
 //        return postService.getAllPublicPosts();
 //    }
     //list
-    @GetMapping("/listPost")
+    @PostMapping("/listPost")
     public ResponseEntity<List<Post>> listPost(@RequestBody PostFetchRequest request) {
         int userId = request.getUserId();
         List<Integer> friendIds = request.getFriendIds();
@@ -149,6 +149,29 @@ public class PostController {
         postService.deletePostById(id);
         return ResponseEntity.ok("Delete post successfully!");
     }
+
+    @PostMapping("/{postId}/like/{userId}")
+    public ResponseEntity<Map<String, Object>> likePost(@PathVariable Long postId, @PathVariable int userId) {
+        Optional<Post> updatedPost = postService.toggleLike(postId, userId);
+
+        if (updatedPost.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "status", "error",
+                    "message", "Post not found"
+            ));
+        }
+
+        Post post = updatedPost.get();
+        boolean isLiked = post.getLikedUsers().contains(userId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", isLiked ? "liked" : "unliked");
+        response.put("likeCount", post.getLikedUsers().size());
+
+        return ResponseEntity.ok(response);
+    }
+
+
 
     @PostMapping("/{postId}/comment")
     public ResponseEntity<?> addCommentToPost(

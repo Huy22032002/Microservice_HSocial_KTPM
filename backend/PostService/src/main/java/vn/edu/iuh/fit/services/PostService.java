@@ -64,4 +64,26 @@ public class PostService {
     public Optional<Post> findById(Long postId) {
         return postRepository.findById(postId);
     }
+
+    public Optional<Post> toggleLike(Long postId, int userId) {
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            List<Integer> likedUsers = post.getLikedUsers();
+
+            if (likedUsers.contains(userId)) {
+                likedUsers.remove(Integer.valueOf(userId));
+            } else {
+                likedUsers.add(userId);
+            }
+
+            post.setLikedUsers(likedUsers);
+            postRepository.save(post);
+            return Optional.of(post);
+        }
+        return Optional.empty();
+    }
+
+
+
 }
