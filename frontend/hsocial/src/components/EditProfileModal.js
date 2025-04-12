@@ -8,6 +8,7 @@ const EditProfileModal = ({ user, onClose, onSave }) => {
   const [fullname, setFullname] = useState(user.fullname || "");
   const [age, setAge] = useState(user.age || "");
   const [gender, setGender] = useState(user.gender || "Nam");
+  const [avatar, setAvatar] = useState(user.avatar || null);
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -51,13 +52,33 @@ const EditProfileModal = ({ user, onClose, onSave }) => {
   }, [district]);
 
   const handleSubmit = () => {
+    //validate
+    if (
+      !fullname ||
+      !age ||
+      !gender ||
+      !city ||
+      !district ||
+      !ward ||
+      !streetNumber
+    ) {
+      alert("Vui lòng nhập đủ thông tin!");
+      return;
+    }
     const updateUserDetail = {
       fullname,
       age,
       gender,
       address: `${streetNumber}, ${ward}, ${district}, ${city}`,
     };
-    onSave(updateUserDetail);
+    if (avatar) {
+      const formData = new FormData();
+      formData.append("avatar", avatar);
+      formData.append("data", JSON.stringify(updateUserDetail));
+      onSave(formData);
+    } else {
+      onSave(updateUserDetail);
+    }
   };
 
   return (
@@ -69,7 +90,14 @@ const EditProfileModal = ({ user, onClose, onSave }) => {
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
+
         <div className={styles.modalBody}>
+          <label>Hình ảnh (tùy chọn)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setAvatar(e.target.files[0])}
+          />
           <label>Họ tên</label>
           <input
             value={fullname}
@@ -88,7 +116,11 @@ const EditProfileModal = ({ user, onClose, onSave }) => {
             onChange={(e) => setAge(e.target.value)}
           />
           <label>Thành phố</label>
-          <select value={city} onChange={(e) => setCity(e.target.value)}>
+          <select
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            required
+          >
             {cities.map((city) => (
               <option key={city.code} value={city.name}>
                 {city.name}
@@ -97,6 +129,7 @@ const EditProfileModal = ({ user, onClose, onSave }) => {
           </select>
           <label>Quận</label>
           <select
+            required
             value={district}
             onChange={(e) => setDistrict(e.target.value)}
           >
@@ -108,7 +141,11 @@ const EditProfileModal = ({ user, onClose, onSave }) => {
           </select>
 
           <label>Phường</label>
-          <select value={ward} onChange={(e) => setWard(e.target.value)}>
+          <select
+            value={ward}
+            onChange={(e) => setWard(e.target.value)}
+            required
+          >
             {wards.map((w) => (
               <option key={w.code} value={w.name}>
                 {w.name}
@@ -121,6 +158,7 @@ const EditProfileModal = ({ user, onClose, onSave }) => {
             value={streetNumber}
             onChange={(e) => setStreetNumber(e.target.value)}
             placeholder="Nhập số nhà"
+            required
           />
         </div>
         <div className={styles.modalFooter}>

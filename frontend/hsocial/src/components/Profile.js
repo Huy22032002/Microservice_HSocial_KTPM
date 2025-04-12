@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import styles from "../styles/UserHome.module.css";
-import { fetchUserDetail, updateUserDetail } from "../api/userApi";
+import {
+  fetchUserDetail,
+  updateUserDetail,
+  uploadAvatar,
+} from "../api/userApi";
 import { getListFriend } from "../api/friendApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
@@ -27,9 +31,9 @@ const UserHome = () => {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     setFriends(acceptedFriends);
   };
-  const handleUpdateUserDetail = async (data) => {
+  const handleUpdateUserDetail = async (formData) => {
     try {
-      const updatedUserDetail = await updateUserDetail(userId, data);
+      const updatedUserDetail = await uploadAvatar(userId, formData);
       setUserDetails(updatedUserDetail);
       setShowEditModal(false);
       alert("Cập nhật thành công!");

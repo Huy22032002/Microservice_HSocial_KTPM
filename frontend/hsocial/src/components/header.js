@@ -44,7 +44,9 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.navContainer}>
-        <h3 className={styles.logo}>HSocial</h3>
+        <h3 className={styles.logo}>
+          <Link to="/"> HSocial </Link>
+        </h3>
         <div className={styles.filterListChat}>
           <input
             type="text"

@@ -64,3 +64,21 @@ export async function setUserStatus(id, status) {
     return null;
   }
 }
+export async function uploadAvatar(id, formData) {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.post(
+      `${USER_DETAIL_API_URL}/upload-avatar/${id}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
