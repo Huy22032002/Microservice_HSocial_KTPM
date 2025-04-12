@@ -1,12 +1,17 @@
 package vn.edu.iuh.fit.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.iuh.fit.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.models.UserDetail;
+import vn.edu.iuh.fit.services.S3Service;
 import vn.edu.iuh.fit.services.UserDetailService;
 
+import java.io.IOException;
 import java.time.Instant;
 
 @RestController
@@ -14,6 +19,8 @@ import java.time.Instant;
 public class UserDetailController {
     @Autowired
     private UserDetailService userDetailService;
+    @Autowired
+    private S3Service s3Service;
 
     @PostMapping("/create")
     public ResponseEntity<?> createUserDetail(@RequestBody UserDetail userDetail) {
@@ -27,8 +34,30 @@ public class UserDetailController {
         }
     }
 
+    @PostMapping("/upload-avatar/{id}")
+    public ResponseEntity<?> uploadAvatar(@RequestParam("avatar") MultipartFile avatar,
+                                          @PathVariable int id,
+                                          @RequestParam("data") String dataJson) {
+        try {
+            //doc userdetail tu dataJson
+            ObjectMapper mapper = new ObjectMapper();
+            UserDetail userDetail = mapper.readValue(dataJson, UserDetail.class);
+            //upload hinh len s3 va lay url gan cho userdetail
+            String imageUrl = s3Service.uploadFile(avatar);
+            userDetail.setAvatar(imageUrl);
+            //update userDetail vao csdl
+            UserDetail updatedUserDetail = userDetailService.update(id, userDetail);
+            return ResponseEntity.ok(updatedUserDetail);
+        } catch (IOException e) {
+            return ResponseEntity
+                    .status(500)
+                    .body(new ErrorResponse(500, e.getMessage(), e.getMessage(), Instant.now()));
+        }
+    }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUserDetail(@RequestBody UserDetail userDetail, @PathVariable int id) {
+        System.out.println("update: " + userDetail.getAddress());
         try {
             UserDetail updatedUserDetail = userDetailService.update(id, userDetail);
             return ResponseEntity.status(201).body(updatedUserDetail);
