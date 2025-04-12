@@ -12,6 +12,7 @@ import vn.edu.iuh.fit.dto.UserDTO;
 import vn.edu.iuh.fit.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.models.User;
 import vn.edu.iuh.fit.services.AuthService;
+import vn.edu.iuh.fit.services.MessageProducer;
 import vn.edu.iuh.fit.services.UserService;
 
 import java.io.IOException;
@@ -33,6 +34,8 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private MessageProducer messageProducer;
 
     @Autowired
     public AuthController(AuthService authService) {
@@ -59,6 +62,10 @@ public class AuthController {
         }
         try {
             User user = userService.createUser(userDTO);
+            //goi service UserDetail de tao 1 UserDetail
+            System.out.println("User id created: " + user.getId());
+            messageProducer.sendUserId(user.getId());
+
             return ResponseEntity.ok(user);
         }
         catch (Exception e) {

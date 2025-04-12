@@ -5,16 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.iuh.fit.chatservice.exceptions.ErrorResponse;
-import vn.edu.iuh.fit.chatservice.handles.RabbitProducer;
 import vn.edu.iuh.fit.chatservice.models.*;
 import vn.edu.iuh.fit.chatservice.services.ConversationService;
 import vn.edu.iuh.fit.chatservice.services.MessageService;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -23,14 +20,6 @@ public class MessageController {
     private MessageService messageService;
     @Autowired
     private ConversationService conversationService;
-    @Autowired
-    private RabbitProducer rabbitProducer;
-
-    @PostMapping("/send")
-    public ResponseEntity<?> sendMessage(@RequestParam String message) {
-        rabbitProducer.sendMessagae(message);
-        return ResponseEntity.ok(Map.of("message", message));
-    }
 
     @PostMapping("/save-message")
     public ResponseEntity<?> saveMessage(@RequestBody Message message) {
@@ -45,7 +34,11 @@ public class MessageController {
             message.setCreatedAt(Instant.now());
             messageService.save(message);
 
-            return ResponseEntity.ok(message);
+            Map<String, Object> map = new HashMap<>();
+            map.put("message", message);
+            map.put("conversation", conversation);
+
+            return ResponseEntity.ok(map);
         }catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

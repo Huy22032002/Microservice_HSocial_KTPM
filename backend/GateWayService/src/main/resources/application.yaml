@@ -21,7 +21,7 @@ spring:
         - id: AuthService
           uri: http://localhost:8081
           predicates:
-            - Path=/auth/**, /api/users/**
+            - Path=/auth/**, /api/users/**, /api/messageQueue/**
           filters:
             - AddRequestHeader=X-Request-Foo, Bar
 

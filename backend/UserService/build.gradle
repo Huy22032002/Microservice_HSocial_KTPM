@@ -45,6 +45,9 @@ dependencies {
 	implementation "software.amazon.awssdk:s3"
 
 	implementation 'io.github.cdimascio:dotenv-java:3.2.0'
+	//AMQP
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
 
 
 }
