@@ -24,8 +24,8 @@ public class MessageController {
     @PostMapping("/save-message")
     public ResponseEntity<?> saveMessage(@RequestBody Message message) {
         try {
-            Conversation conversation = conversationService.getConversationById(message.getConversationId());
-            //cap nhat lastMessagew
+            Conversation conversation = conversationService.getConversationById(message.getConversationId(), message.getSender());
+            //cap nhat lastMessage
             LastMessage lastMessage = new LastMessage(message.getContent(), Instant.now());
             conversation.setLastMessage(lastMessage);
             conversation.setUpdatedAt(Instant.now());

@@ -65,6 +65,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Tạo authentication token và lưu vào SecurityContext
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            //gan token vao authentication
+            authentication.setDetails(token);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (JwtException e) {

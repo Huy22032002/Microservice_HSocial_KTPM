@@ -9,14 +9,13 @@ export async function fetchUserDetail(userId) {
   try {
     const response = await axios.get(`${USER_DETAIL_API_URL}/${userId}`, {
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (err) {
     console.log(err);
-    return null;
+    throw new Error(`Error fetch user detail: ${err.message}`);
   }
 }
 export async function updateUserDetail(id, data) {
