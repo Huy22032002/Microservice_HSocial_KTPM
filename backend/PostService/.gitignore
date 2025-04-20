@@ -6,6 +6,10 @@ build/
 !**/src/main/resources/application.yml
 !**/src/test/**/build/
 
+.env
+.application.yml
+.application.properties
+
 ### STS ###
 .apt_generated
 .classpath
