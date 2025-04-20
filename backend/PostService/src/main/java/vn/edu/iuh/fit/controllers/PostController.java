@@ -137,6 +137,32 @@ public class PostController {
         return ResponseEntity.ok(allPosts);
     }
 
+    @PostMapping("/listPostId")
+    public ResponseEntity<List<Long>> listPostId(@RequestBody PostFetchRequest request) {
+        int userId = request.getUserId();
+        List<Integer> friendIds = request.getFriendIds();
+
+        List<Post> userPosts = postService.getAllPostsByUserId(userId);
+        List<Post> publicPosts = postService.getAllPublicPosts();
+        List<Post> friendPosts = postService.getFriendPosts(friendIds);
+        //lọc bài public post trừ bài của user
+        publicPosts.removeIf(post -> post.getUserId() == userId);
+
+        List<Post> allPosts = new ArrayList<>();
+        allPosts.addAll(userPosts);
+        allPosts.addAll(publicPosts);
+        allPosts.addAll(friendPosts);
+        //sắp xếp theo thời gian tạo bài viết
+        allPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
+
+        List<Long> postIds = new ArrayList<>();
+        for (Post post : allPosts) {
+            postIds.add(post.getPostId());
+        }
+
+        return ResponseEntity.ok(postIds);
+    }
+
     //get post by id
     @GetMapping("/{id}")
     public ResponseEntity<Post> getPostById(@PathVariable Long id){
@@ -181,6 +207,7 @@ public class PostController {
         try {
             Integer userId = (Integer) payload.get("userId");
             String commentText = (String) payload.get("comment");
+            System.out.println("Comment: " + commentText);
 
             if (commentText == null || commentText.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Nội dung bình luận không được để trống.");
@@ -198,6 +225,9 @@ public class PostController {
             comment.setUserId(userId);
             comment.setPost(post);
             comment.setCreatedAt(LocalDateTime.now());
+
+            post.getComments().add(comment);
+            postService.savePost(post);
 
             commentService.saveComment(comment);
 
