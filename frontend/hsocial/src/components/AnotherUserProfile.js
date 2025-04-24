@@ -1,26 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import styles from "../styles/UserHome.module.css";
-import {
-  fetchUserDetail,
-  updateUserDetail,
-  uploadAvatar,
-} from "../api/userApi";
+import { useParams } from "react-router-dom";
+
+import { fetchUserDetail } from "../api/userApi";
 import { getListFriend } from "../api/friendApi";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import EditProfileModal from "./EditProfileModal";
+
 import Header from "./header";
-import { useNavigate } from "react-router-dom";
+import styles from "../styles/UserHome.module.css";
 
-const UserHome = () => {
-  const navigate = useNavigate();
-
-  const userId = useSelector((state) => state.user.userId);
+const AnotherUserProfile = () => {
+  const { userId } = useParams();
   const [userDetails, setUserDetails] = useState(null);
   const [friends, setFriends] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [showEditModal, setShowEditModal] = useState(false);
 
   const fetchDetails = async () => {
     const userData = await fetchUserDetail(userId);
@@ -34,17 +25,7 @@ const UserHome = () => {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     setFriends(acceptedFriends);
   };
-  const handleUpdateUserDetail = async (formData) => {
-    try {
-      const updatedUserDetail = await uploadAvatar(userId, formData);
-      setUserDetails(updatedUserDetail);
-      setShowEditModal(false);
-      alert("Cập nhật thành công!");
-    } catch (err) {
-      console.log(err);
-      alert("Lỗi cập nhật User Detail không thành công!");
-    }
-  };
+
   useEffect(() => {
     fetchDetails();
     fetchFriends();
@@ -70,12 +51,6 @@ const UserHome = () => {
                   {userDetails.age} tuổi
                 </p>
               </div>
-              <button
-                onClick={() => setShowEditModal(true)}
-                className={styles.btnEdit}
-              >
-                <FontAwesomeIcon icon={faPenToSquare} />
-              </button>
             </div>
           )}
         </div>
@@ -99,22 +74,10 @@ const UserHome = () => {
                     </div>
 
                     <div className={styles.friendActions}>
-                      <button
-                        onClick={() => {
-                          navigate(`/AnotherUserProfile/${friend.friendId}`);
-                        }}
-                        className={styles.profileBtn}
-                      >
+                      <button className={styles.profileBtn}>
                         👤 Xem hồ sơ
                       </button>
-                      <button
-                        onClick={() => {
-                          navigate("/chat");
-                        }}
-                        className={styles.chatBtn}
-                      >
-                        💬 Nhắn tin
-                      </button>
+                      <button className={styles.chatBtn}>💬 Nhắn tin</button>
                     </div>
                   </li>
                 ))
@@ -145,15 +108,8 @@ const UserHome = () => {
           </div>
         </div>
       </div>
-      {showEditModal && (
-        <EditProfileModal
-          user={userDetails}
-          onClose={() => setShowEditModal(false)}
-          onSave={handleUpdateUserDetail}
-        />
-      )}
     </>
   );
 };
 
-export default UserHome;
+export default AnotherUserProfile;

@@ -36,6 +36,9 @@ export default function Chat() {
   const [conversations, setConversations] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState(null);
 
+  //luu ten conversation hien tai
+  const [currentConversationName, setCurrentConversationName] = useState("");
+
   //fetch user detail
   const [userDetail, setUserDetail] = useState(null);
   const getUserDetail = async () => {
@@ -237,18 +240,19 @@ export default function Chat() {
                 const messages = await fetchMessages(conver.id);
                 setMessages(messages);
                 setCurrentConversationId(conver.id);
+                setCurrentConversationName(conver.name);
               }}
               key={index}
               className={styles.lstCon}
             >
               <img
-                src="https://imgur.com/kEcv3Jx.png"
+                src={conver.avatar || require("../assets/default_avatar.png")}
                 className={styles.avatar}
                 alt="avatar"
               />
               <div className={styles.conversation}>
                 <p className={styles.userName}>
-                  <b>User {conver.participants}</b>
+                  <b>{conver.name}</b>
                 </p>
                 <div className={styles.messageContainer}>
                   <p className={styles.messageContent}>
@@ -266,34 +270,32 @@ export default function Chat() {
       </div>
       {/* center container     */}
       <div className={styles.chatBox}>
-        <div className={styles.chatBoxHeader}>
-          <div className={styles.imgChatBoxHeader}>
-            <img
-              src={user?.avatar || "https://imgur.com/kEcv3Jx.png"}
-              alt="avatar user"
-              style={{ width: "40px", height: "40px" }}
-            />
-          </div>
-          <div className={styles.userInfoChatBoxHeader}>
-            <h4 style={{ color: "white", fontSize: 22, margin: 0, padding: 0 }}>
-              {conversations
-                .find((conver) => conver.id === currentConversationId)
-                ?.participants.filter((p) => p !== userId)?.[0] ||
-                "Receiver Name"}
-            </h4>
-            <p
-              style={{
-                color: "rgba(255,255,255,0.75)",
-                fontSize: 14,
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              Hoạt động 10 phút trước
-            </p>
-          </div>
-          <button className={styles.btnUserInfo}>
-            <FontAwesomeIcon icon={faInfo} />
+        <div>
+          <button className={styles.chatBoxHeader}>
+            <div className={styles.imgChatBoxHeader}>
+              <img
+                src={user?.avatar || "https://imgur.com/kEcv3Jx.png"}
+                alt="avatar user"
+                style={{ width: "40px", height: "40px" }}
+              />
+            </div>
+            <div className={styles.userInfoChatBoxHeader}>
+              <h4
+                style={{ color: "white", fontSize: 22, margin: 0, padding: 0 }}
+              >
+                {currentConversationName || "Receiver Name"}
+              </h4>
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.75)",
+                  fontSize: 14,
+                  margin: 0,
+                  padding: 0,
+                }}
+              >
+                Hoạt động 10 phút trước
+              </p>
+            </div>
           </button>
         </div>
         <div className={styles.chatBoxContent}>
@@ -305,8 +307,23 @@ export default function Chat() {
                 className={isMyMessage ? styles.myMessage : styles.otherMessage}
               >
                 <strong>
-                  {isMyMessage ? "Bạn" : `User ${msg.sender || "Unknown"}`}:
-                </strong>{" "}
+                  <img
+                    src={
+                      isMyMessage
+                        ? msg.avatar || require("../assets/default_avatar.png")
+                        : msg.avatar || require("../assets/default_avatar.png")
+                    }
+                    alt="avatar"
+                    style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      marginRight: "6px",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                </strong>
                 {msg.content}
               </div>
             );
@@ -343,10 +360,10 @@ export default function Chat() {
         <img
           src={userDetail?.avatar}
           alt="avatar user"
-          style={{ width: 50, height: 50, borderRadius: 30 }}
+          style={{ width: 150, height: 150, borderRadius: 150 }}
         />
         <h3 style={{ color: "white" }}> {user?.username} </h3>
-        <p style={{ color: "white", fontSize: 14, marginTop: "-15px" }}>
+        <p style={{ color: "white", fontSize: 24, marginTop: "-12px" }}>
           {userDetail?.fullname || "Ten User"}
         </p>
         <div className={styles.btnContainerChatInformation}>
@@ -368,7 +385,7 @@ export default function Chat() {
               Trang cá nhân
             </p>
           </div>
-          <div>
+          <div className={styles.containerBtnInfo}>
             <button>
               <FontAwesomeIcon icon={faSearch} />
             </button>
@@ -379,7 +396,7 @@ export default function Chat() {
                 marginTop: "5px",
               }}
             >
-              Tim kiem
+              Tìm kiếm
             </p>
           </div>
         </div>

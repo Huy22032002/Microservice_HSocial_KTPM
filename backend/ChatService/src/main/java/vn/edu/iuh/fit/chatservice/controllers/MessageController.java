@@ -8,9 +8,11 @@ import vn.edu.iuh.fit.chatservice.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.chatservice.models.*;
 import vn.edu.iuh.fit.chatservice.services.ConversationService;
 import vn.edu.iuh.fit.chatservice.services.MessageService;
+import vn.edu.iuh.fit.chatservice.services.UserServiceClient;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController

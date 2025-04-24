@@ -19,6 +19,7 @@ public class Conversation {
     @Id
     private String id;
     private String name;
+    private String avatar;
     private ConversationType type;
     private List<String> participants;
     private LastMessage lastMessage;

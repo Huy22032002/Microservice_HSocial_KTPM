@@ -2,7 +2,6 @@ package vn.edu.iuh.fit.chatservice.services;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -14,7 +13,7 @@ public class UserServiceClient {
 
     @Autowired
     public UserServiceClient(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:8085").build();
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8080").build();
     }
     @PostConstruct
     public void init() {

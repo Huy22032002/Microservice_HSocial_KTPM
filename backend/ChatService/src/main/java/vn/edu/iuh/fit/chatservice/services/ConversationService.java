@@ -51,16 +51,15 @@ public class ConversationService {
         //lay token
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String token = (String) authentication.getDetails();
-        System.out.println("token: " + token);
 
         List<Conversation> lstConversation = conversationRepository.findByUserId(user);
         for(Conversation conversation: lstConversation){
             for(String userId: conversation.getParticipants()){
                 if(!userId.equals(user)){ //khong lay minh
                     UserDTO userDetail = userServiceClient.getUserById(userId, token).block();
-                    System.out.println("userDetail: " +userDetail);
                     //dat ten conversation theo ten receiver
                     conversation.setName(userDetail.getFullname());
+                    conversation.setAvatar(userDetail.getAvatar());
                 }
             }
         }
