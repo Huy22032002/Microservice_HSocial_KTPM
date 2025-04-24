@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 //@JsonSerialize
 //@JsonDeserialize
 public class NotificationDto {
-    private Long userId;
+    private int userId;
     private String message;
 //    @Enumerated(EnumType.STRING)
 //    private NotificationType type;

@@ -1,0 +1,4 @@
+backend/PostService/src/main/resources/application.properties
+backend/AuthService/src/main/resources/application.properties
+backend/NotiService/src/main/resources/application.properties
+*.properties

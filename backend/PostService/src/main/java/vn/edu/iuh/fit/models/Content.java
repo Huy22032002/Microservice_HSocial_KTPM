@@ -19,7 +19,7 @@ public class Content {
 
     private String text;
 
-    @OneToMany(mappedBy = "content")
-    private List<File> files;
+    @ElementCollection
+    private List<String> files;
 
 }

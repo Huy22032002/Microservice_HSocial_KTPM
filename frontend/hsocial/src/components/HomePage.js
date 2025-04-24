@@ -1,13 +1,15 @@
 import React, { useEffect } from "react";
 import Header from "./header";
-function Home() {
+import PostHome from "./PostHome";
+function HomePage() {
   useEffect(() => {});
 
   return (
     <div>
       <Header />
+      <PostHome />
     </div>
   );
 }
 
-export default Home;
+export default HomePage;

@@ -18,6 +18,14 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "echo 'Waiting for Kafka to start...' && \
+      while ! nc -z localhost 9092; do sleep 1; done && \
+      echo 'Kafka started!' && \
+      kafka-topics --create --topic test-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1 && \
+      tail -f /dev/null"
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -47,3 +55,4 @@ services:
       - rabbitmq
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
+

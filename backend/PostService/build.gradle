@@ -42,6 +42,9 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.4.3'
     //spring kafka
     implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '3.3.3'
+    implementation 'software.amazon.awssdk:s3:2.20.10'
+    //dotenv
+    implementation 'io.github.cdimascio:dotenv-java:3.2.0'
 }
 
 tasks.named('test') {
