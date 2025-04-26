@@ -25,6 +25,55 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: 10px;
+}
+
+.popupUnderButton {
+  position: absolute;
+  margin-top: 8px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  width: 200px;
+  z-index: 100;
+}
+
+.popupContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.popupButtons {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.confirmBtn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
 .avatar {
   width: 100px;
   height: 100px;

@@ -4,8 +4,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import vn.edu.iuh.fit.configs.RabbitMQConfig;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class MessageProducer {

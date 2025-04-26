@@ -13,6 +13,7 @@ import vn.edu.iuh.fit.services.UserDetailService;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/userdetails")
@@ -81,6 +82,19 @@ public class UserDetailController {
             return ResponseEntity
                     .status(500)
                     .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> getUserDetailByFullname(@RequestParam("value") String value) {
+        if(value == null || value.trim().isEmpty()) {
+            return ResponseEntity.status(404).body("null");
+        }
+        try {
+            List<UserDetail> lstUser = userDetailService.findAllByValue(value);
+            return ResponseEntity.status(200).body(lstUser);
+        }catch (Exception e) {
+            return ResponseEntity.status(500).body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
     }
 

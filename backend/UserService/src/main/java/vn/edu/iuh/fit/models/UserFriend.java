@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "user_friends")
+@Document(collection = "friends")
 public class UserFriend {
 
     @Id

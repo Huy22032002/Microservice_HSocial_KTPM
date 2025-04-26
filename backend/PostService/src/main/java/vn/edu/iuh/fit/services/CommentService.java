@@ -7,6 +7,9 @@ import vn.edu.iuh.fit.repositories.CommentRepository;
 
 @Service
 public class CommentService {
+    public CommentService() {
+    }
+
     @Autowired
     private CommentRepository commentRepository;
 

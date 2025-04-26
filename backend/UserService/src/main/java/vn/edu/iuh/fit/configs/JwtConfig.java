@@ -27,13 +27,12 @@ public class JwtConfig {
         }
 
         // Chuyển đổi Public Key từ Base64 thành RSAPublicKey
-        byte[] decodedKey = Base64.getDecoder().decode(publicKeyPEM);
+        byte[] decodedKey = Base64.getDecoder().decode(publicKeyPEM); //giai ma public key
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decodedKey);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        RSAPublicKey publicKey = (RSAPublicKey) keyFactory.generatePublic(keySpec);
+        RSAPublicKey publicKey = (RSAPublicKey) keyFactory.generatePublic(keySpec); //chuyen sang RSA Public key
 
         System.out.println("Public Key in Config: " + publicKey.toString());
 
-        return NimbusJwtDecoder.withPublicKey(publicKey).build();
-    }
-}
+        return NimbusJwtDecoder.withPublicKey(publicKey).build(); //tao JWTDecoder voi public key tren
+    }}

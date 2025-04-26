@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import React from "react";
 import Login from "./components/login";
@@ -8,7 +8,7 @@ import HomePage from "./components/HomePage";
 import Chat from "./components/ChatWebSocket";
 import PostHome from "./components/PostHome";
 import Profile from "./components/Profile";
-import UserDetail from "./components/UserDetail";
+import AnotherUserProfile from "./components/AnotherUserProfile";
 
 import { Provider } from "react-redux";
 import { store } from "./redux/userSlice";
@@ -25,7 +25,10 @@ function App() {
           <Route path="chat" element={<Chat />} />
           <Route path="post" element={<PostHome />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="userDetail" element={<UserDetail />} />
+          <Route
+            path="anotherUserProfile/:userId"
+            element={<AnotherUserProfile />}
+          />
         </Routes>
       </BrowserRouter>
     </Provider>

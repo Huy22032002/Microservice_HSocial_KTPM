@@ -3,6 +3,7 @@ package vn.edu.iuh.fit.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.iuh.fit.dtos.UserStatusDTO;
 import vn.edu.iuh.fit.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.services.UserStatusService;
 
@@ -14,13 +15,14 @@ public class UserStatusController {
     @Autowired
     private UserStatusService userStatusService;
 
-    @PostMapping("/{userId}/status")
-    public ResponseEntity<?> setStatus(@PathVariable int userId, @RequestParam String status) {
-        if (status == null || status.isBlank()) {
+    @PutMapping("/{userId}")
+    public ResponseEntity<?> setUserStatus(@PathVariable int userId, @RequestBody UserStatusDTO status, @RequestHeader("Authorization") String token) {
+        System.out.println("token: " + token + "userid: " + userId + " status: " + status);
+        if (status == null || status.getStatus().isBlank()) {
             return ResponseEntity.badRequest().body("Trạng thái không được để trống");
         }
         try {
-            return ResponseEntity.ok(userStatusService.setStatus(userId, status));
+            return ResponseEntity.ok(userStatusService.setStatus(userId, status.getStatus()));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse(500, "Không thể cập nhật trạng thái", e.getMessage(), Instant.now()));
         }

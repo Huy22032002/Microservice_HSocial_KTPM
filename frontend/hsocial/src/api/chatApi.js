@@ -1,31 +1,10 @@
 import axios from "axios";
-
+import { fetchUserDetail } from "../api/userApi";
 //lay userId tu Redux
 
-const USER_API = process.env.REACT_APP_USER_API_URL;
 const CONVER_API = process.env.REACT_APP_CONVER_API_URL;
 const MESSAGE_API = process.env.REACT_APP_MESSAGE_API_URL;
 
-export async function fetchUser(userId) {
-  const token = localStorage.getItem("token");
-
-  try {
-    const response = await fetch(`${USER_API}/${userId}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch User: ${response.status}`);
-    }
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.log("Error fetch user", error);
-  }
-}
 export async function fetchConversations(userId) {
   const token = localStorage.getItem("token");
 
@@ -41,6 +20,7 @@ export async function fetchConversations(userId) {
     return data;
   } catch (error) {
     console.log(error);
+    throw new Error("Error fetch list Conversation api: ", error.message);
   }
 }
 export const fetchMessages = async (id) => {
@@ -53,8 +33,19 @@ export const fetchMessages = async (id) => {
         "Content-Type": "application/json",
       },
     });
-    console.log("fetch All Messages data: ", response.data);
-    return response.data;
+    const messages = response.data;
+
+    //fetch user avatar voi moi message
+    // goi song song tat ca cac fetchUserDetail
+    const avatarPromises = messages.map((message) =>
+      fetchUserDetail(message.sender)
+    );
+    const userDetails = await Promise.all(avatarPromises);
+    messages.forEach((msg, i) => {
+      msg.avatar = userDetails[i].avatar;
+    });
+
+    return messages;
   } catch (error) {
     console.log(`error fetch messages: ${error}`);
   }

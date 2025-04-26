@@ -19,6 +19,16 @@ public class ConversationController {
     @Autowired
     private ConversationService conversationService;
 
+    @PostMapping
+    public ResponseEntity<?> createConversation(@RequestBody Conversation conversation){
+        try {
+            conversationService.createConversation(conversation);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }catch (Exception e){
+            return ResponseEntity.status(500).body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
+    }
+
     @GetMapping
     public ResponseEntity<?> getAll(){
         List<Conversation> lstConversation = conversationService.getAllConversations();
@@ -27,29 +37,6 @@ public class ConversationController {
         }
         return ResponseEntity.ok(lstConversation);
     }
-//    @GetMapping("/{userId}")
-//    public ResponseEntity<?> getAllConversationsOfUser( @PathVariable String userId,
-//                                                        @RequestHeader(name="Authorization", required = false) String token) {
-//        try {
-//            UserDTO userDTO = authServiceClient.getUser(userId, token);
-//            if(userDTO == null){
-//                return ResponseEntity
-//                        .status(HttpStatus.NOT_FOUND)
-//                        .body(new ErrorResponse(404, "Not Found", "User Not Found", Instant.now()));
-//            }
-//            List<Conversation> conversations = conversationService.getAllConversationsByUser(userId);
-//            if (conversations.isEmpty())
-//                return ResponseEntity.ok(new ErrorResponse(200, "No Conversations", "User has no conversations", Instant.now()));
-//
-//            return ResponseEntity.ok(conversations);
-//        }
-//        catch (Exception e) {
-//            return ResponseEntity
-//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
-//        }
-//
-//    }
     @GetMapping("/{userId}")
     public ResponseEntity<?> getAllConversationsOfUser( @PathVariable String userId) {
         try {
@@ -64,4 +51,16 @@ public class ConversationController {
                     .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
     }
+//    @GetMapping("/{id}/name")
+//    public ResponseEntity<?> getConversationName( @PathVariable String id, int userId) {
+//        try {
+//            Conversation conversation = conversationService.getConversationById(id);
+//            if(conversation == null)
+//                return ResponseEntity.status(400).body(new ErrorResponse(400, "No Conversation", "There are no conversation available", Instant.now()) );
+//
+//
+//        }catch (Exception e) {
+//            return  ResponseEntity.status(500).body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+//        }
+//    }
 }

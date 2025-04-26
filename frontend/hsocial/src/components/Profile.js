@@ -11,8 +11,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import EditProfileModal from "./EditProfileModal";
 import Header from "./header";
+import { useNavigate } from "react-router-dom";
 
 const UserHome = () => {
+  const navigate = useNavigate();
+
   const userId = useSelector((state) => state.user.userId);
   const [userDetails, setUserDetails] = useState(null);
   const [friends, setFriends] = useState([]);
@@ -26,10 +29,12 @@ const UserHome = () => {
   };
   const fetchFriends = async () => {
     const lstFriend = await getListFriend(userId);
-    const acceptedFriends = lstFriend
-      .filter((f) => f.friendStatus === "ACCEPTED")
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    setFriends(acceptedFriends);
+    if (lstFriend) {
+      const acceptedFriends = lstFriend
+        .filter((f) => f.friendStatus === "ACCEPTED")
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setFriends(acceptedFriends);
+    }
   };
   const handleUpdateUserDetail = async (formData) => {
     try {
@@ -96,10 +101,22 @@ const UserHome = () => {
                     </div>
 
                     <div className={styles.friendActions}>
-                      <button className={styles.profileBtn}>
+                      <button
+                        onClick={() => {
+                          navigate(`/AnotherUserProfile/${friend.friendId}`);
+                        }}
+                        className={styles.profileBtn}
+                      >
                         👤 Xem hồ sơ
                       </button>
-                      <button className={styles.chatBtn}>💬 Nhắn tin</button>
+                      <button
+                        onClick={() => {
+                          navigate("/chat");
+                        }}
+                        className={styles.chatBtn}
+                      >
+                        💬 Nhắn tin
+                      </button>
                     </div>
                   </li>
                 ))
