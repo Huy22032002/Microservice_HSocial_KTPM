@@ -16,7 +16,7 @@ import java.time.Instant;
 @RequestMapping("/api/friends")
 public class FriendController {
     @Autowired
-    private UserFriendService friendService;
+    private  UserFriendService friendService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getListFriend(@PathVariable int id) {
@@ -27,6 +27,17 @@ public class FriendController {
         catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
+    }
+    @GetMapping("{id}/pending")
+    public ResponseEntity<?> getListPending(@PathVariable int id) {
+        try{
+            UserFriend lstPending = friendService.getListPendingOfUser(id);
+            return ResponseEntity.ok(lstPending);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(500)
                     .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
     }

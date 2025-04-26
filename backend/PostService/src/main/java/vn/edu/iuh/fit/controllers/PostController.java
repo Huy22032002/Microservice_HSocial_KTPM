@@ -98,13 +98,13 @@ public class PostController {
         Post latestPost = postService.getLastestPost();
 
         // Tạo thông báo
-//        NotificationDto notificationDto = new NotificationDto(
-//                savedPost.getUserId(),
-//                "Bạn có một bài viết mới!",
-//                latestPost.getPostId(),
-//                LocalDateTime.now()
-//        );
-//        notificationProducer.sendNotification(notificationDto);
+        NotificationDto notificationDto = new NotificationDto(
+                savedPost.getUserId(),
+                "Bạn có một bài viết mới!",
+                latestPost.getPostId(),
+                LocalDateTime.now()
+        );
+        notificationProducer.sendNotification(notificationDto);
 
         return ResponseEntity.ok(savedPost);
     }

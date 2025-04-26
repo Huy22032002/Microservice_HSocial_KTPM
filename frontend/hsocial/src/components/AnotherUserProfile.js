@@ -2,16 +2,29 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import { fetchUserDetail } from "../api/userApi";
-import { getListFriend } from "../api/friendApi";
+import {
+  accpeptFriend,
+  getListFriend,
+  getListPending,
+  sendFriendRequest,
+  removeFriend,
+} from "../api/friendApi";
 
 import Header from "./header";
 import styles from "../styles/UserHome.module.css";
-
+import { useSelector } from "react-redux";
 const AnotherUserProfile = () => {
   const { userId } = useParams();
   const [userDetails, setUserDetails] = useState(null);
   const [friends, setFriends] = useState([]);
   const [posts, setPosts] = useState([]);
+
+  const userIdRedux = useSelector((state) => state.user.userId);
+  //state hủy lời mời kết bạn
+  const [showCancelPopup, setShowCancelPopup] = useState(false);
+
+  //status pending, accepted, none
+  const [friendStatus, setFriendStatus] = useState("");
 
   const fetchDetails = async () => {
     console.log("user id: ", userId);
@@ -29,10 +42,63 @@ const AnotherUserProfile = () => {
       setFriends(acceptedFriends);
     }
   };
+  const checkFriendStatus = async () => {
+    console.log("friends cua another user: ", friends);
+    //lay danh sach ban be cua minh
+    const myListFriend = await getListFriend(userIdRedux);
+    const isFriend = myListFriend.find((friend) => friend.friendId == userId);
+    if (isFriend) {
+      setFriendStatus("Bạn bè");
+      return;
+    }
+    //trường hợp ai đó gửi lời mời kết bạn, lấy danh sach pending của mình
+    const myListPending = await getListPending(userIdRedux);
+    console.log("my liss pending", myListPending);
+    if (myListPending != null) {
+      const rs = myListPending.find((friend) => friend.friendId == userId);
+      if (rs) {
+        setFriendStatus("Chấp nhận");
+        return;
+      }
+    }
+    //ko phai pending, accpect thi là kết bạn
+    setFriendStatus("Kết bạn");
+  };
 
+  const handleRemoveFriend = async () => {
+    if (friendStatus === "Bạn bè") {
+      const rs = await removeFriend(userIdRedux, userId);
+      if (rs) {
+        setFriendStatus("Kết bạn");
+      }
+    }
+  };
+  const handleButton = async () => {
+    if (friendStatus === "Kết bạn") {
+      await sendFriendRequest(userIdRedux, userId);
+      alert("Gửi lời mời kết bạn thành công!");
+      setFriendStatus("Đã gửi lời mời");
+    } else if (friendStatus === "Chấp nhận") {
+      await accpeptFriend(userIdRedux, userId);
+      setFriendStatus("Bạn bè");
+    } else if (friendStatus === "Đã gửi lời mời") {
+      //show popup có nút hủy lời mời
+      console.log("Mở popup có nút hủy lời mời kết bạn");
+      setShowCancelPopup(true);
+      //xóa status pending bên friendID để hủy
+      setFriendStatus("Kết bạn");
+    } else if (friendStatus === "Bạn bè") {
+      console.log("Mở popup hủy kết bạn");
+      setShowCancelPopup(true);
+    }
+  };
   useEffect(() => {
-    fetchDetails();
-    fetchFriends();
+    if (userIdRedux && userId) {
+      setFriends([]);
+      fetchDetails();
+      fetchFriends();
+      checkFriendStatus();
+    }
   }, [userId]);
 
   return (
@@ -57,6 +123,40 @@ const AnotherUserProfile = () => {
               </div>
             </div>
           )}
+          <div className={styles.buttonContainer}>
+            <button onClick={handleButton}>{friendStatus}</button>
+            {showCancelPopup && (
+              <div className={styles.popupUnderButton}>
+                <div className={styles.popupContent}>
+                  {friendStatus === "Bạn bè" ? (
+                    <p>Bạn có muốn hủy kết bạn?</p>
+                  ) : (
+                    <p>Bạn có muốn hủy lời mời kết bạn?</p>
+                  )}
+                  <div className={styles.popupButtons}>
+                    <button
+                      className={styles.confirmBtn}
+                      onClick={() => {
+                        handleRemoveFriend();
+                        console.log("Đã xác nhận hủy.");
+                        setShowCancelPopup(false);
+                        setFriendStatus("Kết bạn");
+                      }}
+                    >
+                      Xác nhận
+                    </button>
+                    <button
+                      className={styles.cancelBtn}
+                      onClick={() => setShowCancelPopup(false)}
+                    >
+                      Hủy
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            <button>Nhắn tin</button>
+          </div>
         </div>
 
         <div className={styles.profileBody}>

@@ -3,8 +3,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getListUserDetailByValue } from "../api/userApi";
 import { debounce } from "lodash"; //goi api theo giay
+import { useSelector } from "react-redux";
 
 const SearchUser = () => {
+  const userId = useSelector((state) => state.user.userId);
+
   const [searchValue, setSearchValue] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -84,7 +87,8 @@ const SearchUser = () => {
                   borderBottom: "1px solid #eee",
                 }}
                 onClick={() => {
-                  navigate(`/anotherUserProfile/${user.id}`);
+                  if (user.id === userId) navigate("/profile");
+                  else navigate(`/anotherUserProfile/${user.id}`);
                   setSearchValue("");
                   setShowPopup(false);
                 }}

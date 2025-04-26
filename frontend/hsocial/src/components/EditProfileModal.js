@@ -7,7 +7,7 @@ import axios from "axios";
 const EditProfileModal = ({ user, onClose, onSave }) => {
   const [fullname, setFullname] = useState(user.fullname || "");
   const [age, setAge] = useState(user.age || "");
-  const [gender, setGender] = useState(user.gender || "Nam");
+  const [gender, setGender] = useState(user.gender || true);
   const [avatar, setAvatar] = useState(user.avatar || null);
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
