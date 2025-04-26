@@ -40,4 +40,7 @@ public class Notification {
         this.isRead = isRead;
         this.createdAt = createdAt;
     }
+
+    public Notification(Long userId, String message, Long contentId, String type, boolean isRead, LocalDateTime createdAt) {
+    }
 }

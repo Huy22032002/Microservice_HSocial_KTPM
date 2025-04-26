@@ -20,16 +20,16 @@ import java.time.LocalDateTime;
 public class NotificationDto {
     private Long userId;
     private String message;
-    @Enumerated(EnumType.STRING)
-    private NotificationType type;
+
     private Long ContentId;
     private LocalDateTime createdAt;
+//    @Enumerated(EnumType.STRING)
+    private String type;
 
     public Notification toEntity(
 //            Long userId, String message, NotificationType type, Long ContentId, LocalDateTime createdAt
     ) {
-        Notification notification = new Notification(userId, message, ContentId,type, false,createdAt);
 
-        return notification;
+        return new Notification(userId, message, ContentId,type, false,createdAt);
     }
 }
