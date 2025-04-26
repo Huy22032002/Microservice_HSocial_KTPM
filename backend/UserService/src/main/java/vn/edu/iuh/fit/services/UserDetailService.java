@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import vn.edu.iuh.fit.models.UserDetail;
 import vn.edu.iuh.fit.repositories.UserDetailRepositories;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,5 +35,10 @@ public class UserDetailService {
         checkExistUserDetail.setGender(userDetail.isGender());
 
         return userDetailRepositories.save(checkExistUserDetail);
+    }
+
+    //tim danh sach user trong tim kiem
+    public List<UserDetail> findAllByValue(String value) {
+        return userDetailRepositories.findByFullnameContainingIgnoreCase(value);
     }
 }

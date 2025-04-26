@@ -2,30 +2,9 @@ import axios from "axios";
 import { fetchUserDetail } from "../api/userApi";
 //lay userId tu Redux
 
-const USER_API = process.env.REACT_APP_USER_API_URL;
 const CONVER_API = process.env.REACT_APP_CONVER_API_URL;
 const MESSAGE_API = process.env.REACT_APP_MESSAGE_API_URL;
 
-export async function fetchUser(userId) {
-  const token = localStorage.getItem("token");
-
-  try {
-    const response = await fetch(`${USER_API}/${userId}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch User: ${response.status}`);
-    }
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.log("Error fetch user", error);
-  }
-}
 export async function fetchConversations(userId) {
   const token = localStorage.getItem("token");
 
@@ -41,6 +20,7 @@ export async function fetchConversations(userId) {
     return data;
   } catch (error) {
     console.log(error);
+    throw new Error("Error fetch list Conversation api: ", error.message);
   }
 }
 export const fetchMessages = async (id) => {

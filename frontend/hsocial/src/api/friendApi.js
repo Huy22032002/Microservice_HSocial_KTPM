@@ -13,11 +13,7 @@ export async function getListFriend(id) {
         "Content-Type": "application/json",
       },
     });
-    if (!response.data) {
-      console.log("ko fetch dc friends");
-      return [];
-    }
-    console.log(response.data);
+    console.log("ds ban be: ", response.data);
     return response.data.friends;
   } catch (err) {
     if (err.response) {

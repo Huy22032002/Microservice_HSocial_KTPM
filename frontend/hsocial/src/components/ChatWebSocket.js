@@ -2,10 +2,8 @@ import styles from "../styles/Chat.module.css";
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBell,
   faIcons,
   faImage,
-  faInfo,
   faPaperPlane,
   faSearch,
   faUser,
@@ -14,13 +12,8 @@ import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  fetchUser,
-  fetchConversations,
-  fetchMessages,
-  postMessage,
-} from "../api/chatApi";
-import { fetchUserDetail } from "../api/userApi";
+import { fetchConversations, fetchMessages, postMessage } from "../api/chatApi";
+import { fetchUserDetail, fetchUser } from "../api/userApi";
 
 export default function Chat() {
   const navigate = useNavigate();

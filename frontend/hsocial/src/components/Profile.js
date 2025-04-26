@@ -29,10 +29,12 @@ const UserHome = () => {
   };
   const fetchFriends = async () => {
     const lstFriend = await getListFriend(userId);
-    const acceptedFriends = lstFriend
-      .filter((f) => f.friendStatus === "ACCEPTED")
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    setFriends(acceptedFriends);
+    if (lstFriend) {
+      const acceptedFriends = lstFriend
+        .filter((f) => f.friendStatus === "ACCEPTED")
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setFriends(acceptedFriends);
+    }
   };
   const handleUpdateUserDetail = async (formData) => {
     try {

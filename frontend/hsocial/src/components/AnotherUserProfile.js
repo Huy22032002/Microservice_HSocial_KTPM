@@ -14,16 +14,20 @@ const AnotherUserProfile = () => {
   const [posts, setPosts] = useState([]);
 
   const fetchDetails = async () => {
+    console.log("user id: ", userId);
+
     const userData = await fetchUserDetail(userId);
     setUserDetails(userData);
     console.log("User detail:", userData);
   };
   const fetchFriends = async () => {
     const lstFriend = await getListFriend(userId);
-    const acceptedFriends = lstFriend
-      .filter((f) => f.friendStatus === "ACCEPTED")
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    setFriends(acceptedFriends);
+    if (lstFriend) {
+      const acceptedFriends = lstFriend
+        .filter((f) => f.friendStatus === "ACCEPTED")
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setFriends(acceptedFriends);
+    }
   };
 
   useEffect(() => {
