@@ -11,5 +11,6 @@ import lombok.Setter;
 @Setter
 public class UserDTO {
     private int id;
-    private String username;
+    private String fullname;
+    private String avatar;
 }

@@ -20,11 +20,15 @@ import java.util.UUID;
 
 @Service
 public class S3Service {
-    private final AWSConfig awsConfig;
+    @Autowired
+    private AWSConfig awsConfig;
 
     @Autowired
     public S3Service(AWSConfig awsConfig) {
         this.awsConfig = awsConfig;
+    }
+
+    public S3Service() {
     }
 
     public String uploadFile(MultipartFile file) throws IOException {

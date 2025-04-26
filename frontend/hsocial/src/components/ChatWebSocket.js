@@ -2,25 +2,22 @@ import styles from "../styles/Chat.module.css";
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBell,
   faIcons,
   faImage,
-  faInfo,
   faPaperPlane,
   faSearch,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  fetchUser,
-  fetchConversations,
-  fetchMessages,
-  postMessage,
-} from "../api/chatApi";
+import { fetchConversations, fetchMessages, postMessage } from "../api/chatApi";
+import { fetchUserDetail, fetchUser } from "../api/userApi";
 
 export default function Chat() {
+  const navigate = useNavigate();
+
   const [message, setMessage] = useState("");
   const [socket, setSocket] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -31,6 +28,23 @@ export default function Chat() {
   //luu danh sach conversations
   const [conversations, setConversations] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState(null);
+
+  //luu ten conversation hien tai
+  const [currentConversationName, setCurrentConversationName] = useState("");
+
+  //fetch user detail
+  const [userDetail, setUserDetail] = useState(null);
+  const getUserDetail = async () => {
+    try {
+      const data = await fetchUserDetail(userId);
+      if (!data) return;
+      setUserDetail(data);
+      console.log("User Detail: ", data);
+    } catch (err) {
+      console.log(err);
+      alert("Failed to fetch User Detail", err);
+    }
+  };
 
   const currentConversationIdRef = useRef(null);
 
@@ -57,6 +71,7 @@ export default function Chat() {
       if (data) setUser(data);
       const lstConvers = await fetchConversations(userId);
       if (lstConvers) setConversations(lstConvers);
+      getUserDetail();
     }
     fetchData();
 
@@ -170,6 +185,7 @@ export default function Chat() {
   };
   return (
     <div className={styles.chatContainer}>
+      {/* left container */}
       <div className={styles.listChat}>
         <div className={styles.headerListChat}>
           <h1>Đoạn Chat</h1>
@@ -217,18 +233,19 @@ export default function Chat() {
                 const messages = await fetchMessages(conver.id);
                 setMessages(messages);
                 setCurrentConversationId(conver.id);
+                setCurrentConversationName(conver.name);
               }}
               key={index}
               className={styles.lstCon}
             >
               <img
-                src="https://imgur.com/kEcv3Jx.png"
+                src={conver.avatar || require("../assets/default_avatar.png")}
                 className={styles.avatar}
                 alt="avatar"
               />
               <div className={styles.conversation}>
                 <p className={styles.userName}>
-                  <b>User {conver.participants}</b>
+                  <b>{conver.name}</b>
                 </p>
                 <div className={styles.messageContainer}>
                   <p className={styles.messageContent}>
@@ -244,36 +261,34 @@ export default function Chat() {
           ))}
         </div>
       </div>
-
+      {/* center container     */}
       <div className={styles.chatBox}>
-        <div className={styles.chatBoxHeader}>
-          <div className={styles.imgChatBoxHeader}>
-            <img
-              src={user?.avatar || "https://imgur.com/kEcv3Jx.png"}
-              alt="avatar user"
-              style={{ width: "40px", height: "40px" }}
-            />
-          </div>
-          <div className={styles.userInfoChatBoxHeader}>
-            <h4 style={{ color: "white", fontSize: 22, margin: 0, padding: 0 }}>
-              {conversations
-                .find((conver) => conver.id === currentConversationId)
-                ?.participants.filter((p) => p !== userId)?.[0] ||
-                "Receiver Name"}
-            </h4>
-            <p
-              style={{
-                color: "rgba(255,255,255,0.75)",
-                fontSize: 14,
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              Hoạt động 10 phút trước
-            </p>
-          </div>
-          <button className={styles.btnUserInfo}>
-            <FontAwesomeIcon icon={faInfo} />
+        <div>
+          <button className={styles.chatBoxHeader}>
+            <div className={styles.imgChatBoxHeader}>
+              <img
+                src={user?.avatar || "https://imgur.com/kEcv3Jx.png"}
+                alt="avatar user"
+                style={{ width: "40px", height: "40px" }}
+              />
+            </div>
+            <div className={styles.userInfoChatBoxHeader}>
+              <h4
+                style={{ color: "white", fontSize: 22, margin: 0, padding: 0 }}
+              >
+                {currentConversationName || "Receiver Name"}
+              </h4>
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.75)",
+                  fontSize: 14,
+                  margin: 0,
+                  padding: 0,
+                }}
+              >
+                Hoạt động 10 phút trước
+              </p>
+            </div>
           </button>
         </div>
         <div className={styles.chatBoxContent}>
@@ -285,8 +300,23 @@ export default function Chat() {
                 className={isMyMessage ? styles.myMessage : styles.otherMessage}
               >
                 <strong>
-                  {isMyMessage ? "Bạn" : `User ${msg.sender || "Unknown"}`}:
-                </strong>{" "}
+                  <img
+                    src={
+                      isMyMessage
+                        ? msg.avatar || require("../assets/default_avatar.png")
+                        : msg.avatar || require("../assets/default_avatar.png")
+                    }
+                    alt="avatar"
+                    style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      marginRight: "6px",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                </strong>
                 {msg.content}
               </div>
             );
@@ -318,15 +348,24 @@ export default function Chat() {
           </button>
         </div>
       </div>
+      {/* right container */}
       <div className={styles.chatInformation}>
-        <img src={user?.avatar} alt="avatar user" />
+        <img
+          src={userDetail?.avatar}
+          alt="avatar user"
+          style={{ width: 150, height: 150, borderRadius: 150 }}
+        />
         <h3 style={{ color: "white" }}> {user?.username} </h3>
-        <p style={{ color: "gray", fontSize: 14, marginTop: "-15px" }}>
-          Hoat dong 25 phut truoc
+        <p style={{ color: "white", fontSize: 24, marginTop: "-12px" }}>
+          {userDetail?.fullname || "Ten User"}
         </p>
         <div className={styles.btnContainerChatInformation}>
           <div className={styles.containerBtnInfo}>
-            <button>
+            <button
+              onClick={() => {
+                navigate("/profile");
+              }}
+            >
               <FontAwesomeIcon icon={faUser} />
             </button>
             <p
@@ -336,24 +375,10 @@ export default function Chat() {
                 marginTop: "5px",
               }}
             >
-              Trang ca nhan
+              Trang cá nhân
             </p>
           </div>
-          <div>
-            <button>
-              <FontAwesomeIcon icon={faBell} />
-            </button>
-            <p
-              style={{
-                color: "rgba(255, 255, 255, 0.9)",
-                fontSize: 14,
-                marginTop: "5px",
-              }}
-            >
-              Thong bao
-            </p>
-          </div>
-          <div>
+          <div className={styles.containerBtnInfo}>
             <button>
               <FontAwesomeIcon icon={faSearch} />
             </button>
@@ -364,7 +389,7 @@ export default function Chat() {
                 marginTop: "5px",
               }}
             >
-              Tim kiem
+              Tìm kiếm
             </p>
           </div>
         </div>
