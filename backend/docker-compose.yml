@@ -46,6 +46,16 @@ services:
     depends_on:
       - rabbitmq
     environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq 
+
+  noti-service:
+    build: ./NotiService
+    container_name: NotiService
+    ports:
+      - "8084:8084"
+    depends_on:
+      - rabbitmq
+    environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
   
 

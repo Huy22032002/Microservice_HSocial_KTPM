@@ -5,7 +5,9 @@ import styles from "../styles/Header.module.css";
 import { fetchUserDetail, setUserStatus } from "../api/userApi";
 import { fetchNotifications, setAllNotiStatus } from "../api/notificationApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { faSearch, faUserPlus, faBell, faBookmark } from "@fortawesome/free-solid-svg-icons";
+
 import SearchUser from "./SearchUser";
 import "./header.css";
 
@@ -17,8 +19,10 @@ export default function Header() {
   const [showPopup, setShowPopup] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+
   const [showFriendRequests, setShowFriendRequests] = useState(false);
   const [friendRequests, setFriendRequests] = useState([]);
+
 
   const handleLogout = async () => {
     try {
@@ -37,16 +41,22 @@ export default function Header() {
 
   useEffect(() => {
     getAvatarAndNameFromUserDetail();
+    getNotifications();
   }, [userId]);
 
   const getNotifications = async () => {
-    try {
-      const res = await fetchNotifications(userId);
-      setNotifications(res);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
+
+    console.log("id: ", userId);
+    if (userId) {
+      try {
+        const res = await fetchNotifications(userId);
+        setNotifications(res);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
     }
-  }
+  };
+
 
   // Mock function for friend requests - replace with actual API call
   const getFriendRequests = async () => {
@@ -65,6 +75,7 @@ export default function Header() {
     }
   }
 
+
   const getAvatarAndNameFromUserDetail = async () => {
     if (userId) {
       const userDetail = await fetchUserDetail(userId);
@@ -78,6 +89,7 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.navContainer}>
+
         <div className={styles.leftSection}>
           <h3 className={styles.logo}>
             <Link to="/">HSocial</Link>

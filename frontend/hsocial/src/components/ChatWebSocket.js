@@ -203,10 +203,7 @@ export default function Chat() {
         </div>
 
         <div className={styles.filterListChat}>
-          <FontAwesomeIcon
-            icon={faSearch}
-            style={{ color: "rgba(255, 255, 255,0.8)" }}
-          />
+          <FontAwesomeIcon icon={faSearch} style={{ color: "#65686C" }} />
           <input
             type="text"
             placeholder="Tìm kiếm bạn bè hoặc ai đó..."
@@ -274,14 +271,14 @@ export default function Chat() {
             </div>
             <div className={styles.userInfoChatBoxHeader}>
               <h4
-                style={{ color: "white", fontSize: 22, margin: 0, padding: 0 }}
+                style={{ color: "black", fontSize: 22, margin: 0, padding: 0 }}
               >
                 {currentConversationName || "Receiver Name"}
               </h4>
               <p
                 style={{
-                  color: "rgba(255,255,255,0.75)",
-                  fontSize: 14,
+                  color: "rgba(105, 105, 105, 0.75)",
+                  fontSize: 15,
                   margin: 0,
                   padding: 0,
                 }}
@@ -324,10 +321,10 @@ export default function Chat() {
         </div>
         <div className={styles.chatBoxFooter}>
           <button className={styles.btnTypeMessage}>
-            <FontAwesomeIcon icon={faImage} style={{ fontSize: 20 }} />
+            <FontAwesomeIcon icon={faImage} />
           </button>
           <button className={styles.btnTypeMessage}>
-            <FontAwesomeIcon icon={faIcons} style={{ fontSize: 20 }} />
+            <FontAwesomeIcon icon={faIcons} />
           </button>
           <input
             type="text"
@@ -365,12 +362,13 @@ export default function Chat() {
               onClick={() => {
                 navigate("/profile");
               }}
+              className={styles.btnChatInfo}
             >
               <FontAwesomeIcon icon={faUser} />
             </button>
             <p
               style={{
-                color: "rgba(255, 255, 255, 0.9)",
+                color: "#000000",
                 fontSize: 14,
                 marginTop: "5px",
               }}
@@ -379,12 +377,12 @@ export default function Chat() {
             </p>
           </div>
           <div className={styles.containerBtnInfo}>
-            <button>
+            <button className={styles.btnChatInfo}>
               <FontAwesomeIcon icon={faSearch} />
             </button>
             <p
               style={{
-                color: "rgba(255, 255, 255, 0.9)",
+                color: "#000",
                 fontSize: 14,
                 marginTop: "5px",
               }}

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import vn.edu.iuh.fit.models.Notification;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("UPDATE Notification n SET n.isRead = :status WHERE n.id = :id")
     void updateNotificationIsRead(@Param("id") Long id, @Param("status") boolean status);
 
+    @Transactional
     @Modifying
     @Query("UPDATE Notification n SET n.isRead = :status WHERE n.userId = :userId")
     void updateAllNotificationIsReadByUserId(@Param("userId") Long userId, @Param("status") boolean status);

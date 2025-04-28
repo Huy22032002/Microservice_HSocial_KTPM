@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import vn.edu.iuh.fit.dtos.NotificationDto;
 import vn.edu.iuh.fit.models.Notification;
+import vn.edu.iuh.fit.models.NotificationType;
 import vn.edu.iuh.fit.repositories.NotificationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ public class NotificationConsumer {
 
         // Chuyển thành entity và lưu vào DB
         Notification notification = notificationDto.toEntity();
+        notification.setType(NotificationType.POST);
         notificationRepository.save(notification);
         logger.info("Notification saved: {}", notification);
 

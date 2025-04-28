@@ -48,8 +48,6 @@ dependencies {
 	//AMQP
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
-
-
 }
 
 tasks.named('test') {

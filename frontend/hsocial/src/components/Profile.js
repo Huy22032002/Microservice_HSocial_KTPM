@@ -27,6 +27,7 @@ const UserHome = () => {
     setUserDetails(userData);
     console.log("User detail:", userData);
   };
+
   const fetchFriends = async () => {
     const lstFriend = await getListFriend(userId);
     if (lstFriend) {
