@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.iuh.fit.dtos.NotificationDto;
 import vn.edu.iuh.fit.models.Notification;
+import vn.edu.iuh.fit.models.NotificationType;
 import vn.edu.iuh.fit.repositories.NotificationRepository;
 
 import java.time.LocalDateTime;
@@ -34,7 +35,7 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setUserId(dto.getUserId());
         notification.setMessage(dto.getMessage());
-        notification.setType(dto.getType());
+        notification.setType(NotificationType.valueOf(dto.getType()));
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
         notificationRepository.save(notification);

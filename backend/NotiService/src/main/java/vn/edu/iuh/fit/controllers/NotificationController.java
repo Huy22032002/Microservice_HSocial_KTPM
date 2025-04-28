@@ -32,9 +32,16 @@ public class NotificationController {
     }
 
     // Đánh dấu thông báo là đã đọc
-    @PutMapping("/{id}/read")
+    @PutMapping("/read/{id}")
     public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
         notificationService.updateNotificationStatus(id, true);
+        return ResponseEntity.noContent().build();
+    }
+
+    //đánh dấu tất cả thông báo đã đọc
+    @PutMapping("read_all/{user_id}")
+    public ResponseEntity<Void> markAllAsRead(@PathVariable Long user_id) {
+        notificationService.updateAllNotificationStatusByUserId(user_id,true);
         return ResponseEntity.noContent().build();
     }
 
@@ -44,4 +51,6 @@ public class NotificationController {
         notificationService.deleteNotification(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }
