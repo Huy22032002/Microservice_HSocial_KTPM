@@ -8,21 +8,27 @@ const headers = {
   Authorization: `Bearer ${token}`,
 };
 
+// const header = {
+//   Authorization: `Bearer ${token}`,
+// };
+
 export const fetchUserById = async (userId) => {
   const res = await axios.get(`${API_URL}/api/users/${userId}`, { headers });
   return res.data;
 };
 
-export const fetchPostById = async (postId)=>{
-  const res = await axios.get(`${API_URL}/posts/${postId}`, { 
+export const fetchPostById = async (postId) => {
+  const res = await axios.get(`${API_URL}/posts/${postId}`, {
     // headers
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-   });
+  });
   return res.data;
-}
+};
 
 export const fetchFriendsByUserId = async (userId) => {
-  const res = await axios.get(`${API_URL}/api/users/friends/${userId}`, { headers });
+  const res = await axios.get(`${API_URL}/api/users/friends/${userId}`, {
+    headers,
+  });
   return res.data;
 };
 
@@ -34,6 +40,13 @@ export const fetchPostsList = async (userId, friendIds) => {
   );
   return res.data;
 };
+
+// export const fetchUserPosts = async (userId) => {
+//   const res = await axios.get(`${API_URL}/posts/userPosts/${userId}`, {
+//     headers,
+//   });
+//   return res.data;
+// };
 
 export const uploadFilesToS3 = async (files) => {
   const formData = new FormData();
@@ -48,12 +61,18 @@ export const uploadFilesToS3 = async (files) => {
 };
 
 export const createNewPost = async (postData) => {
-  const res = await axios.post(`${API_URL}/posts/create`, postData, { headers });
+  const res = await axios.post(`${API_URL}/posts/create`, postData, {
+    headers,
+  });
   return res.data;
 };
 
 export const likePostByUser = async (postId, userId) => {
-  const res = await axios.post(`${API_URL}/posts/${postId}/like/${userId}`, null, { headers });
+  const res = await axios.post(
+    `${API_URL}/posts/${postId}/like/${userId}`,
+    null,
+    { headers }
+  );
   return res.data;
 };
 

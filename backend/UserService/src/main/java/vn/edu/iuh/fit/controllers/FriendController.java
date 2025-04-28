@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.edu.iuh.fit.dtos.FriendRequest;
 import vn.edu.iuh.fit.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.models.UserFriend;
+import vn.edu.iuh.fit.services.MessageProducer;
 import vn.edu.iuh.fit.services.UserFriendService;
 
 import java.time.Instant;
@@ -17,6 +18,8 @@ import java.time.Instant;
 public class FriendController {
     @Autowired
     private  UserFriendService friendService;
+    @Autowired
+    private MessageProducer messageProducer;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getListFriend(@PathVariable int id) {
@@ -47,6 +50,9 @@ public class FriendController {
             if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
                 return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
             }
+            //gui message qua notification service
+            messageProducer.sendToNotificationService(friendRequest);
+
             return ResponseEntity.ok(friendService.addFriend(friendRequest));
         } catch (Exception e) {
             return ResponseEntity

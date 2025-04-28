@@ -52,6 +52,10 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '3.4.3'
     //netty-http
     implementation 'io.projectreactor.netty:reactor-netty-http'
+    //AMQP
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+
 
 }
 

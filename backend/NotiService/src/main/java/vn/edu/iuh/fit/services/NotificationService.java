@@ -44,6 +44,7 @@ public class NotificationService {
         return notificationRepository.findByUserId(userId);
 
     }
-
-
+    public void saveOneNotification(Notification notification) {
+        notificationRepository.save(notification);
+    }
 }

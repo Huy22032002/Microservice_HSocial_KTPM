@@ -46,6 +46,8 @@ const AnotherUserProfile = () => {
     console.log("friends cua another user: ", friends);
     //lay danh sach ban be cua minh
     const myListFriend = await getListFriend(userIdRedux);
+    console.log("my list friend: ", myListFriend, " ", typeof myListFriend);
+
     const isFriend = myListFriend.find((friend) => friend.friendId == userId);
     if (isFriend) {
       setFriendStatus("Bạn bè");

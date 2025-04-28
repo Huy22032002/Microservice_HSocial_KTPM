@@ -1,0 +1,115 @@
+.header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.logo a {
+  text-decoration: none;
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.filterListChat {
+  flex: 1;
+  margin: 0 20px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+}
+
+.link {
+  margin-left: 15px;
+  text-decoration: none;
+  color: #007bff;
+  font-size: 16px;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.fullname {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.popup {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.popupLink {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.popupLink:hover {
+  text-decoration: underline;
+}
+
+.notificationContainer {
+  /* position: relative; */
+  justify-content: space-between;
+}
+
+.notificationIcon {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 20;
+  position: relative;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  border-radius: 50%;
+  padding: 2px 6px;
+}
+
+.notificationDropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: #fff;
+}

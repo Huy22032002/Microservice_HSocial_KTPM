@@ -14,4 +14,12 @@ import java.io.Serializable;
 public class FriendRequest implements Serializable {
     private int userId;
     private int friendId;
+
+    @Override
+    public String toString() {
+        return "FriendRequest{" +
+                "userId=" + userId +
+                ", friendId=" + friendId +
+                '}';
+    }
 }
