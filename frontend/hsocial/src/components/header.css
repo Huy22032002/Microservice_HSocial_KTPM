@@ -1,127 +1,13 @@
+/* Keep your existing styles and add these new styles for notifications */
+
+/* Add these styles to your existing Header.module.css */
 .header {
-
-  background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.navContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.logo a {
-  text-decoration: none;
-  color: #333;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.filterListChat {
-  flex: 1;
-  margin: 0 20px;
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-}
-
-.link {
-  margin-left: 15px;
-  text-decoration: none;
-  color: #007bff;
-  font-size: 16px;
-}
-
-.link:hover {
-  text-decoration: underline;
-}
-
-.userInfo {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.fullname {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-}
-
-.popup {
-  position: absolute;
-  top: 60px;
-  right: 20px;
-  background-color: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-}
-
-.popupLink {
-  background: none;
-  border: none;
-  color: #007bff;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.popupLink:hover {
-  text-decoration: underline;
-}
-
-.notificationContainer {
-  /* position: relative; */
-  justify-content: space-between;
-}
-
-.notificationIcon {
-  font-size: 20px;
-  cursor: pointer;
-  padding: 20;
-  position: relative;
-}
-
-.notificationBadge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: red;
-  color: white;
-  font-size: 12px;
-  border-radius: 50%;
-  padding: 2px 6px;
-}
-
-.notificationDropdown {
-  position: absolute;
-  top: 40px;
-  right: 0;
-  background-color: #fff;
-}
-=======
+  background-color: white;
+  padding: 12px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
-  background-color: #ffffff;
-  padding: 10px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  width: 100%;
 }
 
 .navContainer {
@@ -132,213 +18,52 @@
   margin: 0 auto;
 }
 
-.leftSection {
-  display: flex;
-  align-items: center;
-}
-
 .logo {
+  font-size: 24px;
   margin: 0;
-  padding: 0;
-  margin-right: 30px;
 }
 
 .logo a {
+  text-decoration: none;
   color: #0a66c2;
-  font-size: 24px;
   font-weight: bold;
-  text-decoration: none;
 }
 
-.mainNav {
-  display: flex;
-  gap: 20px;
-}
-
-.navLink {
-  color: #333;
-  text-decoration: none;
-  padding: 5px 10px;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.navLink:hover {
-  color: #0a66c2;
-}
-
-.centerSection {
-  flex: 1;
-  max-width: 400px;
+.filterListChat {
+  flex-grow: 1;
+  max-width: 500px;
   margin: 0 20px;
 }
 
-.searchContainer {
-  position: relative;
-  width: 100%;
-}
-
-.rightSection {
+.nav {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-.iconGroup {
-  display: flex;
-  gap: 20px;
+.link {
+  text-decoration: none;
+  color: #333;
+  padding: 8px 16px;
+  border-radius: 4px;
 }
 
-.iconContainer {
-  position: relative;
-  cursor: pointer;
-}
-
-.icon {
-  color: #555;
-  font-size: 20px;
-  transition: color 0.2s ease;
-}
-
-.icon:hover {
-  color: #0a66c2;
-}
-
-.badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background-color: #ff4c4c;
-  color: white;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dropdown {
-  position: absolute;
-  top: 40px;
-  right: -100px;
-  width: 320px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  overflow: hidden;
-}
-
-.dropdownHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
-}
-
-.dropdownHeader h4 {
-  margin: 0;
-  font-size: 16px;
-}
-
-.clearBtn {
-  background: none;
-  border: none;
-  color: #0a66c2;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.dropdownList {
-  max-height: 350px;
-  overflow-y: auto;
-}
-
-.dropdownItem {
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.dropdownItem:hover {
+.link:hover {
   background-color: #f5f5f5;
 }
 
-.dropdownItem.unread {
-  background-color: rgba(10, 102, 194, 0.05);
-}
-
-.notificationContent p {
-  margin: 0 0 5px;
-  font-size: 14px;
-}
-
-.notificationContent small {
-  color: #777;
-  font-size: 12px;
-}
-
-.emptyMessage {
-  padding: 20px;
-  text-align: center;
-  color: #777;
-  font-size: 14px;
-}
-
-.requestAvatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 10px;
-}
-
-.requestContent {
-  flex: 1;
-}
-
-.requestContent p {
-  margin: 0 0 5px;
-  font-size: 14px;
-}
-
-.requestContent small {
-  color: #777;
-  font-size: 12px;
-}
-
-.requestActions {
-  display: flex;
-  gap: 5px;
-}
-
-.acceptBtn, .declineBtn {
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  border: none;
-}
-
-.acceptBtn {
-  background-color: #0a66c2;
-  color: white;
-}
-
-.declineBtn {
-  background-color: #eee;
-  color: #333;
-}
-
-.userProfile {
-  position: relative;
-  cursor: pointer;
+.userInfo {
   display: flex;
   align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  position: relative;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.userInfo:hover {
+  background-color: #f5f5f5;
 }
 
 .avatar {
@@ -348,83 +73,178 @@
   object-fit: cover;
 }
 
-.userDropdown {
+.fullname {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.popup {
   position: absolute;
-  top: 40px;
+  top: 45px;
   right: 0;
-  width: 180px;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  min-width: 150px;
+}
+
+.popupLink {
+  display: block;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: #333;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.popupLink:hover {
+  background-color: #f5f5f5;
+}
+
+/* Notification styles */
+.notificationContainer {
+  position: relative;
+  margin-right: 10px;
+}
+
+.iconWrapper {
+  position: relative;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  transition: background-color 0.2s ease;
+}
+
+.iconWrapper:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.bellIcon {
+  font-size: 18px;
+  color: #555;
+}
+
+.notiBadge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: #ff3b30;
+  color: white;
+  border-radius: 50%;
+  padding: 2px;
+  min-width: 16px;
+  height: 16px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.notificationsDropdown {
+  position: absolute;
+  top: 45px;
+  right: -120px;
+  width: 320px;
+  max-height: 400px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   overflow: hidden;
 }
 
-.dropdownLink {
-  display: block;
-  padding: 12px 15px;
-  text-decoration: none;
-  color: #333;
-  transition: background-color 0.2s ease;
+.notificationsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
   border-bottom: 1px solid #eee;
 }
 
-.dropdownLink:hover {
-  background-color: #f5f5f5;
+.notificationsHeader h4 {
+  margin: 0;
+  font-weight: 600;
 }
 
-.dropdownButton {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 12px 15px;
+.markReadBtn {
   background: none;
   border: none;
+  color: #0095f6;
+  font-size: 12px;
   cursor: pointer;
-  font-size: 14px;
-  color: #333;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.markReadBtn:hover {
+  background: rgba(0, 149, 246, 0.1);
+}
+
+.notificationsList {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.notificationItem {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.dropdownButton:hover {
-  background-color: #f5f5f5;
+.notificationItem:hover {
+  background-color: #f8f8f8;
 }
 
-.authLinks {
-  display: flex;
-  gap: 15px;
+.notificationItem.unread {
+  background-color: rgba(0, 149, 246, 0.05);
 }
 
-.signupBtn, .loginBtn {
-  padding: 8px 16px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 500;
+.notificationContent p {
+  margin: 0 0 4px;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
-.signupBtn {
-  background-color: transparent;
-  color: #0a66c2;
-  border: 1px solid #0a66c2;
+.notificationContent small {
+  color: #8e8e8e;
+  font-size: 11px;
 }
 
-.loginBtn {
-  background-color: #0a66c2;
-  color: white;
-  border: 1px solid #0a66c2;
+.emptyNotification {
+  padding: 24px 16px;
+  text-align: center;
+  color: #8e8e8e;
 }
 
+/* Make sure we handle mobile displays properly */
 @media (max-width: 768px) {
-  .mainNav {
-    display: none;
+  .notificationsDropdown {
+    width: 100%;
+    right: -50%;
+    max-width: 320px;
+  }
+
+  .navContainer {
+    flex-wrap: wrap;
   }
   
-  .centerSection {
-    margin: 0 10px;
-  }
-  
-  .iconGroup {
-    gap: 15px;
+  .filterListChat {
+    order: 3;
+    width: 100%;
+    max-width: none;
+    margin: 10px 0 0;
   }
 }
-

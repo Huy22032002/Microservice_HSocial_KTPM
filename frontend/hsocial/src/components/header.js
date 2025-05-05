@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Header.module.css";
 import { fetchUserDetail, setUserStatus } from "../api/userApi";
-import { fetchNotifications, setAllNotiStatus } from "../api/notificationApi";
+import { fetchNotifications, setAllNotiStatus } from "../api/notiApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { faSearch, faUserPlus, faBell, faBookmark } from "@fortawesome/free-solid-svg-icons";
-
+import { faSearch, faBell } from "@fortawesome/free-solid-svg-icons";
 import SearchUser from "./SearchUser";
-import "./header.css";
 
 export default function Header() {
   const userId = useSelector((state) => state.user.userId);
@@ -19,10 +16,7 @@ export default function Header() {
   const [showPopup, setShowPopup] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
-
-  const [showFriendRequests, setShowFriendRequests] = useState(false);
-  const [friendRequests, setFriendRequests] = useState([]);
-
+  const notificationRef = useRef(null);
 
   const handleLogout = async () => {
     try {
@@ -41,40 +35,24 @@ export default function Header() {
 
   useEffect(() => {
     getAvatarAndNameFromUserDetail();
-    getNotifications();
   }, [userId]);
 
-  const getNotifications = async () => {
-
-    console.log("id: ", userId);
-    if (userId) {
-      try {
-        const res = await fetchNotifications(userId);
-        setNotifications(res);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
+  // Effect for detecting clicks outside notification dropdown
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
       }
     }
-  };
-
-
-  // Mock function for friend requests - replace with actual API call
-  const getFriendRequests = async () => {
-    try {
-      // Replace with actual API call to get friend requests
-      // const res = await fetchFriendRequests(userId);
-      // setFriendRequests(res);
-      
-      // Temporary mock data
-      setFriendRequests([
-        { id: 1, from: { fullname: "Jane Doe", avatar: "https://via.placeholder.com/40" }, createdAt: new Date() },
-        { id: 2, from: { fullname: "John Smith", avatar: "https://via.placeholder.com/40" }, createdAt: new Date(Date.now() - 86400000) }
-      ]);
-    } catch (error) {
-      console.error("Error fetching friend requests:", error);
-    }
-  }
-
+    
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    // Clean up
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [notificationRef]);
 
   const getAvatarAndNameFromUserDetail = async () => {
     if (userId) {
@@ -85,163 +63,148 @@ export default function Header() {
       }
     }
   };
-  
+
+  const handleNotificationClick = async () => {
+    if (showNotifications) {
+      setShowNotifications(false);
+      return;
+    }
+    
+    try {
+      const notis = await fetchNotifications(userId);
+      setNotifications(notis || []);
+      setShowNotifications(true);
+      setShowPopup(false); // Close user popup if open
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      setNotifications([]);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      await setAllNotiStatus(userId);
+      // Update the local notifications array to mark all as read
+      setNotifications(prevNotifications => 
+        prevNotifications.map(noti => ({
+          ...noti,
+          isRead: true
+        }))
+      );
+    } catch (error) {
+      console.error("Error marking notifications as read:", error);
+    }
+  };
+
+  const handleNotificationItemClick = (notification) => {
+    // Navigate to the notification target URL if available
+    if (notification.link) {
+      navigate(notification.link);
+    }
+    setShowNotifications(false);
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles.navContainer}>
-
-        <div className={styles.leftSection}>
-          <h3 className={styles.logo}>
-            <Link to="/">HSocial</Link>
-          </h3>
-          <nav className={styles.mainNav}>
-            <Link to="/" className={styles.navLink}>Home</Link>
-            <Link to="/network" className={styles.navLink}>Network</Link>
-            <Link to="/events" className={styles.navLink}>Events</Link>
-          </nav>
+        <h3 className={styles.logo}>
+          <Link to="/"> HSocial </Link>
+        </h3>
+        <div className={styles.filterListChat}>
+          {/* search */}
+          <SearchUser />
         </div>
-        
-        <div className={styles.centerSection}>
-          <div className={styles.searchContainer}>
-            <SearchUser />
+        {userId ? (
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <h3 style={{ marginRight: "30px" }}>
+              <Link to="/chat">Chat</Link>
+            </h3>
+            <h3>
+              <Link to="/profile">Profile</Link>
+            </h3>
           </div>
-        </div>
-        
-        <div className={styles.rightSection}>
+        ) : (
+          <p>Please Login</p>
+        )}
+
+        <nav className={styles.nav}>
           {userId ? (
             <>
-              <div className={styles.iconGroup}>
-                <div className={styles.iconContainer}>
-                  <FontAwesomeIcon icon={faBookmark} className={styles.icon} onClick={() => navigate('/saved')} />
-                </div>
-                
-                {/* Friend Request Icon */}
-                <div className={styles.iconContainer}>
-                  <FontAwesomeIcon 
-                    icon={faUserPlus} 
-                    className={styles.icon} 
-                    onClick={() => {
-                      getFriendRequests();
-                      setShowFriendRequests(!showFriendRequests);
-                      setShowNotifications(false);
-                    }} 
-                  />
-                  {friendRequests.length > 0 && (
-                    <span className={styles.badge}>{friendRequests.length}</span>
-                  )}
-                  
-                  {/* Friend Requests Dropdown */}
-                  {showFriendRequests && (
-                    <div className={styles.dropdown}>
-                      <div className={styles.dropdownHeader}>
-                        <h4>Friend Requests</h4>
-                      </div>
-                      <div className={styles.dropdownList}>
-                        {friendRequests.length > 0 ? (
-                          friendRequests.map(request => (
-                            <div key={request.id} className={styles.dropdownItem}>
-                              <img src={request.from.avatar} alt="User" className={styles.requestAvatar} />
-                              <div className={styles.requestContent}>
-                                <p>{request.from.fullname}</p>
-                                <small>{new Date(request.createdAt).toLocaleDateString()}</small>
-                              </div>
-                              <div className={styles.requestActions}>
-                                <button className={styles.acceptBtn}>Accept</button>
-                                <button className={styles.declineBtn}>Decline</button>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p className={styles.emptyMessage}>No friend requests</p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Notification Icon */}
-                <div className={styles.iconContainer}>
-                  <FontAwesomeIcon 
-                    icon={faBell} 
-                    className={styles.icon} 
-                    onClick={() => {
-                      getNotifications();
-                      setShowNotifications(!showNotifications);
-                      setShowFriendRequests(false);
-                    }}
-                  />
+              {/* Notification Icon */}
+              <div className={styles.notificationContainer} ref={notificationRef}>
+                <div className={styles.iconWrapper} onClick={handleNotificationClick}>
+                  <FontAwesomeIcon icon={faBell} className={styles.bellIcon} />
                   {notifications.filter(n => !n.isRead).length > 0 && (
-                    <span className={styles.badge}>
+                    <span className={styles.notiBadge}>
                       {notifications.filter(n => !n.isRead).length}
                     </span>
                   )}
-                  
-                  {/* Notifications Dropdown */}
-                  {showNotifications && (
-                    <div className={styles.dropdown}>
-                      <div className={styles.dropdownHeader}>
-                        <h4>Notifications</h4>
-                        {notifications.filter(n => !n.isRead).length > 0 && (
-                          <button 
-                            onClick={async () => {
-                              await setAllNotiStatus(userId);
-                              getNotifications();
-                            }} 
-                            className={styles.clearBtn}
-                          >
-                            Mark all as read
-                          </button>
-                        )}
-                      </div>
-                      <div className={styles.dropdownList}>
-                        {notifications.length > 0 ? (
-                          notifications.map(notification => (
-                            <div 
-                              key={notification.id} 
-                              className={`${styles.dropdownItem} ${!notification.isRead ? styles.unread : ''}`}
-                              onClick={() => navigate(notification.link || '/')}
-                            >
-                              <div className={styles.notificationContent}>
-                                <p>{notification.message}</p>
-                                <small>{new Date(notification.createdAt).toLocaleString()}</small>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p className={styles.emptyMessage}>No notifications</p>
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
-              </div>
-              
-              {/* User Profile */}
-              <div
-                className={styles.userProfile}
-                onClick={() => setShowPopup(!showPopup)}
-              >
-                <img src={avatar || "https://via.placeholder.com/40"} alt="avatar" className={styles.avatar} />
                 
-                {/* User dropdown */}
-                {showPopup && (
-                  <div className={styles.userDropdown}>
-                    <Link to="/profile" className={styles.dropdownLink}>Profile</Link>
-                    <Link to="/settings" className={styles.dropdownLink}>Settings</Link>
-                    <button onClick={handleLogout} className={styles.dropdownButton}>
-                      Sign Out
-                    </button>
+                {/* Notifications Dropdown */}
+                {showNotifications && (
+                  <div className={styles.notificationsDropdown}>
+                    <div className={styles.notificationsHeader}>
+                      <h4>Thông báo</h4>
+                      {notifications.filter(n => !n.isRead).length > 0 && (
+                        <button className={styles.markReadBtn} onClick={markAllAsRead}>
+                          Đánh dấu đã đọc
+                        </button>
+                      )}
+                    </div>
+                    <div className={styles.notificationsList}>
+                      {notifications.length > 0 ? (
+                        notifications.map((notification) => (
+                          <div 
+                            key={notification.id} 
+                            className={`${styles.notificationItem} ${!notification.isRead ? styles.unread : ''}`}
+                            onClick={() => handleNotificationItemClick(notification)}
+                          >
+                            <div className={styles.notificationContent}>
+                              <p>{notification.message}</p>
+                              <small>{new Date(notification.createdAt).toLocaleString()}</small>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className={styles.emptyNotification}>Không có thông báo nào</p>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
+              
+              <div
+                className={styles.userInfo}
+                onClick={() => {
+                  setShowPopup(!showPopup);
+                  setShowNotifications(false); // Close notifications if open
+                }}
+              >
+                <img src={avatar || "https://via.placeholder.com/40"} alt="avatar" className={styles.avatar} />
+                <span className={styles.fullname}>{fullname}</span>
+              </div>
+
+              {/* Popup đăng xuất */}
+              {showPopup && (
+                <div className={styles.popup}>
+                  <button onClick={handleLogout} className={styles.popupLink}>
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
             </>
           ) : (
-            <div className={styles.authLinks}>
-              <Link to="/signup" className={styles.signupBtn}>Sign Up</Link>
-              <Link to="/login" className={styles.loginBtn}>Sign In</Link>
-            </div>
+            <>
+              <Link to="/signup" className={styles.link}>
+                Sign Up
+              </Link>
+              <Link to="/login" className={styles.link}>
+                Sign In
+              </Link>
+            </>
           )}
-        </div>
+        </nav>
       </div>
     </header>
   );
