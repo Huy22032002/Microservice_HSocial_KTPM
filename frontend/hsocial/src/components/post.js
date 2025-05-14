@@ -146,9 +146,9 @@ const Post = ({ postId }) => {
 
       <div className="post-actions">
         <button onClick={likePost}>
-          {liked ? "Unlike" : "Like"} ({likes} người)
+          {liked ? "👍 Unlike" : "👍 Like"} ({likes} người)
         </button>
-        <button>Chia sẻ</button>
+        <button>➡️ Chia sẻ</button>
       </div>
 
       <div className="post-comments">

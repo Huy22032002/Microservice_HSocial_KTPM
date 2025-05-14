@@ -1,203 +1,376 @@
-/* PostHome.css */
+/* Instagram-inspired PostHome.css */
+:root {
+  --primary-color: #0095f6;
+  --background-color: #fafafa;
+  --card-background: #ffffff;
+  --text-color: #262626;
+  --border-color: #dbdbdb;
+  --secondary-text: #8e8e8e;
+  --error-color: #ed4956;
+  --success-color: #78de45;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
 .main-container {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: auto;
-  }
-  
-  /* Khu vực nội dung chính */
-  .content-area {
-    flex: 2;
-  }
-  
-  /* Header */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .title {
-    font-size: 28px;
-    color: #333;
-  }
-  
-  .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-  
-  /* Form đăng bài */
-  .post-form {
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    display: flex;
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Content Area */
+.content-area {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Post Form */
+.post-form {
+  background: var(--card-background);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.post-form-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.post-form-input {
+  flex-grow: 1;
+  padding: 10px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 20px;
+  background: var(--background-color);
+  font-size: 15px;
+  resize: none;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+.textarea:focus {
+  outline: none;
+}
+
+.preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.media-preview {
+  width: calc(33.333% - 6px);
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.post-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.file-input-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text-color);
+  padding: 8px 12px;
+  border-radius: 20px;
+  transition: background-color 0.2s;
+}
+
+.file-input-label:hover {
+  background-color: var(--background-color);
+}
+
+.file-input {
+  display: none;
+}
+
+.icon {
+  color: var(--primary-color);
+  font-size: 18px;
+}
+
+.privacy-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.privacy-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 20px;
+  transition: background-color 0.2s;
+}
+
+.privacy-display:hover {
+  background-color: var(--background-color);
+}
+
+.privacy-select {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.post-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.post-button:hover {
+  opacity: 0.9;
+}
+
+.post-button.submitting {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Posts Container */
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  color: var(--secondary-text);
+  gap: 12px;
+}
+
+.spinner {
+  font-size: 32px;
+  color: var(--primary-color);
+}
+
+/* Empty State */
+.empty-state {
+  background: var(--card-background);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  opacity: 0.8;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  margin: 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.empty-subtitle {
+  color: var(--secondary-text);
+  font-size: 14px !important;
+  font-weight: normal !important;
+}
+
+/* Sidebar */
+.sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: sticky;
+  top: 90px;
+  height: fit-content;
+}
+
+.sidebar-section {
+  background: var(--card-background);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.sidebar-section h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+/* Friend Suggestions */
+.suggestion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.suggestion-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.suggestion-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.suggestion-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.suggestion-meta {
+  font-size: 12px;
+  color: var(--secondary-text);
+}
+
+.suggestion-action {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Events */
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.event-item:hover {
+  background-color: var(--background-color);
+}
+
+.event-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 8px;
+}
+
+.event-month {
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.event-day {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.event-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.event-meta {
+  font-size: 12px;
+  color: var(--secondary-text);
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .main-container {
     flex-direction: column;
-    gap: 10px;
   }
-  
-  .textarea {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    resize: vertical;
-    min-height: 80px;
-  }
-  
-  .file-input {
-    border: none;
-  }
-  
-  .btn {
-    background: linear-gradient(135deg, #ff7eb3, #ff758c);
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .btn:hover {
-    background: linear-gradient(135deg, #ff758c, #ff7eb3);
-    transform: scale(1.05);
-  }
-  
-  .refresh-btn {
-    margin-bottom: 20px;
-  }
-  
-  /* Bài viết */
-  .post-card {
-    background: #fff;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-  }
-  
-  .post-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-  }
-  
-  .post-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .post-user-info {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .post-user-name {
-    font-weight: bold;
-  }
-  
-  .post-time {
-    font-size: 12px;
-    color: #888;
-  }
-  
-  .post-title {
-    font-size: 20px;
-    color: #444;
-  }
-  
-  .post-content {
-    font-size: 16px;
-    color: #666;
-  }
-  
-  /* Media trong bài viết */
-  .post-media {
-    margin: 10px 0;
-  }
-  
-  .media-image {
-    max-width: 100%;
-    border-radius: 5px;
-  }
-  
-  .media-video {
-    width: 100%;
-    border-radius: 5px;
-  }
-  
-  /* Reactions */
-  .reactions {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-  }
-  
-  .reaction-emoji {
-    cursor: pointer;
-    font-size: 20px;
-  }
-  
-  /* Bình luận */
-  .comment-section {
-    margin-top: 10px;
-    background: #f9f9f9;
-    padding: 10px;
-    border-radius: 5px;
-  }
-  
-  .comment {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 5px;
-  }
-  
-  /* Sidebar */
+
   .sidebar {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    position: static;
   }
-  
-  .sidebar-section {
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 576px) {
+  .main-container {
+    padding: 12px;
   }
-  
-  .suggestion-card,
-  .event-card {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+
+  .media-preview {
+    height: 150px;
   }
-  
-  .suggestion-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .small-btn {
-    padding: 5px 10px;
-    font-size: 14px;
-  }
-  
+}

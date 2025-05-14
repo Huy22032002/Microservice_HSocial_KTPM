@@ -21,13 +21,15 @@ import java.time.LocalDateTime;
 public class NotificationDto implements Serializable {
     private Long userId;
     private String message;
-    @Enumerated(EnumType.STRING)
-    private NotificationType type;
+
     private Long ContentId;
     private LocalDateTime createdAt;
+//    @Enumerated(EnumType.STRING)
+    private String type;
 
     public Notification toEntity() {
         Notification notification = new Notification(userId, message, ContentId,type, false,createdAt);
         return notification;
+
     }
 }

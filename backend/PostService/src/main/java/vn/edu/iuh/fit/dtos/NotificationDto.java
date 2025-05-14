@@ -23,5 +23,6 @@ public class NotificationDto {
 //    private NotificationType type;
     private Long ContentId;
     private LocalDateTime createdAt;
+    private String type;
 
 }
