@@ -73,7 +73,7 @@ export async function postMessage(
     }
     // Lọc danh sách người nhận, loại bỏ chính mình
     const receivers = currentConversation.participants.filter(
-      (id) => id !== userId
+      (id) => id != userId
     );
 
     const response = await axios.post(

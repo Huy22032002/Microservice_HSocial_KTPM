@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            Jwt jwt = jwtDecoder.decode(token);
+            Jwt jwt = jwtDecoder.decode(token); // 1: xác thực private key = public key => 2: decode payload lấy info user
 
             // Lấy username từ JWT
             String username = jwt.getSubject();

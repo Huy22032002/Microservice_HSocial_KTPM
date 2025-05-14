@@ -115,12 +115,12 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) //cho phép CORS
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        // 2: The user should be authenticated for any request in the application.
+                        // 2: The user will be authenticated for any request in the application.
                         authorize -> authorize.anyRequest().authenticated()
                 )
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
                 .sessionManagement(
-                        // 3: Spring Security will never create an HttpSession and it will never use it to obtain the Security Context.
+                        // 3: Spring Security will never create an HttpSession (STATELESS, xac thuc qua jwt)
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(new JwtAccessTokenFilter(this.jwtDecoder(), this.jwtTokenUil,this.userDetailsService,this.tokenService), UsernamePasswordAuthenticationFilter.class)
@@ -129,7 +129,6 @@ public class SecurityConfig {
                                 .accessDeniedHandler((request, response, accessDeniedException) -> {
 
                                 }))
-                // 4: Spring Security’s HTTP Basic Authentication support is enabled by default. However, as soon as any servlet-based configuration is provided, HTTP Basic must be explicitly provided.
                 .httpBasic(Customizer.withDefaults());
 
         return httpSecurity.build();
