@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchUserDetail } from "../api/userApi";
 import {
@@ -9,11 +9,13 @@ import {
   sendFriendRequest,
   removeFriend,
 } from "../api/friendApi";
-
+import { fetchPostsUser } from "../api/postApi";
+import Post from "./post";
 import Header from "./header";
 import styles from "../styles/AnotherUserProfile.module.css";
 import { useSelector } from "react-redux";
 import { faFilter, faUser } from "@fortawesome/free-solid-svg-icons";
+
 const AnotherUserProfile = () => {
   const { userId } = useParams();
   const [userDetails, setUserDetails] = useState(null);
@@ -21,6 +23,7 @@ const AnotherUserProfile = () => {
   const [friends, setFriends] = useState([]);
   const [posts, setPosts] = useState([]);
   const [btnFilter, setBtnFilter] = useState("Mới nhất");
+  const navigate = useNavigate();
 
   const userIdRedux = useSelector((state) => state.user.userId);
   //state hủy lời mời kết bạn
@@ -48,7 +51,14 @@ const AnotherUserProfile = () => {
     }
   };
 
-  const fetchPosts = async () => {};
+  const fetchPosts = async () => {
+    try {
+      const data = await fetchPostsUser(userId);
+      if (data) setPosts(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const checkFriendStatus = async () => {
     console.log("friends cua another user: ", friends);
     //lay danh sach ban be cua minh
@@ -101,6 +111,9 @@ const AnotherUserProfile = () => {
       setShowCancelPopup(true);
     }
   };
+  const handleBtnChat = () => {
+    navigate(`/chat/${userId}`);
+  };
   useEffect(() => {
     if (userIdRedux && userId) {
       setFriends([]);
@@ -118,7 +131,18 @@ const AnotherUserProfile = () => {
         <div className={styles.profileContainer}>
           {/* header */}
           <div className={styles.profileHeader}>
-            <div className={styles.headerWallpaper}></div>
+            <div className={styles.headerWallpaper}>
+              <img
+                alt="wallpaper"
+                src={require("../assets/default_wallpaper.jpg")}
+                style={{
+                  objectFit: "cover",
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "0 0 12px 12px",
+                }}
+              />
+            </div>
             <div className={styles.headerInfo}>
               <div className={styles.headerInfoLeft}>
                 <img
@@ -152,6 +176,7 @@ const AnotherUserProfile = () => {
                   <p style={{ fontWeight: "bold", fontSize: 14 }}> Bạn bè</p>
                 </button>
                 <button
+                  onClick={handleBtnChat}
                   className={[styles.headerInfoBtn, styles.btnChat].join(" ")}
                 >
                   <FontAwesomeIcon
@@ -162,7 +187,14 @@ const AnotherUserProfile = () => {
                 </button>
               </div>
             </div>
-            <hr style={{ background: "gray", margin: "10px 40px" }} />
+            <hr
+              style={{
+                background: "rgba(0,0,0,0.1)",
+                margin: "10px 40px",
+                border: "none",
+                height: "1px",
+              }}
+            />
             {/* menu */}
             <div className={styles.headerMenu}></div>
           </div>
@@ -187,7 +219,15 @@ const AnotherUserProfile = () => {
                   <button className={styles.btnFilter}>{btnFilter}</button>
                 </div>
               </div>
-              <div className={styles.lstPosts}></div>
+              <div className={styles.lstPosts}>
+                {!posts || posts.length === 0 ? (
+                  <p>{userDetails?.fullname} chưa đăng bài viết nào!</p>
+                ) : (
+                  posts.map((post, index) => (
+                    <Post key={index} postId={post.postId} />
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </div>

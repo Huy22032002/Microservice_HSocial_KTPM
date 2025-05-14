@@ -98,3 +98,4 @@ export async function postMessage(
     console.log(`Error save message ${e}`);
   }
 }
+export async function getSingleConversation() {}

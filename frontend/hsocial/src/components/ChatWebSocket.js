@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchConversations, fetchMessages, postMessage } from "../api/chatApi";
 import { fetchUserDetail, fetchUser } from "../api/userApi";
 import Header from "./header";
@@ -18,6 +18,7 @@ import moment from "moment/moment";
 
 export default function Chat() {
   const navigate = useNavigate();
+  const { userIdParam } = useParams();
 
   //socket
   const [socket, setSocket] = useState(null);

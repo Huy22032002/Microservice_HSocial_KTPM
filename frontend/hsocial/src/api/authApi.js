@@ -33,8 +33,6 @@ export async function signUp(username, email, password, phone) {
   }
 }
 export async function loginApi(username, pass) {
-  console.log(SIGNIN_API);
-
   try {
     const response = await fetch(`${SIGNIN_API}`, {
       method: "POST",
