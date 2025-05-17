@@ -4,7 +4,9 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { fetchPostById } from "../api/postApi";
 import "../styles/post.css";
+
 import FullScreen from "./FullScreen";
+
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -113,16 +115,13 @@ const Post = ({ postId }) => {
         return;
       }
 
-      const res = await axios.post(
-        `${API_URL}/posts/${postId}/like/${userId}`,
-        null,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+    
+      const res = await axios.post(`${API_URL}/api/posts/${postId}/like/${userId}`, null, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       const { status } = res.data;
       if (status === "liked") {

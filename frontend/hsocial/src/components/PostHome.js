@@ -54,7 +54,7 @@ const PostHome = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${API_URL}/posts/listPostId`,
+        `${API_URL}/api/posts/listPostId`,
         {
           userId: Number(userId),
           friendIds: friends.map((f) => f.id),
@@ -97,16 +97,13 @@ const PostHome = () => {
       const formData = new FormData();
       files.forEach((file) => formData.append("files", file));
       try {
-        const response = await axios.post(
-          `${API_URL}/posts/s3upload`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+
+        const response = await axios.post(`${API_URL}/api/posts/s3upload`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         mediaUrls = response.data;
       } catch (error) {
         console.error("Lỗi khi upload file lên S3:", error);
@@ -126,7 +123,7 @@ const PostHome = () => {
     };
 
     try {
-      await axios.post(`${API_URL}/posts/create`, postData, {
+      await axios.post(`${API_URL}/api/posts/create`, postData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -1,3 +1,4 @@
+
 .header {
   border-bottom: 1px solid #e0e0e0;
   padding: 10px 20px;
@@ -7,14 +8,18 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 5px;
   /* =======
+
+/* Keep your existing styles and add these new styles for notifications */
+
+/* Add these styles to your existing Header.module.css */
+/* .header {
   background-color: white;
   padding: 12px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
->>>>>>> 6714be31649bfd500706877b8f92fe65020e759f */
-}
+} */
 
 .navContainer {
   display: flex;
@@ -22,6 +27,17 @@
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.logo {
+  font-size: 24px;
+  margin: 0;
+}
+
+.logo a {
+  text-decoration: none;
+  color: #0a66c2;
+  font-weight: bold;
 }
 
 .filterListChat {
@@ -235,7 +251,6 @@
   .navContainer {
     flex-wrap: wrap;
   }
-
   .filterListChat {
     order: 3;
     width: 100%;
@@ -243,3 +258,4 @@
     margin: 10px 0 0;
   }
 }
+

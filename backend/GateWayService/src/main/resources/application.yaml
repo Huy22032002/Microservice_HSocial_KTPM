@@ -33,7 +33,7 @@ spring:
         - id: PostService
           uri: http://localhost:8083
           predicates:
-            - Path=/posts/**
+            - Path=/api/posts/**
           filters:
             - AddRequestHeader=X-Request-Foo, Bar
 

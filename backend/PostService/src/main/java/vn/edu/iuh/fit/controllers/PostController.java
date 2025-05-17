@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.iuh.fit.dtos.NotificationDto;
 import vn.edu.iuh.fit.dtos.PostFetchRequest;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("api/posts")
 public class PostController {
     @Autowired
     private PostService postService;
@@ -41,6 +42,7 @@ public class PostController {
         this.commentService = commentService;
     }
 
+    @Retryable(value = {IOException.class, java.io.IOException.class}, maxAttempts = 3)
     @PostMapping("/s3upload")
     public ResponseEntity<List<String>> uploadFiles(@RequestParam("files") MultipartFile[] files) {
         // Kiểm tra xem có file nào được gửi lên không
@@ -79,6 +81,7 @@ public class PostController {
     public ResponseEntity<Post> createPost(@RequestBody PostRequest postRequest) {
         System.out.println("PostRequest: " + postRequest);
         Post post = postRequest.getPost();
+        System.out.println("PostReceived: " + post);
         List<String> fileUrls = postRequest.getMediaUrls(); // Danh sách URL file từ S3
 
         // Tạo nội dung bài viết
@@ -174,6 +177,17 @@ public class PostController {
         }
 
         return ResponseEntity.ok(postIds);
+    }
+
+    //list postId by userId
+    @GetMapping("/userPosts/{user_id}")
+    public ResponseEntity<List<Post>> listUserPost(@PathVariable int user_id) {
+        List<Post> userPosts = postService.getAllPostsByUserId(user_id);
+        List<Post> allPosts = new ArrayList<>();
+        allPosts.addAll(userPosts);
+        //sắp xếp theo thời gian tạo bài viết
+        allPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
+        return ResponseEntity.ok(allPosts);
     }
 
     //get post by id
