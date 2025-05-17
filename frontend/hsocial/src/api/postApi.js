@@ -18,7 +18,7 @@ export const fetchUserById = async (userId) => {
 };
 
 export const fetchPostById = async (postId) => {
-  const res = await axios.get(`${API_URL}/posts/${postId}`, {
+  const res = await axios.get(`${API_URL}/api/posts/${postId}`, {
     // headers
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
@@ -34,7 +34,7 @@ export const fetchFriendsByUserId = async (userId) => {
 
 export const fetchPostsList = async (userId, friendIds) => {
   const res = await axios.post(
-    `${API_URL}/posts/listPost`,
+    `${API_URL}/api/posts/listPost`,
     { userId: Number(userId), friendIds },
     { headers }
   );
@@ -51,7 +51,7 @@ export const fetchPostsList = async (userId, friendIds) => {
 export const uploadFilesToS3 = async (files) => {
   const formData = new FormData();
   files.forEach((file) => formData.append("files", file));
-  const res = await axios.post(`${API_URL}/posts/s3upload`, formData, {
+  const res = await axios.post(`${API_URL}/api/posts/s3upload`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ export const uploadFilesToS3 = async (files) => {
 };
 
 export const createNewPost = async (postData) => {
-  const res = await axios.post(`${API_URL}/posts/create`, postData, {
+  const res = await axios.post(`${API_URL}/api/posts/create`, postData, {
     headers,
   });
   return res.data;
@@ -69,7 +69,7 @@ export const createNewPost = async (postData) => {
 
 export const likePostByUser = async (postId, userId) => {
   const res = await axios.post(
-    `${API_URL}/posts/${postId}/like/${userId}`,
+    `${API_URL}/api/posts/${postId}/like/${userId}`,
     null,
     { headers }
   );
@@ -78,7 +78,7 @@ export const likePostByUser = async (postId, userId) => {
 
 export const commentOnPost = async (postId, userId, comment) => {
   const res = await axios.post(
-    `${API_URL}/posts/${postId}/comment`,
+    `${API_URL}/api/posts/${postId}/comment`,
     { userId, comment },
     { headers }
   );
