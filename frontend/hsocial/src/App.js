@@ -1,14 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import React from "react";
-import Login from "./components/login";
-import SignUp from "./components/signup";
-import Home from "./components/home";
-import HomePage from "./components/HomePage";
-import Chat from "./components/ChatWebSocket";
+import Login from "./screens/login";
+import SignUp from "./screens/signup";
+import Home from "./screens/home";
+import HomePage from "./screens/HomePage";
+import Chat from "./screens/ChatWebSocket";
 import PostHome from "./components/PostHome";
-import Profile from "./components/Profile";
-import AnotherUserProfile from "./components/AnotherUserProfile";
+import Profile from "./screens/Profile";
+import AnotherUserProfile from "./screens/AnotherUserProfile";
 
 import { Provider } from "react-redux";
 import { store } from "./redux/userSlice";

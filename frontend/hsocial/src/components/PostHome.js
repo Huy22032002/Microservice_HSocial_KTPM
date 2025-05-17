@@ -1,11 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import "./PostHome.css";
+import "../styles/PostHome.css";
 import { fetchUserDetail } from "../api/userApi";
 import Post from "./post.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage, faLock, faEarth, faUserFriends, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  faImage,
+  faLock,
+  faEarth,
+  faUserFriends,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
+import BannerHome from "../components/BannerHome.js";
+import ListChatFriend from "./ListChatFriend.js";
 
 const PostHome = () => {
   const [friends, setFriends] = useState([]);
@@ -26,10 +34,15 @@ const PostHome = () => {
       const response = await axios.get(`${API_URL}/api/friends/${userId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      if (response.data.friend !== null && response.data.friends?.length > 0) {
+
+      if (response.data.friends !== null && response.data.friends?.length > 0) {
         const friendDetails = await Promise.all(
-          response.data.friends.map((friend) => fetchUserDetail(friend.id))
+          response.data.friends.map((friend) =>
+            fetchUserDetail(friend.friendId)
+          )
         );
+        console.log(friendDetails);
+
         setFriends(friendDetails);
       }
     } catch (error) {
@@ -84,12 +97,16 @@ const PostHome = () => {
       const formData = new FormData();
       files.forEach((file) => formData.append("files", file));
       try {
-        const response = await axios.post(`${API_URL}/posts/s3upload`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await axios.post(
+          `${API_URL}/posts/s3upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         mediaUrls = response.data;
       } catch (error) {
         console.error("Lỗi khi upload file lên S3:", error);
@@ -181,15 +198,17 @@ const PostHome = () => {
       <div className="content-area">
         <div className="post-form">
           <div className="post-form-header">
-            <img 
-              src={currentUser.avatar || "https://via.placeholder.com/40"} 
-              alt="User avatar" 
+            <img
+              src={currentUser.avatar || "https://via.placeholder.com/40"}
+              alt="User avatar"
               className="user-avatar"
             />
             <div className="post-form-input">
               <textarea
                 className="textarea"
-                placeholder={`${currentUser.fullname || 'Bạn'} ơi, bạn đang nghĩ gì?`}
+                placeholder={`${
+                  currentUser.fullname || "Bạn"
+                } ơi, bạn đang nghĩ gì?`}
                 value={newContent}
                 onChange={(e) => setNewContent(e.target.value)}
               />
@@ -200,17 +219,27 @@ const PostHome = () => {
             <div className="preview-container">
               {previewUrls.map((url, index) => {
                 const file = files[index];
-                const isVideo = file.type.startsWith('video/');
-                
+                const isVideo = file.type.startsWith("video/");
+
                 return isVideo ? (
-                  <video key={index} src={url} className="media-preview" controls />
+                  <video
+                    key={index}
+                    src={url}
+                    className="media-preview"
+                    controls
+                  />
                 ) : (
-                  <img key={index} src={url} alt={`Preview ${index}`} className="media-preview" />
+                  <img
+                    key={index}
+                    src={url}
+                    alt={`Preview ${index}`}
+                    className="media-preview"
+                  />
                 );
               })}
             </div>
           )}
-          
+
           <div className="post-form-actions">
             <label className="file-input-label">
               <FontAwesomeIcon icon={faImage} className="icon" />
@@ -225,13 +254,20 @@ const PostHome = () => {
             </label>
 
             <div className="privacy-selector">
-              <div className="privacy-display" onClick={() => document.getElementById('privacy-select').click()}>
+              <div
+                className="privacy-display"
+                onClick={() =>
+                  document.getElementById("privacy-select").click()
+                }
+              >
                 {getPrivacyIcon()}
-                <span>{
-                  postPrivacy === "PUBLIC" ? "Công khai" : 
-                  postPrivacy === "FRIENDS" ? "Bạn bè" : 
-                  "Riêng tư"
-                }</span>
+                <span>
+                  {postPrivacy === "PUBLIC"
+                    ? "Công khai"
+                    : postPrivacy === "FRIENDS"
+                    ? "Bạn bè"
+                    : "Riêng tư"}
+                </span>
               </div>
               <select
                 id="privacy-select"
@@ -245,14 +281,16 @@ const PostHome = () => {
               </select>
             </div>
 
-            <button 
-              className={`post-button ${isSubmitting ? 'submitting' : ''}`} 
+            <button
+              className={`post-button ${isSubmitting ? "submitting" : ""}`}
               onClick={createPost}
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <FontAwesomeIcon icon={faSpinner} spin />
-              ) : "Đăng"}
+              ) : (
+                "Đăng"
+              )}
             </button>
           </div>
         </div>
@@ -265,13 +303,15 @@ const PostHome = () => {
             </div>
           ) : postIds.length === 0 ? (
             <div className="empty-state">
-              <img 
-                src="https://cdn-icons-png.flaticon.com/512/7486/7486754.png" 
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/7486/7486754.png"
                 alt="Không có bài viết"
-                className="empty-icon" 
+                className="empty-icon"
               />
               <p>Chưa có bài viết nào</p>
-              <p className="empty-subtitle">Hãy đăng bài hoặc kết bạn để thấy các bài viết</p>
+              <p className="empty-subtitle">
+                Hãy đăng bài hoặc kết bạn để thấy các bài viết
+              </p>
             </div>
           ) : (
             postIds.map((postId) => <Post key={postId} postId={postId} />)
@@ -285,7 +325,13 @@ const PostHome = () => {
           <div className="suggestion-list">
             {/* Placeholder for friend suggestions */}
             <div className="suggestion-item">
-              <img src={"https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png"||require('../../public/default_avatar.png')} alt="Suggested user" />
+              <img
+                src={
+                  "https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png" ||
+                  require("../../public/default_avatar.png")
+                }
+                alt="Suggested user"
+              />
               <div className="suggestion-info">
                 <span className="suggestion-name">Jane Doe</span>
                 <span className="suggestion-meta">12 bạn chung</span>
@@ -293,7 +339,13 @@ const PostHome = () => {
               <button className="suggestion-action">Kết bạn</button>
             </div>
             <div className="suggestion-item">
-              <img src={"https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png"||require('../../public/default_avatar.png')} alt="Suggested user" />
+              <img
+                src={
+                  "https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png" ||
+                  require("../../public/default_avatar.png")
+                }
+                alt="Suggested user"
+              />
               <div className="suggestion-info">
                 <span className="suggestion-name">John Smith</span>
                 <span className="suggestion-meta">5 bạn chung</span>
@@ -302,7 +354,7 @@ const PostHome = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="sidebar-section">
           <h3>Sự kiện sắp tới</h3>
           <div className="events-list">
@@ -328,6 +380,11 @@ const PostHome = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="rightContainerHome">
+        <BannerHome />
+        <hr style={{ color: "rgba(0,0,0,0.1)" }} />
+        <ListChatFriend friends={friends} />
       </div>
     </div>
   );

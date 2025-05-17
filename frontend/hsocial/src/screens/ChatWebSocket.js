@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchConversations, fetchMessages, postMessage } from "../api/chatApi";
 import { fetchUserDetail, fetchUser } from "../api/userApi";
-import Header from "./header";
+import Header from "../components/header";
 import moment from "moment/moment";
 
 export default function Chat() {

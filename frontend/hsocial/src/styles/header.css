@@ -1,8 +1,4 @@
-/* Keep your existing styles and add these new styles for notifications */
-
-/* Add these styles to your existing Header.module.css */
 .header {
-  /* <<<<<<< HEAD */
   border-bottom: 1px solid #e0e0e0;
   padding: 10px 20px;
   display: flex;

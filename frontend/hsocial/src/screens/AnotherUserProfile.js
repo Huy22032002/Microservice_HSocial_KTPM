@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchUserDetail } from "../api/userApi";
@@ -10,11 +10,13 @@ import {
   removeFriend,
 } from "../api/friendApi";
 import { fetchPostsUser } from "../api/postApi";
-import Post from "./post";
-import Header from "./header";
+import Post from "../components/post";
+import Header from "../components/header";
 import styles from "../styles/AnotherUserProfile.module.css";
 import { useSelector } from "react-redux";
 import { faFilter, faUser } from "@fortawesome/free-solid-svg-icons";
+import ProfileMenu from "../components/ProfileMenu";
+import ProfileImage from "../components/ProfileImage";
 
 const AnotherUserProfile = () => {
   const { userId } = useParams();
@@ -22,6 +24,7 @@ const AnotherUserProfile = () => {
 
   const [friends, setFriends] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [images, setImages] = useState([]);
   const [btnFilter, setBtnFilter] = useState("Mới nhất");
   const navigate = useNavigate();
 
@@ -54,7 +57,15 @@ const AnotherUserProfile = () => {
   const fetchPosts = async () => {
     try {
       const data = await fetchPostsUser(userId);
-      if (data) setPosts(data);
+      if (data) {
+        setPosts(data);
+        //lay tat ca bai viet co hinh anh
+        data.forEach((post) => {
+          if (post.content?.files?.length > 0) {
+            setImages((prev) => [...prev, post]);
+          }
+        });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -187,6 +198,7 @@ const AnotherUserProfile = () => {
                 </button>
               </div>
             </div>
+            <ProfileMenu />
             <hr
               style={{
                 background: "rgba(0,0,0,0.1)",
@@ -209,6 +221,11 @@ const AnotherUserProfile = () => {
               </div>
               <div className={styles.userImage}>
                 <h2>Ảnh</h2>
+                {images.length > 0 ? (
+                  <ProfileImage images={images} />
+                ) : (
+                  <p>Hiện chưa có ảnh</p>
+                )}
               </div>
             </div>
             <div className={styles.rightContent}>

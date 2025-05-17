@@ -89,6 +89,13 @@
 .btnChat:hover {
   background-color: #075be3;
 }
+.btnUpdate {
+  background: #0866ff;
+  color: #fff;
+}
+.btnUpdate:hover {
+  background-color: #075be3;
+}
 
 .headerMenu {
 }

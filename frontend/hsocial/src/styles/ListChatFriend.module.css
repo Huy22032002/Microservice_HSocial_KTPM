@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0 12px;
+  box-sizing: border-box;
+}
+.friendItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+.friendItem:hover {
+  background-color: #c7c7c7;
+  border-radius: 8px;
+}
