@@ -5,6 +5,9 @@ import axios from "axios";
 import { fetchPostById } from "../api/postApi";
 import "../styles/post.css";
 
+import FullScreen from "./FullScreen";
+
+
 const API_URL = process.env.REACT_APP_API_URL;
 
 const Post = ({ postId }) => {
@@ -31,12 +34,22 @@ const Post = ({ postId }) => {
 
       // Lấy thông tin người đăng bài viết
       const user = await fetchUserDetail(fetchedPost.userId);
-      setPostUser(user || {avatar: "https://icons.veryicon.com/png/o/miscellaneous/rookie-official-icon-gallery/225-default-avatar.png", fullname: "Người dùng không xác định"});
+      setPostUser(
+        user || {
+          avatar:
+            "https://icons.veryicon.com/png/o/miscellaneous/rookie-official-icon-gallery/225-default-avatar.png",
+          fullname: "Người dùng không xác định",
+        }
+      );
 
       // Lấy thông tin người dùng cho các bình luận (có cache)
       if (fetchedPost.comments?.length > 0) {
-        const uniqueUserIds = [...new Set(fetchedPost.comments.map((c) => c.userId))];
-        const usersToFetch = uniqueUserIds.filter(id => !userCommentDetail[id]);
+        const uniqueUserIds = [
+          ...new Set(fetchedPost.comments.map((c) => c.userId)),
+        ];
+        const usersToFetch = uniqueUserIds.filter(
+          (id) => !userCommentDetail[id]
+        );
 
         const userDetailPromises = usersToFetch.map(async (userId) => {
           const userDetail = await fetchUserDetail(userId);
@@ -44,12 +57,15 @@ const Post = ({ postId }) => {
         });
 
         const fetchedUserDetails = await Promise.all(userDetailPromises);
-        const newUserMap = fetchedUserDetails.reduce((acc, { userId, userDetail }) => {
-          acc[userId] = userDetail;
-          return acc;
-        }, {});
+        const newUserMap = fetchedUserDetails.reduce(
+          (acc, { userId, userDetail }) => {
+            acc[userId] = userDetail;
+            return acc;
+          },
+          {}
+        );
 
-        setUserCommentDetail(prev => ({ ...prev, ...newUserMap }));
+        setUserCommentDetail((prev) => ({ ...prev, ...newUserMap }));
       }
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu bài viết hoặc user:", error);
@@ -90,13 +106,16 @@ const Post = ({ postId }) => {
     }
   };
 
+  const [popUpFull, setPopUpFull] = useState(false);
+
   const likePost = async () => {
     try {
       if (userId == null) {
         alert("Vui lòng đăng nhập để thích bài viết");
         return;
       }
-      
+
+    
       const res = await axios.post(`${API_URL}/api/posts/${postId}/like/${userId}`, null, {
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +148,7 @@ const Post = ({ postId }) => {
         <h3>{postUser.fullname}</h3>
       </div>
 
-      <div className="post-content">
+      <div onClick={() => setPopUpFull(true)} className="post-content">
         <p>{content?.text}</p>
         {Array.isArray(files) &&
           files.map((file, index) => {
@@ -139,10 +158,19 @@ const Post = ({ postId }) => {
                 <source src={file} type="video/mp4" />
               </video>
             ) : (
-              <img key={index} src={file} alt={`file-${index}`} className="post-image" />
+              <img
+                key={index}
+                src={file}
+                alt={`file-${index}`}
+                className="post-image"
+                onClick={() => setPopUpFull(true)}
+              />
             );
           })}
       </div>
+      {popUpFull && (
+        <FullScreen post={post} onClose={() => setPopUpFull(false)} />
+      )}
 
       <div className="post-actions">
         <button onClick={likePost}>
@@ -157,7 +185,8 @@ const Post = ({ postId }) => {
             const user = userCommentDetail[comment.userId];
             return (
               <div key={comment.commentId} className="comment">
-                <strong>{user ? user.fullname : "Loading..."}</strong>: {comment.content}
+                <strong>{user ? user.fullname : "Loading..."}</strong>:{" "}
+                {comment.content}
               </div>
             );
           })}

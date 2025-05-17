@@ -24,10 +24,9 @@ public class JwtTokenUtil {
         String token = "";
         UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
         try{
-            Instant now = Instant.now();
             JwtClaimsSet claims = JwtClaimsSet.builder()
                     .issuer("iuh.fit.se")
-                    .issuedAt(now)
+                    .issuedAt(Instant.now())
                     .expiresAt(generateExpirationDate())
                     .subject(userPrincipal.getUsername())
                     .claim("scope", userPrincipal.getAuthorities()

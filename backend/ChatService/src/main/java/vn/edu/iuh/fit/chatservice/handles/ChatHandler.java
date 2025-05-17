@@ -28,22 +28,29 @@ public class ChatHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        JsonNode jsonNode = objectMapper.readTree(message.getPayload());
-        String senderId = jsonNode.get("sender").asText();
-        String receiverId = jsonNode.get("receiver").asText();
-        String content = jsonNode.get("content").asText();
-        String conversationId = jsonNode.get("conversationId").asText();
+        System.out.println("new message: " + message.getPayload());
 
-        String jsonResponse = objectMapper.writeValueAsString(Map.of(
-                "sender", senderId,
-                "receiver", receiverId,
-                "content", content,
-                "conversationId", conversationId
-        ));
+        //dùng JsonNode để parse payload từ String thành Json
+        JsonNode jsonNode = objectMapper.readTree(message.getPayload());
+        System.out.println(jsonNode.toString());
+
+        String senderId = jsonNode.get("sender").asText();
+        String receiverId = jsonNode.get("receivers").get(0).asText();
+
+//        String jsonResponse = objectMapper.writeValueAsString(Map.of(
+//                "id", id,
+//                "conversationId", conversationId,
+//                "sender", senderId,
+//                "receiver", receiverId,
+//                "content", content,
+//                "status", status,
+//                "createdAt", createdAt
+//        ));
+
         // Send to sender
-        sendToUser(senderId, jsonResponse);
+        sendToUser(senderId, message.getPayload());
         // Send to receiver
-        sendToUser(receiverId, jsonResponse);
+        sendToUser(receiverId, message.getPayload());
     }
 
     private void sendToUser(String userId, String message) {

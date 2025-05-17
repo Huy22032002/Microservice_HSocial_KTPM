@@ -374,3 +374,9 @@ body {
     height: 150px;
   }
 }
+
+.rightContainerHome {
+  background: #ffffff;
+  justify-self: flex-end;
+}
+

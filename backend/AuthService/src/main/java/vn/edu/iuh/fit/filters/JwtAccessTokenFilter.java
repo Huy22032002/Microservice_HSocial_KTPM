@@ -71,8 +71,12 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
                 if(jwtTokenUtil.isTokenValid(jwtToken, userPrincipal)) {
                     SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
+                    System.out.println("userPrincipal: " + userPrincipal.getUsername() + userPrincipal.getAuthorities() + userPrincipal.getPassword());
+
                     UsernamePasswordAuthenticationToken createdToken = new UsernamePasswordAuthenticationToken(userPrincipal.getUsername(), userPrincipal.getPassword(), userPrincipal.getAuthorities());
                     createdToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    System.out.println("createdToken: " + createdToken);
+
                     securityContext.setAuthentication(createdToken);
                     SecurityContextHolder.setContext(securityContext);
                 }

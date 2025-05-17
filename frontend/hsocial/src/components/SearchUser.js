@@ -36,7 +36,18 @@ const SearchUser = () => {
   }, [searchValue]);
 
   return (
-    <div style={{ position: "relative" }}>
+    <div
+      style={{
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+        background: "#e4e6e9",
+        padding: "12px",
+        borderRadius: "16px",
+        margin: "10px 0",
+        width: "240px",
+      }}
+    >
       <input
         type="text"
         placeholder="Tìm kiếm bạn bè hoặc ai đó..."
@@ -47,14 +58,11 @@ const SearchUser = () => {
         }}
         onBlur={() => setTimeout(() => setShowPopup(false), 200)}
         style={{
-          width: "300px",
-          background: "none",
-          color: "rgba(255, 255, 255, 0.8)",
+          background: "#e4e6e9",
           outline: "none",
           border: "none",
           margin: "0 6px",
-          padding: "10px",
-          borderBottom: "1px solid rgba(255,255,255,0.4)",
+          width: "80%",
         }}
       />
       {showPopup && (

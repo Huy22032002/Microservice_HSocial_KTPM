@@ -142,19 +142,16 @@ public class PostController {
         allPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
         return ResponseEntity.ok(allPosts);
     }
-
-//    @GetMapping("/userPosts/{user_id}")
-//    public ResponseEntity<List<Post>> listUserPost( @PathVariable int user_id) {
-//
-//
-//        List<Post> userPosts = postService.getAllPostsByUserId(user_id);
-//
-//        List<Post> allPosts = new ArrayList<>();
-//        allPosts.addAll(userPosts);
-//        //sắp xếp theo thời gian tạo bài viết
-//        allPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
-//        return ResponseEntity.ok(allPosts);
-//    }
+    //list post by userId
+    @GetMapping("/listPost/{user_id}")
+    public ResponseEntity<List<Post>> listUserPost(@PathVariable int user_id) {
+        List<Post> userPosts = postService.getAllPostsByUserId(user_id);
+        List<Post> allPosts = new ArrayList<>();
+        allPosts.addAll(userPosts);
+        //sắp xếp theo thời gian tạo bài viết
+        allPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
+        return ResponseEntity.ok(allPosts);
+    }
 
     @PostMapping("/listPostId")
     public ResponseEntity<List<Long>> listPostId(@RequestBody PostFetchRequest request) {

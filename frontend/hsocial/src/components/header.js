@@ -5,7 +5,7 @@ import styles from "../styles/Header.module.css";
 import { fetchUserDetail, setUserStatus } from "../api/userApi";
 import { fetchNotifications, setAllNotiStatus } from "../api/notiApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faBell } from "@fortawesome/free-solid-svg-icons";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
 import SearchUser from "./SearchUser";
 
 export default function Header() {
@@ -40,14 +40,17 @@ export default function Header() {
   // Effect for detecting clicks outside notification dropdown
   useEffect(() => {
     function handleClickOutside(event) {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
         setShowNotifications(false);
       }
     }
-    
+
     // Add event listener
     document.addEventListener("mousedown", handleClickOutside);
-    
+
     // Clean up
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -69,7 +72,7 @@ export default function Header() {
       setShowNotifications(false);
       return;
     }
-    
+
     try {
       const notis = await fetchNotifications(userId);
       setNotifications(notis || []);
@@ -85,10 +88,10 @@ export default function Header() {
     try {
       await setAllNotiStatus(userId);
       // Update the local notifications array to mark all as read
-      setNotifications(prevNotifications => 
-        prevNotifications.map(noti => ({
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((noti) => ({
           ...noti,
-          isRead: true
+          isRead: true,
         }))
       );
     } catch (error) {
@@ -107,10 +110,23 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.navContainer}>
-        <h3 className={styles.logo}>
-          <Link to="/home"> HSocial </Link>
+        <h3>
+          <Link to="/home">
+            {" "}
+            <img
+              src={require("../assets/logo.png")}
+              alt="Logo"
+              style={{
+                width: "60px",
+                height: "60px",
+                borderRadius: "40px",
+                boxSizing: "border-box",
+              }}
+            />{" "}
+          </Link>
+
         </h3>
-        <div className={styles.filterListChat}>
+        <div className={styles.filterListChatt}>
           {/* search */}
           <SearchUser />
         </div>
@@ -131,23 +147,32 @@ export default function Header() {
           {userId ? (
             <>
               {/* Notification Icon */}
-              <div className={styles.notificationContainer} ref={notificationRef}>
-                <div className={styles.iconWrapper} onClick={handleNotificationClick}>
+              <div
+                className={styles.notificationContainer}
+                ref={notificationRef}
+              >
+                <div
+                  className={styles.iconWrapper}
+                  onClick={handleNotificationClick}
+                >
                   <FontAwesomeIcon icon={faBell} className={styles.bellIcon} />
-                  {notifications.filter(n => !n.isRead).length > 0 && (
+                  {notifications.filter((n) => !n.isRead).length > 0 && (
                     <span className={styles.notiBadge}>
-                      {notifications.filter(n => !n.isRead).length}
+                      {notifications.filter((n) => !n.isRead).length}
                     </span>
                   )}
                 </div>
-                
+
                 {/* Notifications Dropdown */}
                 {showNotifications && (
                   <div className={styles.notificationsDropdown}>
                     <div className={styles.notificationsHeader}>
                       <h4>Thông báo</h4>
-                      {notifications.filter(n => !n.isRead).length > 0 && (
-                        <button className={styles.markReadBtn} onClick={markAllAsRead}>
+                      {notifications.filter((n) => !n.isRead).length > 0 && (
+                        <button
+                          className={styles.markReadBtn}
+                          onClick={markAllAsRead}
+                        >
                           Đánh dấu đã đọc
                         </button>
                       )}
@@ -155,25 +180,35 @@ export default function Header() {
                     <div className={styles.notificationsList}>
                       {notifications.length > 0 ? (
                         notifications.map((notification) => (
-                          <div 
-                            key={notification.id} 
-                            className={`${styles.notificationItem} ${!notification.isRead ? styles.unread : ''}`}
-                            onClick={() => handleNotificationItemClick(notification)}
+                          <div
+                            key={notification.id}
+                            className={`${styles.notificationItem} ${
+                              !notification.isRead ? styles.unread : ""
+                            }`}
+                            onClick={() =>
+                              handleNotificationItemClick(notification)
+                            }
                           >
                             <div className={styles.notificationContent}>
                               <p>{notification.message}</p>
-                              <small>{new Date(notification.createdAt).toLocaleString()}</small>
+                              <small>
+                                {new Date(
+                                  notification.createdAt
+                                ).toLocaleString()}
+                              </small>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <p className={styles.emptyNotification}>Không có thông báo nào</p>
+                        <p className={styles.emptyNotification}>
+                          Không có thông báo nào
+                        </p>
                       )}
                     </div>
                   </div>
                 )}
               </div>
-              
+
               <div
                 className={styles.userInfo}
                 onClick={() => {
@@ -181,7 +216,11 @@ export default function Header() {
                   setShowNotifications(false); // Close notifications if open
                 }}
               >
-                <img src={avatar || "https://via.placeholder.com/40"} alt="avatar" className={styles.avatar} />
+                <img
+                  src={avatar || "https://via.placeholder.com/40"}
+                  alt="avatar"
+                  className={styles.avatar}
+                />
                 <span className={styles.fullname}>{fullname}</span>
               </div>
 

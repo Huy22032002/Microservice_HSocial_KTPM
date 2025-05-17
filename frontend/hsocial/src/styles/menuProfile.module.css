@@ -1,0 +1,23 @@
+.menuContainer {
+  display: flex;
+  width: 100%;
+  background: rgb(255, 255, 255);
+  padding: 12px;
+  box-sizing: border-box;
+  margin: 8px 0;
+}
+
+.menuItem {
+  border: none;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: none;
+  color: #858686;
+  font-size: 20px;
+  box-sizing: border-box;
+  font-weight: bold;
+}
+.menuItem:hover {
+  background: #f5f5f5;
+  cursor: pointer;
+}

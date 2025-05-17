@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import Header from "./header";
-import PostHome from "./PostHome";
+import Header from "../components/header";
+import PostHome from "../components/PostHome";
 function HomePage() {
   useEffect(() => {});
 

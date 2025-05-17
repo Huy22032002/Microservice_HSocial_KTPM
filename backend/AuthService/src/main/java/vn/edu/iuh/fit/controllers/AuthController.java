@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.iuh.fit.dto.LoginRequest;
@@ -12,7 +11,6 @@ import vn.edu.iuh.fit.dto.UserDTO;
 import vn.edu.iuh.fit.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.models.User;
 import vn.edu.iuh.fit.services.AuthService;
-import vn.edu.iuh.fit.services.MessageProducer;
 import vn.edu.iuh.fit.services.UserService;
 
 import java.io.IOException;
@@ -20,10 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,8 +30,6 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private MessageProducer messageProducer;
 
     @Autowired
     public AuthController(AuthService authService) {
@@ -63,8 +57,6 @@ public class AuthController {
         try {
             User user = userService.createUser(userDTO);
             //goi service UserDetail de tao 1 UserDetail
-            System.out.println("User id created: " + user.getId());
-            messageProducer.sendUserId(user.getId());
 
             return ResponseEntity.ok(user);
         }

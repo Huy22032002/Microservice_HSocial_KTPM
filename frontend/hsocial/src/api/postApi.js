@@ -84,3 +84,18 @@ export const commentOnPost = async (postId, userId, comment) => {
   );
   return res.data;
 };
+
+export const fetchPostsUser = async (user_id) => {
+  try {
+    const response = await axios.get(`${API_URL}/posts/listPost/${user_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("list post of user:  ", response.data);
+    return response.data;
+  } catch (e) {
+    throw new Error("error get list post of user ", e);
+  }
+};
