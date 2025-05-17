@@ -104,10 +104,13 @@ public class UserFriendService {
     }
     public UserFriend declineFriendRequest(FriendRequest friendRequest) {
         UserFriend userFriend = userFriendRepositories.findByUserId(friendRequest.getUserId());
-        for(UserFriend.Friend friend : userFriend.getFriends()) {
-            if(friend.getFriendId() == friendRequest.getFriendId() && friend.getFriendStatus() == FriendStatus.PENDING) {
-                userFriend.getFriends().remove(friend);
-            }
+        if(userFriend == null) {
+            throw new RuntimeException("Khong tim thay user");
+        }
+
+        boolean removed = userFriend.getFriends().removeIf(friend -> friend.getFriendId() == friendRequest.getFriendId() && friend.getFriendStatus() == FriendStatus.PENDING);
+        if(!removed) {
+            throw new RuntimeException("Không tìm thấy lời mời từ friendId: " + friendRequest.getFriendId());
         }
         return userFriendRepositories.save(userFriend);
     }

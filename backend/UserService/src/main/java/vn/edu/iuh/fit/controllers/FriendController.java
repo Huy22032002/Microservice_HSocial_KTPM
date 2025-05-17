@@ -46,6 +46,8 @@ public class FriendController {
     }
     @PostMapping("/add")
     public ResponseEntity<?> addFriend(@RequestBody FriendRequest friendRequest) {
+        System.out.println("UserId: " + friendRequest.getUserId() + ", FriendId: " + friendRequest.getFriendId());
+
         try {
             if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
                 return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
@@ -97,6 +99,7 @@ public class FriendController {
         if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
             return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
         }
+        System.out.println("UserId: " + friendRequest.getUserId() + ", FriendId: " + friendRequest.getFriendId());
         try {
             UserFriend userFriend = friendService.declineFriendRequest(friendRequest);
             return ResponseEntity.ok(userFriend);
