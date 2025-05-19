@@ -30,7 +30,7 @@ export async function getListFriend(id) {
       },
     });
     console.log(`ds ban be cua user ${id} trong api: `, response.data);
-    if (response.data.length > 0) return response.data.friends;
+    if (response.data.friends.length > 0) return response.data.friends;
     else return [];
   } catch (err) {
     if (err.response) {

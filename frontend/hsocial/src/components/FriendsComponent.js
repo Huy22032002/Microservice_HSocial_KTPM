@@ -41,41 +41,43 @@ const FriendComponent = () => {
   return (
     <div className={styles.container}>
       <h2>Danh sách bạn bè</h2>
-      {friends.length > 0 ? (
-        friends.map((f, i) => (
-          <div key={f.friendId} className={styles.friendContainer}>
-            <img
-              onClick={() => handleBtnProfile(f.friendId)}
-              src={f.avatar}
-              alt="ha"
-              style={{
-                background: "none",
-                borderRadius: "30px",
-                width: "100px",
-                height: "100px",
-              }}
-            />
-            <p
-              onClick={() => handleBtnProfile(f.friendId)}
-              style={{ fontSize: "20px", fontWeight: "bold" }}
-            >
-              {f.name}
-            </p>
-            <button
-              onClick={handleBtnChat}
-              className={[styles.headerInfoBtn, styles.btnChat].join(" ")}
-            >
-              <FontAwesomeIcon
-                icon={faMessage}
-                style={{ marginRight: 4, height: 16 }}
+      <div className={styles.friendContainer}>
+        {friends.length > 0 ? (
+          friends.map((f, i) => (
+            <div key={f.friendId} className={styles.friendItem}>
+              <img
+                onClick={() => handleBtnProfile(f.friendId)}
+                src={f.avatar}
+                alt="ha"
+                style={{
+                  background: "none",
+                  borderRadius: "30px",
+                  width: "100px",
+                  height: "100px",
+                }}
               />
-              <p style={{ fontWeight: "bold", fontSize: 14 }}> Nhắn tin</p>
-            </button>
-          </div>
-        ))
-      ) : (
-        <p>Đang load danh sách bạn bè</p>
-      )}
+              <p
+                onClick={() => handleBtnProfile(f.friendId)}
+                style={{ fontSize: "20px", fontWeight: "bold" }}
+              >
+                {f.name}
+              </p>
+              <button
+                onClick={handleBtnChat}
+                className={[styles.headerInfoBtn, styles.btnChat].join(" ")}
+              >
+                <FontAwesomeIcon
+                  icon={faMessage}
+                  style={{ marginRight: 4, height: 16 }}
+                />
+                <p style={{ fontWeight: "bold", fontSize: 14 }}> Nhắn tin</p>
+              </button>
+            </div>
+          ))
+        ) : (
+          <p>Đang load danh sách bạn bè</p>
+        )}
+      </div>
     </div>
   );
 };

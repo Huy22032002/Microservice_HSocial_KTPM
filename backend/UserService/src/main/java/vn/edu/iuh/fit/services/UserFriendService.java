@@ -93,17 +93,22 @@ public class UserFriendService {
     }
     public UserFriend acceptFriend(FriendRequest friendRequest) {
         UserFriend userFriend = userFriendRepositories.findByUserId(friendRequest.getUserId());
-        //loc danh sach de tim loi moi ket ban
-        for(UserFriend.Friend friend : userFriend.getFriends()) {
-            if(friendRequest.getFriendId() == friend.getFriendId() && friend.getFriendStatus() == FriendStatus.PENDING) {
+        if (userFriend == null) {
+            throw new RuntimeException("User không tồn tại.");
+        }
+        boolean found = false;
+        for (UserFriend.Friend friend : userFriend.getFriends()) {
+            if (friendRequest.getFriendId() == friend.getFriendId() && friend.getFriendStatus() == FriendStatus.PENDING) {
                 friend.setFriendStatus(FriendStatus.ACCEPTED);
+                found = true;
 
-                //tim userFriend cua friend
+                // Tìm hoặc tạo userFriend của friend
                 UserFriend friendUserFriend = userFriendRepositories.findByUserId(friendRequest.getFriendId());
-                if(friendUserFriend == null) {
+                if (friendUserFriend == null) {
                     friendUserFriend = new UserFriend(friendRequest.getFriendId(), new ArrayList<>());
                 }
-                //them 2 chieu` luu danh sach ban be cua friendId)
+
+                // Thêm kết bạn 2 chiều
                 UserFriend.Friend friend2 = new UserFriend.Friend();
                 friend2.setFriendId(friendRequest.getUserId());
                 friend2.setFriendStatus(FriendStatus.ACCEPTED);
@@ -111,12 +116,16 @@ public class UserFriendService {
 
                 friendUserFriend.getFriends().add(friend2);
                 userFriendRepositories.save(friendUserFriend);
-            }
-            return userFriendRepositories.save(userFriend);
 
+                break;
+            }
         }
-        throw new RuntimeException("Không tìm thấy lời mời kết bạn.");
+        if (!found) {
+            throw new RuntimeException("Không tìm thấy lời mời kết bạn.");
+        }
+        return userFriendRepositories.save(userFriend);
     }
+
     public boolean removeFriend(FriendRequest friendRequest) {
         UserFriend userFriend = userFriendRepositories.findByUserId(friendRequest.getUserId());
         UserFriend friendUser = userFriendRepositories.findByUserId(friendRequest.getFriendId());
