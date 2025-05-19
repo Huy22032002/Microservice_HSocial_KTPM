@@ -4,13 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.edu.iuh.fit.chatservice.dtos.UserDTO;
 import vn.edu.iuh.fit.chatservice.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.chatservice.models.Conversation;
-import vn.edu.iuh.fit.chatservice.services.AuthServiceClient;
 import vn.edu.iuh.fit.chatservice.services.ConversationService;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -26,6 +25,21 @@ public class ConversationController {
             return new ResponseEntity<>(HttpStatus.CREATED);
         }catch (Exception e){
             return ResponseEntity.status(500).body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
+    }
+
+    @GetMapping("/conversation")
+    public ResponseEntity<?> getConversation(@RequestParam String userId, @RequestParam String senderId){
+        try {
+            Conversation conversation = conversationService.getSingleConversation(userId, senderId);
+            if(conversation != null){
+                return ResponseEntity.ok(conversation);
+            }
+            else {
+                return ResponseEntity.status(404).body(new ErrorResponse(404, "Not found", "Not found Conversation", Instant.now()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ErrorResponse(404, "Internal Server Error", e.getMessage(), Instant.now()));
         }
     }
 
@@ -51,16 +65,5 @@ public class ConversationController {
                     .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
     }
-//    @GetMapping("/{id}/name")
-//    public ResponseEntity<?> getConversationName( @PathVariable String id, int userId) {
-//        try {
-//            Conversation conversation = conversationService.getConversationById(id);
-//            if(conversation == null)
-//                return ResponseEntity.status(400).body(new ErrorResponse(400, "No Conversation", "There are no conversation available", Instant.now()) );
-//
-//
-//        }catch (Exception e) {
-//            return  ResponseEntity.status(500).body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
-//        }
-//    }
+
 }

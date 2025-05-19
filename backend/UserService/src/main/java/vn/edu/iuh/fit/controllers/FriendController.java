@@ -11,6 +11,8 @@ import vn.edu.iuh.fit.services.MessageProducer;
 import vn.edu.iuh.fit.services.UserFriendService;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -33,6 +35,18 @@ public class FriendController {
                     .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
     }
+    @GetMapping("/name/{id}")
+    public ResponseEntity<?> getListFriendsWithName(@PathVariable int id) {
+        try {
+            List<Map<String, Object>> lstFriend = friendService.getAllFriendsWithFullNameOfUser(id);
+            return ResponseEntity.ok(lstFriend);
+        }catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
+    }
+
     @GetMapping("{id}/pending")
     public ResponseEntity<?> getListPending(@PathVariable int id) {
         try{

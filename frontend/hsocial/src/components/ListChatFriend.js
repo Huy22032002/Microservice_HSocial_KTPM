@@ -1,16 +1,26 @@
+import { useNavigate } from "react-router-dom";
 import styles from "../styles/ListChatFriend.module.css";
 
 const ListChatFriend = ({ friends }) => {
-  const handleChatFriend = () => {
+  const navigate = useNavigate();
+
+  const handleChatFriend = (id) => {
     console.log("btn lst fr");
+    navigate(`/AnotherUserProfile/${id}`);
   };
 
   return (
     <div className={styles.container}>
       <h3>Người liên hệ</h3>
-      <div onClick={handleChatFriend}>
+      <div>
         {friends.map((friend) => (
-          <div key={friend.friendId} className={styles.friendItem}>
+          <div
+            key={friend.id}
+            className={styles.friendItem}
+            onClick={() => {
+              handleChatFriend(friend.id);
+            }}
+          >
             <img
               src={friend.avatar || require("../assets/default_avatar.png")}
               alt="avatar"

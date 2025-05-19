@@ -4,18 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.iuh.fit.dtos.FriendRequest;
 import vn.edu.iuh.fit.models.FriendStatus;
+import vn.edu.iuh.fit.models.UserDetail;
 import vn.edu.iuh.fit.models.UserFriend;
+import vn.edu.iuh.fit.repositories.UserDetailRepositories;
 import vn.edu.iuh.fit.repositories.UserFriendRepositories;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class UserFriendService {
     @Autowired
     private UserFriendRepositories userFriendRepositories;
+    @Autowired
+    private UserDetailRepositories userDetailRepositories;
 
     public UserFriend getAllFriendsOfUser(int userId) {
         UserFriend userFriend = userFriendRepositories.findByUserId(userId);
@@ -29,6 +35,34 @@ public class UserFriendService {
         userFriend.setFriends(friends);
         return userFriend;
     }
+
+    public List<Map<String, Object>> getAllFriendsWithFullNameOfUser(int userId) {
+        UserFriend userFriend = userFriendRepositories.findByUserId(userId);
+        if (userFriend == null) {
+            return null;
+        }
+        List<UserFriend.Friend> friends = userFriend.getFriends().stream()
+                .filter(f -> f.getFriendStatus() == FriendStatus.ACCEPTED)
+                .collect(Collectors.toList());
+
+        userFriend.setFriends(friends);
+
+        //gán thêm full name
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (UserFriend.Friend friend : userFriend.getFriends()) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("friendId", friend.getFriendId());
+            item.put("status", friend.getFriendStatus());
+            UserDetail ud = userDetailRepositories.findById(friend.getFriendId()).orElse(null);
+            if (ud != null) {
+                item.put("name", ud.getFullname());
+                item.put("avatar", ud.getAvatar());
+            }
+            result.add(item);
+        }
+        return result;
+    }
+
     public UserFriend getListPendingOfUser(int userId) {
         UserFriend userFriend = userFriendRepositories.findByUserId(userId);
         if(userFriend == null) {
@@ -40,7 +74,6 @@ public class UserFriendService {
         userFriend.setFriends(lstPending);
         return userFriend;
     }
-
     public UserFriend addFriend(FriendRequest friendRequest) {
         int friendId = friendRequest.getFriendId();
         //tim userId

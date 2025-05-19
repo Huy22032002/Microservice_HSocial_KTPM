@@ -135,7 +135,7 @@ export default function Header() {
               <Link to="/chat">Chat</Link>
             </h3>
             <h3>
-              <Link to="/profile">Profile</Link>
+              <Link to={`/profile/${userId}`}>Profile</Link>
             </h3>
           </div>
         ) : (
