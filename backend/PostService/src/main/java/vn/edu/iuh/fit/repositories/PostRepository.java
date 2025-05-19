@@ -22,5 +22,9 @@ public interface PostRepository extends JpaRepository<Post, Long> , JpaSpecifica
     List<Post> findAllPublicPosts(@Param("privacy") Privacy privacy);
 
     List<Post> findByPostPrivacy(Privacy postPrivacy);
+    List<Post> findTop20ByOrderByCreatedAtDesc();
+    List<Post> findByContentTextContainingIgnoreCase(String text);
 
+
+    void deleteByPostId(Long id);
 }

@@ -3,7 +3,7 @@ import { fetchUserDetail } from "../api/userApi";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { fetchPostById } from "../api/postApi";
-import "../styles/Post.css";
+import "../styles/post.css";
 import {
   faThumbsUp,
   faShare,
@@ -16,7 +16,6 @@ import {
   faGlobe,
   faThumbsUp as farThumbsUp,
   faSpinner,
-  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 
 import FullScreen from "./FullScreen";
@@ -24,7 +23,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-const Post = ({ postId,refreshPosts }) => {
+const Post = ({ postId }) => {
   const userId = useSelector((state) => state.user.userId);
   const [post, setPost] = useState(null);
   const [userCommentDetail, setUserCommentDetail] = useState({});
@@ -36,11 +35,6 @@ const Post = ({ postId,refreshPosts }) => {
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [shareCaption, setShareCaption] = useState("");
-  const [sharePrivacy, setSharePrivacy] = useState("PUBLIC");
-  const [isSharing, setIsSharing] = useState(false);
-
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -88,72 +82,22 @@ const Post = ({ postId,refreshPosts }) => {
     }
   };
 
-  const sharePost = async () => {
-    try {
-      setIsSharing(true);
-      const response = await axios.post(
-        `${API_URL}/api/posts/${postId}/share/${userId}`,
-        { caption: shareCaption },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      setIsSharing(false);
-      setShowShareModal(false);
-      setShareCaption("");
-
-      // Show success message
-      alert("Bài viết đã được chia sẻ thành công!");
-
-      // Optional: Refresh the page or update the UI
-      // window.location.reload();
-      if (refreshPosts) {
-        refreshPosts();
-      }
-    } catch (error) {
-      console.error("Lỗi khi chia sẻ bài viết:", error);
-      alert("Không thể chia sẻ bài viết. Vui lòng thử lại sau.");
-      setIsSharing(false);
-    }
-  };
-
   const deletePost = async () => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
       return;
     }
 
     try {
-      const response = await axios.delete(`${API_URL}/api/posts/${postId}`, {
+      await axios.delete(`${API_URL}/api/posts/${postId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
-      console.log("Xóa thành công:", response.data);
       // Refresh the page or update posts list
-      // window.location.reload();
-      // Optional: Call a function to refresh the posts list
-      if (refreshPosts) {
-        refreshPosts();
-      }
+      window.location.reload();
     } catch (error) {
       console.error("Lỗi khi xóa bài viết:", error);
-
-      // Show more detailed error information
-      if (error.response) {
-        console.error("Chi tiết lỗi:", error.response.data);
-        alert(
-          `Không thể xóa bài viết: ${
-            error.response.data.message || error.response.data || "Lỗi server"
-          }`
-        );
-      } else {
-        alert("Không thể xóa bài viết. Vui lòng thử lại sau.");
-      }
+      alert("Không thể xóa bài viết. Vui lòng thử lại sau.");
     }
   };
 
@@ -319,11 +263,11 @@ const Post = ({ postId,refreshPosts }) => {
 
   return (
     <div className="post-container">
-      <div className="p-post-header">
-        <img src={postUser.avatar} alt="avatar" className="p-avatar" />
-        <div className="p-post-user-info">
+      <div className="post-header">
+        <img src={postUser.avatar} alt="avatar" className="avatar" />
+        <div className="post-user-info">
           <h3>{postUser.fullname}</h3>
-          <span className="p-post-time">
+          <span className="post-time">
             {new Date(post.createdAt).toLocaleString("vi-VN", {
               year: "numeric",
               month: "2-digit",
@@ -335,24 +279,21 @@ const Post = ({ postId,refreshPosts }) => {
         </div>
 
         {canModifyPost && (
-          <div className="p-post-options-container" ref={menuRef}>
-            <button
-              className="p-post-options-button"
-              onClick={handleOptionClick}
-            >
+          <div className="post-options-container" ref={menuRef}>
+            <button className="post-options-button" onClick={handleOptionClick}>
               <FontAwesomeIcon icon={faEllipsisV} />
             </button>
 
             {showOptionsMenu && (
-              <div className="p-post-options-menu">
+              <div className="post-options-menu">
                 <button onClick={handleEditPost}>
                   <FontAwesomeIcon icon={faEdit} /> Chỉnh sửa
                 </button>
                 <button className="delete" onClick={deletePost}>
                   <FontAwesomeIcon icon={faTrash} /> Xóa
                 </button>
-                <div className="p-privacy-options">
-                  <div className="p-privacy-menu-label">Quyền riêng tư:</div>
+                <div className="privacy-options">
+                  <div className="privacy-menu-label">Quyền riêng tư:</div>
                   <button
                     onClick={() => updatePrivacy("PRIVATE")}
                     className={post.postPrivacy === "PRIVATE" ? "active" : ""}
@@ -377,27 +318,26 @@ const Post = ({ postId,refreshPosts }) => {
           </div>
         )}
       </div>
-
       {isEditing ? (
-        <div className="p-post-edit-container">
+        <div className="post-edit-container">
           <textarea
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
-            className="p-post-edit-textarea"
+            className="post-edit-textarea"
           />
-          <div className="p-post-edit-actions">
+          <div className="post-edit-actions">
             <button onClick={() => setIsEditing(false)}>Hủy</button>
             <button onClick={saveEditedPost}>Lưu</button>
           </div>
         </div>
       ) : (
-        <div onClick={() => setPopUpFull(true)} className="p-post-content">
+        <div onClick={() => setPopUpFull(true)} className="post-content">
           <p>{content?.text}</p>
           {Array.isArray(files) &&
             files.map((file, index) => {
               const isVideo = /\.(mp4|webm|ogg)$/i.test(file);
               return isVideo ? (
-                <video key={index} controls className="p-post-media">
+                <video key={index} controls className="post-media">
                   <source src={file} type="video/mp4" />
                 </video>
               ) : (
@@ -405,7 +345,7 @@ const Post = ({ postId,refreshPosts }) => {
                   key={index}
                   src={file}
                   alt={`file-${index}`}
-                  className="p-post-image"
+                  className="post-image"
                   onClick={() => setPopUpFull(true)}
                 />
               );
@@ -435,11 +375,10 @@ const Post = ({ postId,refreshPosts }) => {
       {popUpFull && (
         <FullScreen post={post} onClose={() => setPopUpFull(false)} />
       )}
-
-      <div className="p-post-actions">
+      <div className="post-actions">
         <button
           onClick={likePost}
-          className={liked ? "liked p-like-animation" : ""}
+          className={liked ? "liked like-animation" : ""}
         >
           <FontAwesomeIcon icon={liked ? faThumbsUp : farThumbsUp} />
           {liked ? "Đã thích" : "Thích"} ({likes})
@@ -448,29 +387,28 @@ const Post = ({ postId,refreshPosts }) => {
           <FontAwesomeIcon icon={faCommentAlt} /> Bình luận (
           {post.comments?.length || 0})
         </button>
-        <button onClick={() => setShowShareModal(true)}>
+        <button>
           <FontAwesomeIcon icon={faShare} /> Chia sẻ
         </button>
       </div>
-
-      <div className="p-post-comments">
-        <div className="p-comments-list">
+      <div className="post-comments">
+        <div className="comments-list">
           {Array.isArray(post.comments) &&
             post.comments.map((comment) => {
               const user = userCommentDetail[comment.userId];
               return (
-                <div key={comment.commentId} className="p-comment">
+                <div key={comment.commentId} className="comment">
                   <img
                     src={user?.avatar || "https://via.placeholder.com/28"}
                     alt="avatar"
-                    className="p-comment-avatar"
+                    className="comment-avatar"
                   />
-                  <div className="p-comment-content">
-                    <span className="p-comment-user">
+                  <div className="comment-content">
+                    <span className="comment-user">
                       {user ? user.fullname : "Loading..."}
                     </span>
-                    <span> </span>
-                    <span className="p-comment-time">
+                    <span className="comment-text">{comment.content}</span>
+                    <span className="comment-time">
                       {new Date(comment.createdAt).toLocaleString("vi-VN", {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -478,14 +416,12 @@ const Post = ({ postId,refreshPosts }) => {
                         month: "2-digit",
                       })}
                     </span>
-                    <span> </span>
-                    <span className="p-comment-text">{comment.content}</span>
                   </div>
                 </div>
               );
             })}
         </div>
-        <div className="p-comment-form">
+        <div className="comment-form">
           <input
             type="text"
             placeholder="Thêm bình luận..."
@@ -496,102 +432,6 @@ const Post = ({ postId,refreshPosts }) => {
           <button onClick={handleAddComment}>Gửi</button>
         </div>
       </div>
-      {showShareModal && (
-        <div className="p-share-modal-overlay">
-          <div className="p-share-modal">
-            <div className="p-share-modal-header">
-              <h3>Chia sẻ bài viết</h3>
-              <button
-                className="p-close-button"
-                onClick={() => setShowShareModal(false)}
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-            <div className="p-share-modal-body">
-              <div className="p-share-post-preview">
-                <div className="p-preview-user">
-                  <img
-                    src={postUser.avatar}
-                    alt="avatar"
-                    className="p-preview-avatar"
-                  />
-                  <span>{postUser.fullname}</span>
-                </div>
-                <p className="p-preview-text">
-                  {content?.text?.substring(0, 100)}
-                  {content?.text?.length > 100 ? "..." : ""}
-                </p>
-                {files && files.length > 0 && (
-                  <div className="p-preview-media">
-                    {files[0].includes(".mp4") ? (
-                      <video src={files[0]} className="p-preview-thumbnail" />
-                    ) : (
-                      <img
-                        src={files[0]}
-                        alt="Preview"
-                        className="p-preview-thumbnail"
-                      />
-                    )}
-                    {files.length > 1 && <span>+{files.length - 1}</span>}
-                  </div>
-                )}
-              </div>
-              <textarea
-                className="p-share-caption"
-                placeholder="Viết bình luận của bạn..."
-                value={shareCaption}
-                onChange={(e) => setShareCaption(e.target.value)}
-              ></textarea>
-
-              <div className="p-share-options">
-                <div className="p-privacy-selector">
-                  <div className="p-privacy-display">
-                    <FontAwesomeIcon
-                      icon={
-                        sharePrivacy === "PUBLIC"
-                          ? faGlobe
-                          : sharePrivacy === "FRIENDS"
-                          ? faUsers
-                          : faLock
-                      }
-                    />
-                    <span>
-                      {sharePrivacy === "PUBLIC"
-                        ? "Công khai"
-                        : sharePrivacy === "FRIENDS"
-                        ? "Bạn bè"
-                        : "Riêng tư"}
-                    </span>
-                  </div>
-                  <select
-                    className="p-privacy-select"
-                    value={sharePrivacy}
-                    onChange={(e) => setSharePrivacy(e.target.value)}
-                  >
-                    <option value="PUBLIC">Công khai</option>
-                    <option value="FRIENDS">Bạn bè</option>
-                    <option value="PRIVATE">Riêng tư</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div className="p-share-modal-footer">
-              <button
-                className={`p-share-button ${isSharing ? "p-submitting" : ""}`}
-                onClick={sharePost}
-                disabled={isSharing}
-              >
-                {isSharing ? (
-                  <FontAwesomeIcon icon={faSpinner} spin />
-                ) : (
-                  "Chia sẻ ngay"
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

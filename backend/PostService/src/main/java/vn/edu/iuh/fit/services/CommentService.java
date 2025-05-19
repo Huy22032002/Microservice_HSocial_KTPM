@@ -13,6 +13,10 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
+    public void deleteAllCommentsByPostId(long postId) {
+        commentRepository.deleteAllByPostId(postId);
+    }
+
     public void deleteComment(Long id) {
         commentRepository.deleteById(id);
     }
@@ -25,7 +29,7 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    public void getAllPostComments(String postId) {
+    public void getAllPostComments(long postId) {
         commentRepository.getAllPostComments(postId);
     }
 

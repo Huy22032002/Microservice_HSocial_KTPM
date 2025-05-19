@@ -1,10 +1,10 @@
 package vn.edu.iuh.fit.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import vn.edu.iuh.fit.enums.Privacy;
 
@@ -17,7 +17,12 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "postId"
+)
 public class Post {
 
     @Id
@@ -37,6 +42,8 @@ public class Post {
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "post")
+    @ToString.Exclude
+    @JsonIgnore
     private List<SharedPost> sharedPosts;
 
     private LocalDateTime createdAt;
@@ -46,5 +53,8 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private Privacy postPrivacy;
 
+    public void setIsStory(boolean story) {
+        this.isStory = story;
+    }
 
 }
