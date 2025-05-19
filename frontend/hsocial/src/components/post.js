@@ -17,7 +17,10 @@ import {
   faThumbsUp as farThumbsUp,
   faSpinner,
   faTimes,
+  faSmile,
 } from "@fortawesome/free-solid-svg-icons";
+import EmojiPicker from "emoji-picker-react";
+import { containsBannedWords } from "./BannedWords"; 
 
 import FullScreen from "./FullScreen";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,6 +34,7 @@ const Post = ({ postId,refreshPosts }) => {
   const [postUser, setPostUser] = useState({});
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState("");
+  const [showCommentEmojiPicker, setShowCommentEmojiPicker] = useState(false);
   const [likes, setLikes] = useState(0);
   const [liked, setLiked] = useState(false);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
@@ -134,9 +138,6 @@ const Post = ({ postId,refreshPosts }) => {
       });
 
       console.log("Xóa thành công:", response.data);
-      // Refresh the page or update posts list
-      // window.location.reload();
-      // Optional: Call a function to refresh the posts list
       if (refreshPosts) {
         refreshPosts();
       }
@@ -254,6 +255,12 @@ const Post = ({ postId,refreshPosts }) => {
       return;
     }
 
+    const { hasBannedWords, bannedWordsFound } = containsBannedWords(comment);
+    if (hasBannedWords) {
+      alert(`Bình luận có chứa từ không phù hợp: ${bannedWordsFound.join(', ')}`);
+      return;
+    }
+
     try {
       await axios.post(
         `${API_URL}/api/posts/${postId}/comment`,
@@ -270,6 +277,11 @@ const Post = ({ postId,refreshPosts }) => {
     } catch (error) {
       console.error("Lỗi khi thêm bình luận:", error);
     }
+  };
+
+  const onCommentEmojiClick = (emojiObject) => {
+    setComment(prevComment => prevComment + emojiObject.emoji);
+    setShowCommentEmojiPicker(false);
   };
 
   const [popUpFull, setPopUpFull] = useState(false);
@@ -493,6 +505,17 @@ const Post = ({ postId,refreshPosts }) => {
             onChange={(e) => setComment(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
           />
+          <button 
+              className="p-emoji-button"
+              onClick={() => setShowCommentEmojiPicker(!showCommentEmojiPicker)}
+            >
+              <FontAwesomeIcon icon={faSmile} />
+            </button>
+            {showCommentEmojiPicker && (
+              <div className="p-emoji-picker-popup">
+                <EmojiPicker onEmojiClick={onCommentEmojiClick} />
+              </div>
+            )}
           <button onClick={handleAddComment}>Gửi</button>
         </div>
       </div>

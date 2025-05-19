@@ -306,7 +306,6 @@
   color: white;
 }
 
-/* Loading state */
 .p-post-container.loading {
   min-height: 100px;
   display: flex;
@@ -325,7 +324,6 @@
   margin-bottom: 8px;
 }
 
-/* Story related styles */
 .p-story-like-section {
   position: absolute;
   bottom: 12px;
@@ -421,7 +419,6 @@
   }
 }
 
-/* Fix for thumbnails display */
 .p-post-thumbnails {
   display: flex;
   flex-wrap: wrap;
@@ -430,7 +427,7 @@
 
 .p-post-thumbnail {
   width: calc(33.33% - 4px);
-  padding-top: calc(33.33% - 4px); /* Maintain aspect ratio */
+  padding-top: calc(33.33% - 4px); 
   margin: 2px;
   position: relative;
   overflow: hidden;
@@ -464,9 +461,74 @@
   animation: likeAnimation 0.4s ease;
 }
 
-/* Add clear fixes */
 .p-clearfix::after {
   content: "";
   display: table;
   clear: both;
+}
+
+.p-comment-input-container {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+
+.p-comment-input-container input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.p-emoji-button {
+  background: none;
+  border: none;
+  margin-left: 5px;
+  cursor: pointer;
+  color: #65676B;
+  padding: 5px;
+  transition: background-color 0.2s;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.p-emoji-button:hover {
+  background-color: #F2F2F2;
+}
+
+.p-emoji-picker-popup {
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.p-comment-form {
+  display: flex;
+  margin-top: 10px;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+  align-items: center;
+  gap: 10px;
+}
+
+.p-comment-form button {
+  padding: 8px 15px;
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.p-comment-form button:hover {
+  background-color: #166fe5;
 }
