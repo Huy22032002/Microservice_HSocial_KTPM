@@ -315,7 +315,25 @@ public class PostController {
         try {
             // First delete all comments
             commentService.deleteAllCommentsByPostId(postId);
-
+            // Then delete all shared posts
+            List<SharedPost> sharedPosts = sharedPostService.getSharesByPostId(postId);
+            for (SharedPost sharedPost : sharedPosts) {
+                commentService.deleteAllCommentsBySharedPostId(sharedPost.getSharedPostId());
+                sharedPostService.deleteSharedPost(sharedPost);
+            }
+            // Then delete the content and files
+            Optional<Post> optionalPost = postService.findById(postId);
+            if (optionalPost.isPresent()) {
+                Post post = optionalPost.get();
+                Content content = post.getContent();
+                if (content != null) {
+                    contentService.deleteContent(content.getContentId());
+                    // Delete files from S3
+                    for (String fileUrl : content.getFiles()) {
+                        s3Service.deleteFile(fileUrl);
+                    }
+                }
+            }
             // Finally delete the post
             postService.deletePostById(postId);
 

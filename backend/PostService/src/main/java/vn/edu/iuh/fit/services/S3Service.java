@@ -51,4 +51,16 @@ public class S3Service {
 
         return "https://" + awsConfig.getS3BucketName() + ".s3." + awsConfig.getRegion() + ".amazonaws.com/" + fileName;
     }
+
+    public void deleteFile(String fileUrl) {
+        String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+        S3Client s3Client = S3Client.builder()
+                .region(Region.of(awsConfig.getRegion()))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(awsConfig.getAccessKey(), awsConfig.getSecretKey())
+                ))
+                .build();
+
+        s3Client.deleteObject(b -> b.bucket(awsConfig.getS3BucketName()).key(fileName));
+    }
 }
