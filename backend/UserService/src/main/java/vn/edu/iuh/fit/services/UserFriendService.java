@@ -4,18 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.iuh.fit.dtos.FriendRequest;
 import vn.edu.iuh.fit.models.FriendStatus;
+import vn.edu.iuh.fit.models.UserDetail;
 import vn.edu.iuh.fit.models.UserFriend;
+import vn.edu.iuh.fit.repositories.UserDetailRepositories;
 import vn.edu.iuh.fit.repositories.UserFriendRepositories;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class UserFriendService {
     @Autowired
     private UserFriendRepositories userFriendRepositories;
+    @Autowired
+    private UserDetailRepositories userDetailRepositories;
 
     public UserFriend getAllFriendsOfUser(int userId) {
         UserFriend userFriend = userFriendRepositories.findByUserId(userId);
@@ -29,6 +35,34 @@ public class UserFriendService {
         userFriend.setFriends(friends);
         return userFriend;
     }
+
+    public List<Map<String, Object>> getAllFriendsWithFullNameOfUser(int userId) {
+        UserFriend userFriend = userFriendRepositories.findByUserId(userId);
+        if (userFriend == null) {
+            return null;
+        }
+        List<UserFriend.Friend> friends = userFriend.getFriends().stream()
+                .filter(f -> f.getFriendStatus() == FriendStatus.ACCEPTED)
+                .collect(Collectors.toList());
+
+        userFriend.setFriends(friends);
+
+        //gán thêm full name
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (UserFriend.Friend friend : userFriend.getFriends()) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("friendId", friend.getFriendId());
+            item.put("status", friend.getFriendStatus());
+            UserDetail ud = userDetailRepositories.findById(friend.getFriendId()).orElse(null);
+            if (ud != null) {
+                item.put("name", ud.getFullname());
+                item.put("avatar", ud.getAvatar());
+            }
+            result.add(item);
+        }
+        return result;
+    }
+
     public UserFriend getListPendingOfUser(int userId) {
         UserFriend userFriend = userFriendRepositories.findByUserId(userId);
         if(userFriend == null) {
@@ -40,7 +74,6 @@ public class UserFriendService {
         userFriend.setFriends(lstPending);
         return userFriend;
     }
-
     public UserFriend addFriend(FriendRequest friendRequest) {
         int friendId = friendRequest.getFriendId();
         //tim userId
@@ -60,17 +93,22 @@ public class UserFriendService {
     }
     public UserFriend acceptFriend(FriendRequest friendRequest) {
         UserFriend userFriend = userFriendRepositories.findByUserId(friendRequest.getUserId());
-        //loc danh sach de tim loi moi ket ban
-        for(UserFriend.Friend friend : userFriend.getFriends()) {
-            if(friendRequest.getFriendId() == friend.getFriendId() && friend.getFriendStatus() == FriendStatus.PENDING) {
+        if (userFriend == null) {
+            throw new RuntimeException("User không tồn tại.");
+        }
+        boolean found = false;
+        for (UserFriend.Friend friend : userFriend.getFriends()) {
+            if (friendRequest.getFriendId() == friend.getFriendId() && friend.getFriendStatus() == FriendStatus.PENDING) {
                 friend.setFriendStatus(FriendStatus.ACCEPTED);
+                found = true;
 
-                //tim userFriend cua friend
+                // Tìm hoặc tạo userFriend của friend
                 UserFriend friendUserFriend = userFriendRepositories.findByUserId(friendRequest.getFriendId());
-                if(friendUserFriend == null) {
+                if (friendUserFriend == null) {
                     friendUserFriend = new UserFriend(friendRequest.getFriendId(), new ArrayList<>());
                 }
-                //them 2 chieu` luu danh sach ban be cua friendId)
+
+                // Thêm kết bạn 2 chiều
                 UserFriend.Friend friend2 = new UserFriend.Friend();
                 friend2.setFriendId(friendRequest.getUserId());
                 friend2.setFriendStatus(FriendStatus.ACCEPTED);
@@ -78,12 +116,16 @@ public class UserFriendService {
 
                 friendUserFriend.getFriends().add(friend2);
                 userFriendRepositories.save(friendUserFriend);
-            }
-            return userFriendRepositories.save(userFriend);
 
+                break;
+            }
         }
-        throw new RuntimeException("Không tìm thấy lời mời kết bạn.");
+        if (!found) {
+            throw new RuntimeException("Không tìm thấy lời mời kết bạn.");
+        }
+        return userFriendRepositories.save(userFriend);
     }
+
     public boolean removeFriend(FriendRequest friendRequest) {
         UserFriend userFriend = userFriendRepositories.findByUserId(friendRequest.getUserId());
         UserFriend friendUser = userFriendRepositories.findByUserId(friendRequest.getFriendId());
@@ -104,10 +146,13 @@ public class UserFriendService {
     }
     public UserFriend declineFriendRequest(FriendRequest friendRequest) {
         UserFriend userFriend = userFriendRepositories.findByUserId(friendRequest.getUserId());
-        for(UserFriend.Friend friend : userFriend.getFriends()) {
-            if(friend.getFriendId() == friendRequest.getFriendId() && friend.getFriendStatus() == FriendStatus.PENDING) {
-                userFriend.getFriends().remove(friend);
-            }
+        if(userFriend == null) {
+            throw new RuntimeException("Khong tim thay user");
+        }
+
+        boolean removed = userFriend.getFriends().removeIf(friend -> friend.getFriendId() == friendRequest.getFriendId() && friend.getFriendStatus() == FriendStatus.PENDING);
+        if(!removed) {
+            throw new RuntimeException("Không tìm thấy lời mời từ friendId: " + friendRequest.getFriendId());
         }
         return userFriendRepositories.save(userFriend);
     }

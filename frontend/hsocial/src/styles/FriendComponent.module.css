@@ -1,0 +1,70 @@
+.container {
+  width: 100%;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 24px 32px;
+  margin: 20px 0;
+  font-family: "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: "wrap";
+  max-width: 100%;
+  padding: 12px 20px;
+  gap: 10px;
+}
+.friendContainer {
+  width: 100%;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 12px 20px;
+  font-family: "Segoe UI", sans-serif;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+.friendItem {
+  flex: 0 0 calc(33.333% - 20px);
+  box-sizing: border-box;
+  padding: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.friendItem p:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.friendContainer img:hover {
+  cursor: pointer;
+}
+
+.headerInfoBtn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  width: 100px;
+  border-radius: 8px;
+  padding: 20px 0;
+  border: none;
+  background: #e2e5e9;
+  cursor: pointer;
+}
+.headerInfoBtn:hover {
+  background-color: #0052bc;
+}
+
+.btnChat {
+  background: #0866ff;
+  color: #fff;
+}

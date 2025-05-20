@@ -29,8 +29,8 @@ public class ConversationService {
         conversationRepository.save(conversation);
     }
 
-    public Conversation checkConversationExist(List<String> participants) {
-        return conversationRepository.findByParticipants(participants);
+    public Conversation checkConversationExist(String userId, String senderId) {
+        return conversationRepository.findByTwoParticipants(userId, senderId);
     }
 
     public void updateConversation(Conversation conversation) {
@@ -39,6 +39,12 @@ public class ConversationService {
     public Conversation getConversationById(String id, String senderId) {
         return conversationRepository.findById(id).orElse(null);
     }
+
+    public Conversation getSingleConversation(String userId, String senderId) {
+        System.out.println(conversationRepository.findByTwoParticipants(userId, senderId));
+        return conversationRepository.findByTwoParticipants(userId, senderId);
+    }
+
     public void deleteConversation(String id){
         if(conversationRepository.existsById(id)){
             conversationRepository.deleteById(id);

@@ -11,6 +11,8 @@ import vn.edu.iuh.fit.services.MessageProducer;
 import vn.edu.iuh.fit.services.UserFriendService;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -33,6 +35,18 @@ public class FriendController {
                     .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
     }
+    @GetMapping("/name/{id}")
+    public ResponseEntity<?> getListFriendsWithName(@PathVariable int id) {
+        try {
+            List<Map<String, Object>> lstFriend = friendService.getAllFriendsWithFullNameOfUser(id);
+            return ResponseEntity.ok(lstFriend);
+        }catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
+    }
+
     @GetMapping("{id}/pending")
     public ResponseEntity<?> getListPending(@PathVariable int id) {
         try{
@@ -46,6 +60,8 @@ public class FriendController {
     }
     @PostMapping("/add")
     public ResponseEntity<?> addFriend(@RequestBody FriendRequest friendRequest) {
+        System.out.println("UserId: " + friendRequest.getUserId() + ", FriendId: " + friendRequest.getFriendId());
+
         try {
             if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
                 return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
@@ -62,6 +78,7 @@ public class FriendController {
     }
     @PutMapping("/accept")
     public ResponseEntity<?> acceptFriend(@RequestBody FriendRequest friendRequest) {
+        System.out.println("UserId: " + friendRequest.getUserId() + ", FriendId: " + friendRequest.getFriendId());
         try {
             if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
                 return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
@@ -97,6 +114,7 @@ public class FriendController {
         if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
             return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
         }
+        System.out.println("UserId: " + friendRequest.getUserId() + ", FriendId: " + friendRequest.getFriendId());
         try {
             UserFriend userFriend = friendService.declineFriendRequest(friendRequest);
             return ResponseEntity.ok(userFriend);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchUserDetail } from "../api/userApi";
 import {
@@ -8,6 +8,7 @@ import {
   getListPending,
   sendFriendRequest,
   removeFriend,
+  removeFriendRequest,
 } from "../api/friendApi";
 import { fetchPostsUser } from "../api/postApi";
 import Post from "../components/post";
@@ -70,24 +71,48 @@ const AnotherUserProfile = () => {
       console.log(err);
     }
   };
+  const sortedPosts = [...posts].sort((a, b) => {
+    if (btnFilter === "Mới nhất") {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    } else {
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    }
+  });
+  const handleBtnFilterPosts = () => {
+    if (btnFilter === "Mới nhất") setBtnFilter("Cũ nhất");
+    else setBtnFilter("Mới nhất");
+  };
+
   const checkFriendStatus = async () => {
     console.log("friends cua another user: ", friends);
     //lay danh sach ban be cua minh
     const myListFriend = await getListFriend(userIdRedux);
     console.log("my list friend: ", myListFriend);
 
-    const isFriend = myListFriend.find((friend) => friend.friendId == userId);
+    if (myListFriend.length === 0) setFriendStatus("Kết bạn");
+
+    const isFriend = myListFriend.find((friend) => friend?.friendId == userId);
     if (isFriend) {
       setFriendStatus("Bạn bè");
       return;
     }
-    //trường hợp ai đó gửi lời mời kết bạn, lấy danh sach pending của mình
+    //Nếu họ gửi lời mời kết bạn, lấy danh sach pending của mình
     const myListPending = await getListPending(userIdRedux);
     console.log("my liss pending", myListPending);
     if (myListPending != null) {
       const rs = myListPending.find((friend) => friend.friendId == userId);
       if (rs) {
         setFriendStatus("Chấp nhận");
+        return;
+      }
+    }
+    const hisListPending = await getListPending(userId);
+    if (hisListPending != null && hisListPending.length > 0) {
+      const rs = hisListPending.find(
+        (friend) => friend.friendId == userIdRedux
+      );
+      if (rs) {
+        setFriendStatus("Đã gửi lời mời");
         return;
       }
     }
@@ -103,6 +128,7 @@ const AnotherUserProfile = () => {
       }
     }
   };
+
   const handleButton = async () => {
     if (friendStatus === "Kết bạn") {
       await sendFriendRequest(userIdRedux, userId);
@@ -112,19 +138,22 @@ const AnotherUserProfile = () => {
       await accpeptFriend(userIdRedux, userId);
       setFriendStatus("Bạn bè");
     } else if (friendStatus === "Đã gửi lời mời") {
-      //show popup có nút hủy lời mời
-      console.log("Mở popup có nút hủy lời mời kết bạn");
-      setShowCancelPopup(true);
-      //xóa status pending bên friendID để hủy
+      await removeFriendRequest(userId, userIdRedux);
+      alert("Huỷ lời mời kết bạn thành công");
       setFriendStatus("Kết bạn");
     } else if (friendStatus === "Bạn bè") {
       console.log("Mở popup hủy kết bạn");
-      setShowCancelPopup(true);
+      handleRemoveFriend();
+      alert("Huỷ kết bạn thành công!");
     }
   };
   const handleBtnChat = () => {
-    navigate(`/chat/${userId}`);
+    navigate(`/chat`);
   };
+
+  const location = useLocation();
+  const isRootRoute = location.pathname === `/anotherUserProfile/${userId}`;
+
   useEffect(() => {
     if (userIdRedux && userId) {
       setFriends([]);
@@ -176,15 +205,14 @@ const AnotherUserProfile = () => {
                 </div>
               </div>
               <div className={styles.headerInfoRight}>
-                <button
-                  className={styles.headerInfoBtn}
-                  onClick={() => console.log("click btn  bạn bè")}
-                >
+                <button className={styles.headerInfoBtn} onClick={handleButton}>
                   <FontAwesomeIcon
                     icon={faUser}
                     style={{ marginRight: 4, height: 16 }}
                   />
-                  <p style={{ fontWeight: "bold", fontSize: 14 }}> Bạn bè</p>
+                  <p style={{ fontWeight: "bold", fontSize: 14 }}>
+                    {friendStatus}
+                  </p>
                 </button>
                 <button
                   onClick={handleBtnChat}
@@ -198,7 +226,6 @@ const AnotherUserProfile = () => {
                 </button>
               </div>
             </div>
-            <ProfileMenu />
             <hr
               style={{
                 background: "rgba(0,0,0,0.1)",
@@ -207,174 +234,61 @@ const AnotherUserProfile = () => {
                 height: "1px",
               }}
             />
+            <ProfileMenu />
             {/* menu */}
-            <div className={styles.headerMenu}></div>
           </div>
           <div className={styles.profileContent}>
-            <div className={styles.leftContent}>
-              <div className={styles.userInfo}>
-                <h2>Giới thiệu</h2>
-                <p>
-                  {userDetails?.age} tuổi - {userDetails?.gender ? "Nam" : "Nữ"}
-                </p>
-                <p>{userDetails?.address}</p>
-              </div>
-              <div className={styles.userImage}>
-                <h2>Ảnh</h2>
-                {images.length > 0 ? (
-                  <ProfileImage images={images} />
-                ) : (
-                  <p>Hiện chưa có ảnh</p>
-                )}
-              </div>
-            </div>
-            <div className={styles.rightContent}>
-              <div className={styles.filterContainer}>
-                <h2>Bài viết</h2>
-                <div className={styles.btnContainer}>
-                  <FontAwesomeIcon icon={faFilter} />
-                  <button className={styles.btnFilter}>{btnFilter}</button>
+            {isRootRoute ? (
+              <>
+                <div className={styles.leftContent}>
+                  <div className={styles.userInfo}>
+                    <h2>Giới thiệu</h2>
+                    <p>
+                      {userDetails?.age} tuổi -{" "}
+                      {userDetails?.gender ? "Nam" : "Nữ"}
+                    </p>
+                    <p>{userDetails?.address}</p>
+                  </div>
+                  <div className={styles.userImage}>
+                    <h2>Ảnh</h2>
+                    {images.length > 0 ? (
+                      <ProfileImage images={images} />
+                    ) : (
+                      <p>Hiện chưa có ảnh</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className={styles.lstPosts}>
-                {!posts || posts.length === 0 ? (
-                  <p>{userDetails?.fullname} chưa đăng bài viết nào!</p>
-                ) : (
-                  posts.map((post, index) => (
-                    <Post key={index} postId={post.postId} />
-                  ))
-                )}
-              </div>
-            </div>
+                <div className={styles.rightContent}>
+                  <div className={styles.filterContainer}>
+                    <h2>Bài viết</h2>
+                    <div className={styles.btnContainer}>
+                      <FontAwesomeIcon icon={faFilter} />
+                      <button
+                        onClick={handleBtnFilterPosts}
+                        className={styles.btnFilter}
+                      >
+                        {btnFilter}
+                      </button>
+                    </div>
+                  </div>
+                  <div className={styles.lstPosts}>
+                    {!posts || posts.length === 0 ? (
+                      <p>{userDetails?.fullname} chưa đăng bài viết nào!</p>
+                    ) : (
+                      sortedPosts.map((post, index) => (
+                        <Post key={index} postId={post.postId} />
+                      ))
+                    )}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <Outlet />
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 };
-
 export default AnotherUserProfile;
-
-// <div className={styles.profileContainer}>
-//   <div className={styles.profileHeader}>
-//     {userDetails && (
-//       <div className={styles.profileCard}>
-//         <img
-//           src={userDetails.avatar}
-//           alt="Avatar"
-//           className={styles.avatar}
-//         />
-//       </div>
-//     )}
-//     <div className={styles.buttonContainer}>
-//       <button onClick={handleButton}>{friendStatus}</button>
-//       {showCancelPopup && (
-//         <div className={styles.popupUnderButton}>
-//           <div className={styles.popupContent}>
-//             {friendStatus === "Bạn bè" ? (
-//               <p>Bạn có muốn hủy kết bạn?</p>
-//             ) : (
-//               <p>Bạn có muốn hủy lời mời kết bạn?</p>
-//             )}
-//             <div className={styles.popupButtons}>
-//               <button
-//                 className={styles.confirmBtn}
-//                 onClick={() => {
-//                   handleRemoveFriend();
-//                   console.log("Đã xác nhận hủy.");
-//                   setShowCancelPopup(false);
-//                   setFriendStatus("Kết bạn");
-//                 }}
-//               >
-//                 Xác nhận
-//               </button>
-//               <button
-//                 className={styles.cancelBtn}
-//                 onClick={() => setShowCancelPopup(false)}
-//               >
-//                 Hủy
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//       <button>Nhắn tin</button>
-//     </div>
-//   </div>
-
-//   <div className={styles.profileBody}>
-//     {/* Danh sách bạn bè */}
-//     <div className={styles.friendsSection}>
-//       <h3>👥 Danh sách bạn bè</h3>
-//       <ul className={styles.friendList}>
-//         {Array.isArray(friends) && friends.length > 0 ? (
-//           friends.map((friend) => (
-//             <li key={friend.friendId} className={styles.friendItem}>
-//               <div className={styles.friendInfo}>
-//                 <p>
-//                   <strong>ID:</strong> {friend.friendId}
-//                 </p>
-//                 <span>
-//                   Ngày kết bạn:{" "}
-//                   {new Date(friend.createdAt).toLocaleDateString("vi-VN")}
-//                 </span>
-//               </div>
-
-//               <div className={styles.friendActions}>
-//                 <button className={styles.profileBtn}>
-//                   👤 Xem hồ sơ
-//                 </button>
-//                 <button className={styles.chatBtn}>💬 Nhắn tin</button>
-//               </div>
-//             </li>
-//           ))
-//         ) : (
-//           <p>Chưa có bạn bè nào.</p>
-//         )}
-//       </ul>
-//     </div>
-
-//     {/* Danh sách bài viết */}
-//     <div className={styles.postsSection}>
-//       <h3>📝 Bài viết của bạn</h3>
-//       {posts.length === 0 ? (
-//         <p>Chưa có bài viết nào!</p>
-//       ) : (
-//         <div className={styles.postsList}>
-//           {posts.map((post) => (
-//             <div key={post._id} className={styles.postItem}>
-//               <h4>{post.title}</h4>
-//               <p>{post.content}</p>
-//               <p>
-//                 <small>{post.date}</small>
-//               </p>
-//             </div>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   </div>
-// </div>
-
-// return (
-//   <>
-//     <Header />
-//     <div className={styles.profileContainer}>
-//       <div className={styles.profileHeader}>
-//         <div className={styles.headerWallpaper}></div>
-//         <div className={styles.headerInfo}></div>
-//         <div className={styles.headerMenu}></div>
-//       </div>
-//       <div className={styles.profileContent}>
-//         <div className={styles.leftContent}>
-//           <div className={styles.userInfo}></div>
-//           <div className={styles.userImage}></div>
-//         </div>
-//         <div className={styles.rightContent}>
-//           <div className={styles.createPost}></div>
-//           <div className={styles.lstPosts}></div>
-//         </div>
-//       </div>
-//     </div>
-//   </>
-// );

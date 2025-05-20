@@ -95,7 +95,7 @@ const SearchUser = () => {
                   borderBottom: "1px solid #eee",
                 }}
                 onClick={() => {
-                  if (user.id === userId) navigate("/profile");
+                  if (user.id === userId) navigate(`/profile/${userId}`);
                   else navigate(`/anotherUserProfile/${user.id}`);
                   setSearchValue("");
                   setShowPopup(false);

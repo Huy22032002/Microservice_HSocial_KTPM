@@ -1,7 +1,23 @@
 import axios from "axios";
 
 const FRIEND_API = process.env.REACT_APP_USER_FRIEND_API_URL;
-
+export async function getListFriendWithfullName(userId) {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.get(`${FRIEND_API}/name/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (response) {
+      console.log("lst friend with name: ", response.data);
+      return response.data;
+    }
+  } catch (er) {
+    throw er || er.message;
+  }
+}
 export async function getListFriend(id) {
   const token = localStorage.getItem("token");
 
@@ -14,7 +30,8 @@ export async function getListFriend(id) {
       },
     });
     console.log(`ds ban be cua user ${id} trong api: `, response.data);
-    return response.data.friends;
+    if (response.data.friends.length > 0) return response.data.friends;
+    else return [];
   } catch (err) {
     if (err.response) {
       console.log("Lỗi  server:", err.response.status, err.response.data);
@@ -107,5 +124,27 @@ export async function removeFriend(userId, friendId) {
     return rs;
   } catch (err) {
     throw new Error("err remove friend in api: ", err);
+  }
+}
+export async function removeFriendRequest(userId, friendId) {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.delete(
+      `http://localhost:8080/api/friends/decline`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        data: {
+          userId,
+          friendId,
+        },
+      }
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (err) {
+    throw err;
   }
 }

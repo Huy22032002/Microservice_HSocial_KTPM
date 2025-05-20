@@ -13,6 +13,7 @@ import ProfileImage from "../components/ProfileImage";
 import { faAdd, faFilter, faUser } from "@fortawesome/free-solid-svg-icons";
 import { fetchPostsUser } from "../api/postApi";
 import CreatePost from "../components/CreatePost";
+import { useLocation, Outlet } from "react-router-dom";
 
 const UserHome = () => {
   const userId = useSelector((state) => state.user.userId);
@@ -76,6 +77,9 @@ const UserHome = () => {
   const handleCreatePost = async () => {
     await fetchPosts();
   };
+
+  const location = useLocation();
+  const isRootRoute = location.pathname === `/profile/${userId}`;
 
   useEffect(() => {
     fetchDetails();
@@ -165,50 +169,57 @@ const UserHome = () => {
             <ProfileMenu />
           </div>
           <div className={styles.profileContent}>
-            <div className={styles.leftContent}>
-              <div className={styles.userInfo}>
-                <h2>Giới thiệu</h2>
-                <p>
-                  {userDetails?.age} tuổi - {userDetails?.gender ? "Nam" : "Nữ"}
-                </p>
-                <p>{userDetails?.address}</p>
-              </div>
-              <div className={styles.userImage}>
-                <h2>Ảnh</h2>
-                {images.length > 0 ? (
-                  <ProfileImage images={images} />
-                ) : (
-                  <p>Hiện chưa có ảnh</p>
-                )}
-              </div>
-            </div>
-            <div className={styles.rightContent}>
-              <CreatePost
-                currentUser={userDetails}
-                onPostCreated={handleCreatePost}
-              />
-              <div className={styles.filterContainer}>
-                <h2>Bài viết</h2>
-                <div className={styles.btnContainer}>
-                  <FontAwesomeIcon icon={faFilter} />
-                  <button
-                    onClick={handleBtnFilterPosts}
-                    className={styles.btnFilter}
-                  >
-                    {btnFilter}
-                  </button>
+            {isRootRoute ? (
+              <>
+                <div className={styles.leftContent}>
+                  <div className={styles.userInfo}>
+                    <h2>Giới thiệu</h2>
+                    <p>
+                      {userDetails?.age} tuổi -{" "}
+                      {userDetails?.gender ? "Nam" : "Nữ"}
+                    </p>
+                    <p>{userDetails?.address}</p>
+                  </div>
+                  <div className={styles.userImage}>
+                    <h2>Ảnh</h2>
+                    {images.length > 0 ? (
+                      <ProfileImage images={images} />
+                    ) : (
+                      <p>Hiện chưa có ảnh</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className={styles.lstPosts}>
-                {!posts || posts.length === 0 ? (
-                  <p>{userDetails?.fullname} chưa đăng bài viết nào!</p>
-                ) : (
-                  sortedPosts.map((post, index) => (
-                    <Post key={index} postId={post.postId} />
-                  ))
-                )}
-              </div>
-            </div>
+                <div className={styles.rightContent}>
+                  <CreatePost
+                    currentUser={userDetails}
+                    onPostCreated={handleCreatePost}
+                  />
+                  <div className={styles.filterContainer}>
+                    <h2>Bài viết</h2>
+                    <div className={styles.btnContainer}>
+                      <FontAwesomeIcon icon={faFilter} />
+                      <button
+                        onClick={handleBtnFilterPosts}
+                        className={styles.btnFilter}
+                      >
+                        {btnFilter}
+                      </button>
+                    </div>
+                  </div>
+                  <div className={styles.lstPosts}>
+                    {!posts || posts.length === 0 ? (
+                      <p>{userDetails?.fullname} chưa đăng bài viết nào!</p>
+                    ) : (
+                      sortedPosts.map((post, index) => (
+                        <Post key={index} postId={post.postId} />
+                      ))
+                    )}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <Outlet />
+            )}
           </div>
         </div>
       </div>

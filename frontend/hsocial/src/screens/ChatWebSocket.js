@@ -18,7 +18,6 @@ import moment from "moment/moment";
 
 export default function Chat() {
   const navigate = useNavigate();
-  const { userIdParam } = useParams();
 
   //socket
   const [socket, setSocket] = useState(null);
@@ -35,7 +34,6 @@ export default function Chat() {
 
   //lay userId tu Redux
   const userId = useSelector((state) => state.user.userId);
-  const token = localStorage.getItem("token");
   //user
   const [user, setUser] = useState(null);
   const [userDetail, setUserDetail] = useState(null);

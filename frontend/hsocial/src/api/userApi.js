@@ -122,3 +122,17 @@ export async function getListUserDetailByValue(value) {
     throw new Error("Error fetch search Results: ", err);
   }
 }
+export async function createUserDetail(id, fullname, gender, age) {
+  console.log(`${USER_DETAIL_API_URL}/create`);
+  try {
+    const response = await axios.post(`${USER_DETAIL_API_URL}/create`, {
+      id: Number(id),
+      fullname: fullname,
+      age: age,
+      gender: gender === "1" ? true : false,
+    });
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+}
