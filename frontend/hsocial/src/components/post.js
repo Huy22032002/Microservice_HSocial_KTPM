@@ -24,6 +24,7 @@ import { containsBannedWords } from "./BannedWords";
 
 import FullScreen from "./FullScreen";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { set } from "lodash";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -96,7 +97,7 @@ const Post = ({ postId,refreshPosts }) => {
     try {
       setIsSharing(true);
       const response = await axios.post(
-        `${API_URL}/api/posts/${postId}/share/${userId}`,
+        `${API_URL}/api/posts/${postId}/share/${userId}/${sharePrivacy}`,
         { caption: shareCaption },
         {
           headers: {
@@ -109,6 +110,8 @@ const Post = ({ postId,refreshPosts }) => {
       setIsSharing(false);
       setShowShareModal(false);
       setShareCaption("");
+      setSharePrivacy("PUBLIC");
+      setShowOptionsMenu(false);
 
       // Show success message
       alert("Bài viết đã được chia sẻ thành công!");
@@ -263,7 +266,7 @@ const Post = ({ postId,refreshPosts }) => {
 
     try {
       await axios.post(
-        `${API_URL}/api/posts/${postId}/comment`,
+        `${API_URL}/api/posts/post/${postId}/comment`,
         { userId, comment },
         {
           headers: {
@@ -344,6 +347,21 @@ const Post = ({ postId,refreshPosts }) => {
               minute: "2-digit",
             })}
           </span>
+          <span className="p-privacy-icon" title={
+              post.postPrivacy === "PUBLIC" 
+                ? "Công khai" 
+                : post.postPrivacy === "FRIENDS" 
+                  ? "Bạn bè" 
+                  : "Chỉ mình tôi"
+            }>
+              {post.postPrivacy === "PUBLIC" ? (
+                <FontAwesomeIcon icon={faGlobe} />
+              ) : post.postPrivacy === "FRIENDS" ? (
+                <FontAwesomeIcon icon={faUsers} />
+              ) : (
+                <FontAwesomeIcon icon={faLock} />
+              )}
+            </span>
         </div>
 
         {canModifyPost && (
@@ -509,13 +527,13 @@ const Post = ({ postId,refreshPosts }) => {
               className="p-emoji-button"
               onClick={() => setShowCommentEmojiPicker(!showCommentEmojiPicker)}
             >
-              <FontAwesomeIcon icon={faSmile} />
-            </button>
-            {showCommentEmojiPicker && (
-              <div className="p-emoji-picker-popup">
-                <EmojiPicker onEmojiClick={onCommentEmojiClick} />
-              </div>
-            )}
+            <FontAwesomeIcon icon={faSmile} />
+          </button>
+          {showCommentEmojiPicker && (
+            <div className="p-emoji-picker-popup">
+              <EmojiPicker onEmojiClick={onCommentEmojiClick} />
+            </div>
+          )}
           <button onClick={handleAddComment}>Gửi</button>
         </div>
       </div>

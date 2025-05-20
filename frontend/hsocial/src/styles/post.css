@@ -532,3 +532,20 @@
 .p-comment-form button:hover {
   background-color: #166fe5;
 }
+
+.p-post-time-privacy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #65676b;
+}
+
+.p-privacy-icon {
+  color: #65676b;
+  font-size: 0.8rem;
+}
+
+.p-privacy-icon svg {
+  margin-left: 4px;
+}

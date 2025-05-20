@@ -29,4 +29,8 @@ public class SharedPostService {
     public Optional<SharedPost> findById(Long sharedPostId) {
         return sharedPostRepository.findById(sharedPostId);
     }
+
+    public void deleteSharedPost(SharedPost sharedPost) {
+        sharedPostRepository.delete(sharedPost);
+    }
 }

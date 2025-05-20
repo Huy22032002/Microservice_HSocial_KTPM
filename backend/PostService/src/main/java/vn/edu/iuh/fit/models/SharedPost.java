@@ -11,6 +11,7 @@ import lombok.Setter;
 import vn.edu.iuh.fit.enums.Privacy;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -38,5 +39,8 @@ public class SharedPost{
     private LocalDateTime sharedTime;
 
     @Enumerated(EnumType.STRING)
-    private Privacy postPrivacy;
+    private Privacy sharedPrivacy;
+
+    @OneToMany(mappedBy = "sharedPost")
+    private List<Comment> comments;
 }

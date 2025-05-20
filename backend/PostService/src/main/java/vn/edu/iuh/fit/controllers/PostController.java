@@ -326,10 +326,11 @@ public class PostController {
         }
     }
 
-    @PostMapping("/{postId}/share/{userId}")
+    @PostMapping("/{postId}/share/{userId}/{privacy}")
     public ResponseEntity<?> sharePost(
             @PathVariable Long postId,
             @PathVariable int userId,
+            @PathVariable String privacy,
             @RequestBody(required = false) Map<String, Object> payload
     ) {
         try {
@@ -351,6 +352,7 @@ public class PostController {
             sharedPost.setPost(post);
             sharedPost.setUserId(userId);
             sharedPost.setSharedTime(LocalDateTime.now());
+            sharedPost.setSharedPrivacy(Privacy.valueOf(privacy));
 
             // Add caption if provided
             if (payload != null && payload.containsKey("caption")) {
@@ -424,7 +426,7 @@ public class PostController {
     }
 
 
-    @PostMapping("/{postId}/comment")
+    @PostMapping("/post/{postId}/comment")
     public ResponseEntity<?> addCommentToPost(
             @PathVariable Long postId,
             @RequestBody Map<String, Object> payload
@@ -453,6 +455,44 @@ public class PostController {
 
             post.getComments().add(comment);
             postService.savePost(post);
+
+            commentService.saveComment(comment);
+
+            return ResponseEntity.ok("Bình luận đã được thêm.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi thêm bình luận: " + e.getMessage());
+        }
+    }
+
+    //thêm comment cho sharedPost
+    @PostMapping("/shared/{sharedPostId}/comment")
+    public ResponseEntity<?> addCommentToSharedPost(
+            @PathVariable Long sharedPostId,
+            @RequestBody Map<String, Object> payload
+    ) {
+        try {
+            Integer userId = (Integer) payload.get("userId");
+            String commentText = (String) payload.get("comment");
+
+            if (commentText == null || commentText.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Nội dung bình luận không được để trống.");
+            }
+
+            Optional<SharedPost> optionalSharedPost = sharedPostService.findById(sharedPostId);
+            if (optionalSharedPost.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy bài viết.");
+            }
+
+            SharedPost sharedPost = optionalSharedPost.get();
+
+            Comment comment = new Comment();
+            comment.setContent(commentText);
+            comment.setUserId(userId);
+            comment.setSharedPost(sharedPost);
+            comment.setCreatedAt(LocalDateTime.now());
+
+            sharedPost.getComments().add(comment);
+            sharedPostService.saveSharedPost(sharedPost);
 
             commentService.saveComment(comment);
 
@@ -570,5 +610,90 @@ public class PostController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(sharedPost.get());
+    }
+
+    //delete sharedPost by id
+    @Transactional
+    @DeleteMapping("/shared/{sharedPostId}")
+    public ResponseEntity<?> deleteSharedPost(@PathVariable Long sharedPostId) {
+        try {
+            // First delete all comments
+            commentService.deleteAllCommentsBySharedPostId(sharedPostId);
+
+            // Finally delete the post
+            sharedPostService.findById(sharedPostId).ifPresent(sharedPost -> {
+                Post post = sharedPost.getPost();
+                post.getSharedPosts().remove(sharedPost);
+                postService.savePost(post);
+            });
+            sharedPostService.findById(sharedPostId).ifPresent(sharedPost -> {
+                sharedPostService.deleteSharedPost(sharedPost);
+            });
+
+            return ResponseEntity.ok("Bài viết đã được xóa thành công");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi xóa bài viết: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/shared/{sharedPostId}/privacy")
+    public ResponseEntity<?> updateSharedPostPrivacy(@PathVariable Long sharedPostId, @RequestBody Map<String, String> payload) {
+        try {
+            String privacy = payload.get("privacy");
+
+            if (privacy == null || privacy.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Quyền riêng tư không được để trống.");
+            }
+
+            // Kiểm tra giá trị privacy hợp lệ
+            if (!privacy.equals("PUBLIC") && !privacy.equals("FRIENDS") && !privacy.equals("PRIVATE")) {
+                return ResponseEntity.badRequest().body("Giá trị quyền riêng tư không hợp lệ.");
+            }
+
+            Optional<SharedPost> optionalSharedPost = sharedPostService.findById(sharedPostId);
+            if (optionalSharedPost.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy bài viết.");
+            }
+
+            SharedPost sharedPost = optionalSharedPost.get();
+            sharedPost.setSharedPrivacy(Privacy.valueOf(privacy));
+            SharedPost updatedSharedPost = sharedPostService.saveSharedPost(sharedPost);
+
+            return ResponseEntity.ok(updatedSharedPost);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi cập nhật quyền riêng tư bài viết: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/shared/{sharedPostId}/edit")
+    public ResponseEntity<?> editSharedPost(@PathVariable Long sharedPostId, @RequestBody Map<String, String> payload) {
+        try {
+            String editedContent = payload.get("content");
+
+            if (editedContent == null || editedContent.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Nội dung bài viết không được để trống.");
+            }
+
+            Optional<SharedPost> optionalSharedPost = sharedPostService.findById(sharedPostId);
+            if (optionalSharedPost.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy bài viết.");
+            }
+
+            SharedPost sharedPost = optionalSharedPost.get();
+            Post post = sharedPost.getPost();
+            Content content = post.getContent();
+            content.setText(editedContent);
+
+            contentService.saveContent(content);
+            post.setContent(content);
+            Post updatedPost = postService.savePost(post);
+
+            return ResponseEntity.ok(updatedPost);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi khi cập nhật bài viết: " + e.getMessage());
+        }
     }
 }

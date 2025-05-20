@@ -29,4 +29,9 @@ public class Comment {
     @JoinColumn(name = "post_id")
     @JsonIgnore
     private Post post;
+
+    @ManyToOne
+    @JoinColumn(name = "shared_post_id")
+    @JsonIgnore
+    private SharedPost sharedPost;
 }

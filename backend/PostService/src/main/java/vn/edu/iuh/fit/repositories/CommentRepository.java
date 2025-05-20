@@ -16,4 +16,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, JpaSpec
     @Modifying
     @Query(value = "DELETE FROM Comment c WHERE c.post.postId = :postId")
     void deleteAllByPostId(long postId);
+
+    @Modifying
+    @Query(value = "DELETE FROM Comment c WHERE c.sharedPost.sharedPostId = :sharedPostId")
+    void deleteAllBySharedPostId(Long sharedPostId);
 }

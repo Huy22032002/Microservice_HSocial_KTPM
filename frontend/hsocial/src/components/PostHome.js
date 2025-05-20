@@ -1167,7 +1167,7 @@ const PostHome = () => {
                 </div>
               )}
             </div>
-            
+
             <div className="privacy-selector">
               <div
                 className="privacy-display"
@@ -1261,12 +1261,13 @@ const PostHome = () => {
                         <Post
                           key={`post-${post.id}`}
                           postId={post.id}
-                          refreshPosts={refreshAfterShare} // Sử dụng hàm mới
+                          refreshPosts={refreshAfterShare} 
                         />
                       ) : (
                         <SharedPostView
                           key={`shared-${post.id}`}
                           sharedPostId={post.id}
+                          refreshPosts={refreshAfterShare}
                         />
                       )
                     )}
