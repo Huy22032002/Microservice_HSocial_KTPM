@@ -18,7 +18,7 @@ import { useSelector } from "react-redux";
 import { faFilter, faUser } from "@fortawesome/free-solid-svg-icons";
 import ProfileMenu from "../components/ProfileMenu";
 import ProfileImage from "../components/ProfileImage";
-
+import { checkOrCreate } from "../api/chatApi";
 const AnotherUserProfile = () => {
   const { userId } = useParams();
   const [userDetails, setUserDetails] = useState(null);
@@ -147,7 +147,8 @@ const AnotherUserProfile = () => {
       alert("Huỷ kết bạn thành công!");
     }
   };
-  const handleBtnChat = () => {
+  const handleBtnChat = async () => {
+    await checkOrCreate(userIdRedux, userId);
     navigate(`/chat`);
   };
 

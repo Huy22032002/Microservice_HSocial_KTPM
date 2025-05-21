@@ -5,7 +5,7 @@ import styles from "../styles/FriendComponent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMessage } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
-
+import { checkOrCreate } from "../api/chatApi";
 const FriendComponent = () => {
   const [friends, setFriends] = useState([]);
   const userIdRedux = useSelector((state) => state.user.userId);
@@ -30,8 +30,14 @@ const FriendComponent = () => {
   }, [userId, userIdRedux]);
 
   const navigate = useNavigate();
-  const handleBtnChat = () => {
-    navigate(`/chat`);
+
+  const handleBtnChat = async (friendId) => {
+    try {
+      await checkOrCreate(checkUser(), friendId);
+      navigate("/chat");
+    } catch (err) {
+      console.error("Lỗi tạo cuộc trò chuyện:", err);
+    }
   };
 
   const handleBtnProfile = (friendId) => {
@@ -63,7 +69,7 @@ const FriendComponent = () => {
                 {f.name}
               </p>
               <button
-                onClick={handleBtnChat}
+                onClick={() => handleBtnChat(f.friendId)}
                 className={[styles.headerInfoBtn, styles.btnChat].join(" ")}
               >
                 <FontAwesomeIcon

@@ -13,10 +13,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ChatHandler extends TextWebSocketHandler {
 
-    // Map userId -> List of sessions (support multi-tab or multi-device)
+    // lưu tất cả session của 1 user (hỗ trợ đa nen tảng sau này)
     private final Map<String, Set<WebSocketSession>> userSessions = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    //lấy userID từ param, add session và userSessions de quản lý
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String userId = getUserIdFromSession(session);
@@ -36,16 +37,6 @@ public class ChatHandler extends TextWebSocketHandler {
 
         String senderId = jsonNode.get("sender").asText();
         String receiverId = jsonNode.get("receivers").get(0).asText();
-
-//        String jsonResponse = objectMapper.writeValueAsString(Map.of(
-//                "id", id,
-//                "conversationId", conversationId,
-//                "sender", senderId,
-//                "receiver", receiverId,
-//                "content", content,
-//                "status", status,
-//                "createdAt", createdAt
-//        ));
 
         // Send to sender
         sendToUser(senderId, message.getPayload());

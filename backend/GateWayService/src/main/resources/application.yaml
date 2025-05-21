@@ -17,32 +17,82 @@ spring:
           uri: http://localhost:8085
           predicates:
             - Path=/api/userdetails/**, /api/userStatus/**, /api/friends/**
+          filters:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, INTERNAL_SERVER_ERROR
+                methods: GET, POST
+                backoff:
+                  firstBackoff: 100ms
+                  maxBackoff: 500ms
+                  factor: 2
+                  basedOnPreviousValue: true
 
         - id: AuthService
           uri: http://localhost:8081
           predicates:
             - Path=/auth/**, /api/users/**, /api/messageQueue/**
           filters:
-            - AddRequestHeader=X-Request-Foo, Bar
-
+#            - AddRequestHeader=X-Request-Foo, Bar
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, INTERNAL_SERVER_ERROR
+                methods: GET, POST
+                backoff:
+                  firstBackoff: 100ms
+                  maxBackoff: 500ms
+                  factor: 2
+                  basedOnPreviousValue: true
         - id: ChatService
           uri: http://localhost:8082
           predicates:
             - Path=/api/conversations/**, /api/messages/**
+          filters:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, INTERNAL_SERVER_ERROR
+                methods: GET, POST
+                backoff:
+                  firstBackoff: 100ms
+                  maxBackoff: 500ms
+                  factor: 2
+                  basedOnPreviousValue: true
 
         - id: PostService
           uri: http://localhost:8083
           predicates:
             - Path=/api/posts/**
           filters:
-            - AddRequestHeader=X-Request-Foo, Bar
-
+#            - AddRequestHeader=X-Request-Foo, Bar
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, INTERNAL_SERVER_ERROR
+                methods: GET, POST
+                backoff:
+                  firstBackoff: 100ms
+                  maxBackoff: 500ms
+                  factor: 2
+                  basedOnPreviousValue: true
         - id: NotiService
           uri: http://localhost:8084
           predicates:
             - Path=/api/notifications/**
           filters:
-            - AddRequestHeader=X-Request-Foo, Bar
+#            - AddRequestHeader=X-Request-Foo, Bar
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, INTERNAL_SERVER_ERROR
+                methods: GET, POST
+                backoff:
+                  firstBackoff: 100ms
+                  maxBackoff: 500ms
+                  factor: 2
+                  basedOnPreviousValue: true
   kafka:
     bootstrap-servers: localhost:9092
     consumer:

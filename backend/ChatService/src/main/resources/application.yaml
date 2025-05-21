@@ -1,0 +1,20 @@
+resilience4j:
+  ratelimiter:
+    instances:
+      messageApi:
+        limitForPeriod: 3
+        limitRefreshPeriod: 10s
+        timeoutDuration: 0
+      conversationApi:
+        limitForPeriod: 5
+        limitRefreshPeriod: 10s
+        timeoutDuration: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - resilience4j.circuitbreakers
+          - resilience4j.ratelimiters

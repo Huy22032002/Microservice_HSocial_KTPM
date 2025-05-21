@@ -6,8 +6,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import vn.edu.iuh.fit.chatservice.dtos.UserDTO;
 import vn.edu.iuh.fit.chatservice.models.Conversation;
+import vn.edu.iuh.fit.chatservice.models.ConversationStatus;
+import vn.edu.iuh.fit.chatservice.models.ConversationType;
+import vn.edu.iuh.fit.chatservice.models.LastMessage;
 import vn.edu.iuh.fit.chatservice.repositories.ConversationRepository;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -25,12 +29,19 @@ public class ConversationService {
         return conversationRepository.findAll();
     }
 
-    public void createConversation(Conversation conversation){
-        conversationRepository.save(conversation);
-    }
-
     public Conversation checkConversationExist(String userId, String senderId) {
-        return conversationRepository.findByTwoParticipants(userId, senderId);
+        Conversation conversation = conversationRepository.findByTwoParticipants(userId, senderId);
+        if (conversation == null) {
+            Conversation newConversation = new Conversation();
+            newConversation.setType(ConversationType.SINGLE);
+            newConversation.setStatus(ConversationStatus.ACTIVE);
+            LastMessage lastMessage = new LastMessage("", null);
+            newConversation.setLastMessage(lastMessage);
+            newConversation.setParticipants(List.of(userId, senderId));
+            newConversation.setUpdatedAt(Instant.now());
+            return conversationRepository.save(newConversation);
+        }
+        return conversation;
     }
 
     public void updateConversation(Conversation conversation) {

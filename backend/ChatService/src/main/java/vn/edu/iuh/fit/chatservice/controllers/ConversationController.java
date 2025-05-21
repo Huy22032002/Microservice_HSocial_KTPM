@@ -1,5 +1,6 @@
 package vn.edu.iuh.fit.chatservice.controllers;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,6 @@ import vn.edu.iuh.fit.chatservice.models.Conversation;
 import vn.edu.iuh.fit.chatservice.services.ConversationService;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,11 +18,15 @@ public class ConversationController {
     @Autowired
     private ConversationService conversationService;
 
-    @PostMapping
-    public ResponseEntity<?> createConversation(@RequestBody Conversation conversation){
+    @PostMapping("/checkOrCreate")
+    public ResponseEntity<?> createConversation(@RequestParam String user1, @RequestParam String user2) {
         try {
-            conversationService.createConversation(conversation);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            Conversation conv = conversationService.checkConversationExist(user1, user2);
+            if (conv != null) {
+                return ResponseEntity.status(HttpStatus.OK).body(conv); // đã tồn tại
+            } else {
+                return ResponseEntity.status(HttpStatus.CREATED).build(); // vừa tạo
+            }
         }catch (Exception e){
             return ResponseEntity.status(500).body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
@@ -44,6 +48,7 @@ public class ConversationController {
     }
 
     @GetMapping
+    @RateLimiter(name = "conversationApi")
     public ResponseEntity<?> getAll(){
         List<Conversation> lstConversation = conversationService.getAllConversations();
         if(lstConversation.isEmpty()){
@@ -51,6 +56,7 @@ public class ConversationController {
         }
         return ResponseEntity.ok(lstConversation);
     }
+    @RateLimiter(name = "conversationApi")
     @GetMapping("/{userId}")
     public ResponseEntity<?> getAllConversationsOfUser( @PathVariable String userId) {
         try {

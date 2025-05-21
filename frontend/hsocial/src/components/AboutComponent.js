@@ -22,6 +22,7 @@ const AboutComponent = () => {
 
   const getUserDetail = async () => {
     const data = await fetchUserDetail(checkUser());
+    console.log(data);
     setUserDetail(data);
   };
 

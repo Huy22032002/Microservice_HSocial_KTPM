@@ -25,6 +25,7 @@ public class UserDetailController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createUserDetail(@RequestBody UserDetail userDetail) {
+
         try {
             UserDetail newUserDetail = userDetailService.create(userDetail);
             return ResponseEntity.status(201).body(newUserDetail);

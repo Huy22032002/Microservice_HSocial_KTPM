@@ -36,6 +36,11 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-oauth2-resource-server
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '3.4.3'
+
+    //resilence4j
+    implementation "io.github.resilience4j:resilience4j-spring-boot3:2.1.0"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-aop"
 }
 
 tasks.named('test') {
