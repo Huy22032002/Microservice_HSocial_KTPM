@@ -5,7 +5,7 @@ import SignUp from "./screens/signup";
 import Home from "./screens/home";
 import HomePage from "./screens/HomePage";
 import Chat from "./screens/ChatWebSocket";
-import PostHome from "./components/PostHome";
+import PostHome from "./screens/PostHome";
 import Profile from "./screens/Profile";
 import AnotherUserProfile from "./screens/AnotherUserProfile";
 import ImagesComponent from "./components/ImagesComponent";

@@ -175,16 +175,17 @@ const SharedPostView = ({ sharedPostId, refreshPosts }) => {
         />
         <div className={styles.shareUserInfo}>
           <h3 className={styles.shareUserName}>{sharingUser.fullname}</h3>
-          <span className={styles.shareTime}>
-            {new Date(sharedPostData.sharedTime).toLocaleString("vi-VN", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </span>
-          <span className={styles.privacyIcon}>
+          <div className={styles.timeAndPrivacy}>
+            <span className={styles.shareTime}>
+              {new Date(sharedPostData.sharedTime).toLocaleString("vi-VN", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+            <span className={styles.privacyIcon}>
               {sharedPostData.privacy === "PUBLIC" ? (
                 <FontAwesomeIcon icon={faGlobe} title="Công khai" />
               ) : sharedPostData.privacy === "FRIENDS" ? (
@@ -193,6 +194,7 @@ const SharedPostView = ({ sharedPostId, refreshPosts }) => {
                 <FontAwesomeIcon icon={faLock} title="Chỉ mình tôi" />
               )}
             </span>
+          </div>
         </div>
         
         {/* Thêm menu tùy chọn */}

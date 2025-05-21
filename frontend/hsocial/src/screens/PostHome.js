@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import "../styles/PostHome.css";
-import { fetchUserDetail } from "../api/userApi";
-import Post from "./post.js";
+import { fetchUserDetail } from "../api/userApi.js";
+import Post from "../components/post.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faImage,
@@ -24,9 +24,9 @@ import {
   faSmile,
 } from "@fortawesome/free-solid-svg-icons";
 import BannerHome from "../components/BannerHome.js";
-import ListChatFriend from "./ListChatFriend.js";
-import SharedPostView from "./SharedPostView";
-import { containsBannedWords } from "./BannedWords"; // Import banned words utility
+import ListChatFriend from "../components/ListChatFriend.js";
+import SharedPostView from "../components/SharedPostView.js";
+import { containsBannedWords } from "../components/BannedWords.js"; // Import banned words utility
 import EmojiPicker from 'emoji-picker-react';
 
 const PostHome = () => {

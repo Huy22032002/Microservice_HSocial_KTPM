@@ -87,7 +87,7 @@ export const commentOnPost = async (postId, userId, comment) => {
 
 export const fetchPostsUser = async (user_id) => {
   try {
-    const response = await axios.get(`${API_URL}/posts/listPost/${user_id}`, {
+    const response = await axios.get(`${API_URL}/api/posts/listPost/${user_id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
