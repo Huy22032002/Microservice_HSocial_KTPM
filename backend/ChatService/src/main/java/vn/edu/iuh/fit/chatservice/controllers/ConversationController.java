@@ -18,11 +18,15 @@ public class ConversationController {
     @Autowired
     private ConversationService conversationService;
 
-    @PostMapping
-    public ResponseEntity<?> createConversation(@RequestBody Conversation conversation){
+    @PostMapping("/checkOrCreate")
+    public ResponseEntity<?> createConversation(@RequestParam String user1, @RequestParam String user2) {
         try {
-            conversationService.createConversation(conversation);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            Conversation conv = conversationService.checkConversationExist(user1, user2);
+            if (conv != null) {
+                return ResponseEntity.status(HttpStatus.OK).body(conv); // đã tồn tại
+            } else {
+                return ResponseEntity.status(HttpStatus.CREATED).build(); // vừa tạo
+            }
         }catch (Exception e){
             return ResponseEntity.status(500).body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }

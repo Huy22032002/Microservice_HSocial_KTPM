@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
 import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { fetchConversations, fetchMessages, postMessage } from "../api/chatApi";
 import { fetchUserDetail, fetchUser } from "../api/userApi";
 import Header from "../components/header";
@@ -252,167 +252,176 @@ export default function Chat() {
             ))}
           </div>
         </div>
-        {/* center container     */}
-        <div className={styles.chatBox}>
-          <div>
-            <button
-              className={styles.chatBoxHeader}
-              onClick={() => navigate(`/anotherUserProfile/${otherUserId}`)}
-            >
-              <div className={styles.imgChatBoxHeader}>
-                <img
-                  src={user?.avatar || "https://imgur.com/kEcv3Jx.png"}
-                  alt="avatar user"
-                  style={{ width: "40px", height: "40px" }}
-                />
-              </div>
-              <div className={styles.userInfoChatBoxHeader}>
-                <h4
-                  style={{
-                    color: "black",
-                    fontSize: 20,
-                    margin: 0,
-                    padding: 0,
-                  }}
+        {currentConversationId ? (
+          <>
+            {" "}
+            {/* center container     */}
+            <div className={styles.chatBox}>
+              <div>
+                <button
+                  className={styles.chatBoxHeader}
+                  onClick={() => navigate(`/anotherUserProfile/${otherUserId}`)}
                 >
-                  {currentConversationName || "Receiver Name"}
-                </h4>
-                <p
-                  style={{
-                    color: "rgba(105, 105, 105, 0.75)",
-                    fontSize: 14,
-                    margin: 0,
-                    padding: 0,
-                  }}
-                >
-                  Hoạt động 10 phút trước
-                </p>
-              </div>
-            </button>
-          </div>
-          <div className={styles.chatBoxContent}>
-            {messages.map((msg, index) => {
-              const isMyMessage = msg.sender.toString() === userId.toString();
-              return (
-                <div
-                  key={index}
-                  className={
-                    isMyMessage ? styles.myMessage : styles.otherMessage
-                  }
-                >
-                  <strong>
+                  <div className={styles.imgChatBoxHeader}>
                     <img
-                      src={
-                        isMyMessage
-                          ? msg.avatar ||
-                            require("../assets/default_avatar.png")
-                          : msg.avatar ||
-                            require("../assets/default_avatar.png")
-                      }
-                      alt="avatar"
-                      style={{
-                        width: "24px",
-                        height: "24px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        marginRight: "6px",
-                        verticalAlign: "middle",
-                      }}
+                      src={user?.avatar || "https://imgur.com/kEcv3Jx.png"}
+                      alt="avatar user"
+                      style={{ width: "40px", height: "40px" }}
                     />
-                  </strong>
-                  {msg.content}
-                </div>
-              );
-            })}
-          </div>
-          <div className={styles.chatBoxFooter}>
-            <button className={styles.btnTypeMessage}>
-              <FontAwesomeIcon icon={faImage} />
-            </button>
-            <button className={styles.btnTypeMessage}>
-              <FontAwesomeIcon icon={faIcons} />
-            </button>
-            <input
-              type="text"
-              value={message}
-              onChange={(event) => {
-                setMessage(event.target.value);
-              }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  handleSend();
-                }
-              }}
-              placeholder="Aa"
-              className={styles.inputSearch}
-            />
-
-            <button
-              className={styles.btnSendMessage}
-              onClick={handleSend}
-              tabIndex={0}
-              autoFocus
-            >
-              <FontAwesomeIcon icon={faPaperPlane} />
-            </button>
-          </div>
-        </div>
-        {/* right container */}
-        <div className={styles.chatInformation}>
-          <img
-            src={
-              otherUserDetail?.avatar || require("../assets/default_avatar.png")
-            }
-            alt="other user avatar"
-            style={{ width: 80, height: 80, borderRadius: 150 }}
-          />
-          <p style={{ color: "black", fontSize: 24, marginTop: "4px" }}>
-            {otherUserDetail?.fullname || "Tên người dùng"}
-          </p>
-          <p style={{ color: "gray", fontSize: 16, marginTop: "-16px" }}>
-            hoạt động
-          </p>
-          <div className={styles.btnContainerChatInformation}>
-            <div className={styles.containerBtnInfo}>
-              <button
-                onClick={() => {
-                  console.log(
-                    "sự kiện click trang cá nhân other user: ",
-                    otherUserId
+                  </div>
+                  <div className={styles.userInfoChatBoxHeader}>
+                    <h4
+                      style={{
+                        color: "black",
+                        fontSize: 20,
+                        margin: 0,
+                        padding: 0,
+                      }}
+                    >
+                      {currentConversationName || "Receiver Name"}
+                    </h4>
+                    <p
+                      style={{
+                        color: "rgba(105, 105, 105, 0.75)",
+                        fontSize: 14,
+                        margin: 0,
+                        padding: 0,
+                      }}
+                    >
+                      Hoạt động 10 phút trước
+                    </p>
+                  </div>
+                </button>
+              </div>
+              <div className={styles.chatBoxContent}>
+                {messages.map((msg, index) => {
+                  const isMyMessage =
+                    msg.sender.toString() === userId.toString();
+                  return (
+                    <div
+                      key={index}
+                      className={
+                        isMyMessage ? styles.myMessage : styles.otherMessage
+                      }
+                    >
+                      <strong>
+                        <img
+                          src={
+                            isMyMessage
+                              ? msg.avatar ||
+                                require("../assets/default_avatar.png")
+                              : msg.avatar ||
+                                require("../assets/default_avatar.png")
+                          }
+                          alt="avatar"
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                            marginRight: "6px",
+                            verticalAlign: "middle",
+                          }}
+                        />
+                      </strong>
+                      {msg.content}
+                    </div>
                   );
+                })}
+              </div>
+              <div className={styles.chatBoxFooter}>
+                <button className={styles.btnTypeMessage}>
+                  <FontAwesomeIcon icon={faImage} />
+                </button>
+                <button className={styles.btnTypeMessage}>
+                  <FontAwesomeIcon icon={faIcons} />
+                </button>
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(event) => {
+                    setMessage(event.target.value);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      handleSend();
+                    }
+                  }}
+                  placeholder="Aa"
+                  className={styles.inputSearch}
+                />
 
-                  navigate(`/anotherUserProfile/${otherUserId}`);
-                }}
-                className={styles.btnChatInfo}
-              >
-                <FontAwesomeIcon icon={faUser} />
-              </button>
-              <p
-                style={{
-                  color: "#000000",
-                  fontSize: 14,
-                  marginTop: "5px",
-                }}
-              >
-                Trang cá nhân
-              </p>
+                <button
+                  className={styles.btnSendMessage}
+                  onClick={handleSend}
+                  tabIndex={0}
+                  autoFocus
+                >
+                  <FontAwesomeIcon icon={faPaperPlane} />
+                </button>
+              </div>
             </div>
-            <div className={styles.containerBtnInfo}>
-              <button className={styles.btnChatInfo}>
-                <FontAwesomeIcon icon={faSearch} />
-              </button>
-              <p
-                style={{
-                  color: "#000",
-                  fontSize: 14,
-                  marginTop: "5px",
-                }}
-              >
-                Tìm kiếm
+            {/* right container */}
+            <div className={styles.chatInformation}>
+              <img
+                src={
+                  otherUserDetail?.avatar ||
+                  require("../assets/default_avatar.png")
+                }
+                alt="other user avatar"
+                style={{ width: 80, height: 80, borderRadius: 150 }}
+              />
+              <p style={{ color: "black", fontSize: 24, marginTop: "4px" }}>
+                {otherUserDetail?.fullname || "Tên người dùng"}
               </p>
+              <p style={{ color: "gray", fontSize: 16, marginTop: "-16px" }}>
+                hoạt động
+              </p>
+              <div className={styles.btnContainerChatInformation}>
+                <div className={styles.containerBtnInfo}>
+                  <button
+                    onClick={() => {
+                      console.log(
+                        "sự kiện click trang cá nhân other user: ",
+                        otherUserId
+                      );
+
+                      navigate(`/anotherUserProfile/${otherUserId}`);
+                    }}
+                    className={styles.btnChatInfo}
+                  >
+                    <FontAwesomeIcon icon={faUser} />
+                  </button>
+                  <p
+                    style={{
+                      color: "#000000",
+                      fontSize: 14,
+                      marginTop: "5px",
+                    }}
+                  >
+                    Trang cá nhân
+                  </p>
+                </div>
+                <div className={styles.containerBtnInfo}>
+                  <button className={styles.btnChatInfo}>
+                    <FontAwesomeIcon icon={faSearch} />
+                  </button>
+                  <p
+                    style={{
+                      color: "#000",
+                      fontSize: 14,
+                      marginTop: "5px",
+                    }}
+                  >
+                    Tìm kiếm
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        ) : (
+          <p>Vui lòng chọn 1 cuộc hội thoại</p>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { fetchUserDetail } from "../api/userApi";
+import { head } from "lodash";
 //lay userId tu Redux
 
 const CONVER_API = process.env.REACT_APP_CONVER_API_URL;
@@ -7,7 +8,6 @@ const MESSAGE_API = process.env.REACT_APP_MESSAGE_API_URL;
 
 export async function fetchConversations(userId) {
   const token = localStorage.getItem("token");
-
   try {
     const response = await axios.get(`${CONVER_API}/${userId}`, {
       headers: {
@@ -15,9 +15,18 @@ export async function fetchConversations(userId) {
         "Content-Type": "application/json",
       },
     });
+
     const data = response.data;
     console.log("data fetching conversations: ", data);
-    return data;
+
+    if (Array.isArray(data)) {
+      const sorted = data.sort(
+        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      );
+      return sorted;
+    }
+    console.warn("API trả về object lỗi:", data);
+    return [];
   } catch (error) {
     console.log(error);
     throw new Error("Error fetch list Conversation api: ", error.message);
@@ -98,4 +107,21 @@ export async function postMessage(
     console.log(`Error save message ${e}`);
   }
 }
-export async function getSingleConversation() {}
+export async function checkOrCreate(user1, user2) {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.post(
+      `${CONVER_API}/checkOrCreate?user1=${user1}&user2=${user2}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (er) {
+    console.error("Check or create error:", er);
+    throw er;
+  }
+}

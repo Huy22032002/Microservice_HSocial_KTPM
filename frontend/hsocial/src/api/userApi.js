@@ -128,8 +128,10 @@ export async function createUserDetail(id, fullname, gender, age) {
     const response = await axios.post(`${USER_DETAIL_API_URL}/create`, {
       id: Number(id),
       fullname: fullname,
-      age: age,
+      address: "",
+      age: Number(age),
       gender: gender === "1" ? true : false,
+      avatar: null,
     });
     return response.data;
   } catch (err) {

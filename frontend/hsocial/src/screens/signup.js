@@ -32,24 +32,28 @@ function SignUp() {
       !age
     ) {
       setError("All fields are required.");
-      alert("All fields are required.");
+      alert("Vui lòng nhập đủ thông tin!.");
       return;
     }
-    const data = await signUp(username, email, password, phone);
-    if (data) {
-      console.log("data create AuthService: ", data.id);
-      const userDetailData = await createUserDetail(
-        data.id,
-        fullName,
-        age,
-        gender
-      );
-      if (userDetailData) {
-        alert("Sign Up Successfully!");
-        navigate("/login", { state: { username: username } });
+    try {
+      const data = await signUp(username, email, password, phone);
+      if (data && data.id) {
+        const userDetailData = await createUserDetail(
+          data.id,
+          fullName,
+          gender,
+          age
+        );
+        if (userDetailData) {
+          alert("Sign Up Successfully!");
+          navigate("/login", { state: { username: username } });
+        }
+      } else {
+        setError("Đăng ký thất bại!");
       }
-    } else {
-      setError("Sign up failed. Please try again later.");
+    } catch (err) {
+      console.error("SignUp error: ", err);
+      setError(err.response?.data?.message || "Đky failed. lỗi server.");
     }
   };
 
@@ -81,7 +85,7 @@ function SignUp() {
           onChange={(event) => {
             setUsername(event.target.value);
           }}
-          placeholder="Username"
+          placeholder="Tên đăng nhập"
         ></input>
 
         <input
@@ -92,7 +96,7 @@ function SignUp() {
           onChange={(event) => {
             setPassword(event.target.value);
           }}
-          placeholder="Password"
+          placeholder="Mật khẩu"
         ></input>
 
         <input
@@ -112,7 +116,7 @@ function SignUp() {
           type="text"
           value={fullName}
           onChange={(event) => setFullName(event.target.value)}
-          placeholder="Họ tên"
+          placeholder="Họ và tên"
         />
 
         <select
@@ -132,13 +136,13 @@ function SignUp() {
           type="number"
           value={age}
           onChange={(event) => setAge(event.target.value)}
-          placeholder="Age"
+          placeholder="Tuổi"
         />
 
         <div className={styles.policy}>
           <input type="checkbox" required />
           <p>
-            I agree with <b>Privacy Policy</b> and <b>Terms of Use</b>{" "}
+            Tôi đồng ý <b>với các Chính sách</b> và <b>Điều khoản sử dụng</b>{" "}
           </p>
         </div>
 
