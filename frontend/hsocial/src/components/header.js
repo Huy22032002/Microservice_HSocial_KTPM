@@ -7,6 +7,7 @@ import { fetchNotifications, setAllNotiStatus } from "../api/notiApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import SearchUser from "./SearchUser";
+import ChatBot from "../screens/ChatBot";
 
 export default function Header() {
   const userId = useSelector((state) => state.user.userId);
@@ -32,12 +33,14 @@ export default function Header() {
       alert("Có lỗi xảy ra khi đăng xuất!");
     }
   };
-
+  const goToChatBot = () => {
+    navigate("/chatbot");
+  };
+  
   useEffect(() => {
     getAvatarAndNameFromUserDetail();
   }, [userId]);
 
-  // Effect for detecting clicks outside notification dropdown
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -47,11 +50,7 @@ export default function Header() {
         setShowNotifications(false);
       }
     }
-
-    // Add event listener
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Clean up
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -87,7 +86,6 @@ export default function Header() {
   const markAllAsRead = async () => {
     try {
       await setAllNotiStatus(userId);
-      // Update the local notifications array to mark all as read
       setNotifications((prevNotifications) =>
         prevNotifications.map((noti) => ({
           ...noti,
@@ -130,12 +128,41 @@ export default function Header() {
           {/* search */}
           <SearchUser />
         </div>
+        <div
+          className="ai-chatbot-button-container"
+          style={{ textAlign: "center", margin: "15px 0" }}
+        >
+          <button
+            className="ai-chatbot-button"
+            onClick={goToChatBot}
+            style={{
+              padding: "12px 20px",
+              backgroundColor: "#9c27b0", // Màu tím đồng nhất với màu avatar AI
+              color: "white",
+              border: "none",
+              borderRadius: "10px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+              transition: "all 0.3s ease",
+            }}
+          >
+            <span style={{ marginRight: "8px" }}>🤖</span>
+            Trò chuyện với AI HBot
+          </button>
+        </div>
+
         {userId ? (
           <div style={{ display: "flex", flexDirection: "row" }}>
             <h3 style={{ marginRight: "30px" }}>
               <Link to="/chat">Chat</Link>
             </h3>
-            <h3>
+            <h3 style={{ marginRight: "30px" }}>
               <Link to={`/profile/${userId}`}>Profile</Link>
             </h3>
           </div>

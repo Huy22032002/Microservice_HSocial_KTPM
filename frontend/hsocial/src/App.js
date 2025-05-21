@@ -13,6 +13,7 @@ import AboutComponent from "./components/AboutComponent";
 import FriendsComponent from "./components/FriendsComponent";
 import { Provider } from "react-redux";
 import { store } from "./redux/userSlice";
+import ChatBot from "./screens/ChatBot";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="chat" element={<Chat />} />
           <Route path="post" element={<PostHome />} />
+          <Route path="chatbot" element={<ChatBot />} />
           <Route path="profile/:userId" element={<Profile />}>
             <Route path="" />
             <Route path="images" element={<ImagesComponent />} />

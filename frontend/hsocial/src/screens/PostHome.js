@@ -27,7 +27,7 @@ import BannerHome from "../components/BannerHome.js";
 import ListChatFriend from "../components/ListChatFriend.js";
 import SharedPostView from "../components/SharedPostView.js";
 import { containsBannedWords } from "../components/BannedWords.js"; // Import banned words utility
-import EmojiPicker from 'emoji-picker-react';
+import EmojiPicker from "emoji-picker-react";
 
 const PostHome = () => {
   const [friends, setFriends] = useState([]);
@@ -508,9 +508,10 @@ const PostHome = () => {
       return;
     }
 
-    const { hasBannedWords, bannedWordsFound } = containsBannedWords(storyContent);
+    const { hasBannedWords, bannedWordsFound } =
+      containsBannedWords(storyContent);
     if (hasBannedWords) {
-      alert(`Story có chứa từ không phù hợp: ${bannedWordsFound.join(', ')}`);
+      alert(`Story có chứa từ không phù hợp: ${bannedWordsFound.join(", ")}`);
       return;
     }
 
@@ -603,9 +604,12 @@ const PostHome = () => {
       return;
     }
 
-    const { hasBannedWords, bannedWordsFound } = containsBannedWords(newContent);
+    const { hasBannedWords, bannedWordsFound } =
+      containsBannedWords(newContent);
     if (hasBannedWords) {
-      alert(`Nội dung có chứa từ không phù hợp: ${bannedWordsFound.join(', ')}`);
+      alert(
+        `Nội dung có chứa từ không phù hợp: ${bannedWordsFound.join(", ")}`
+      );
       return;
     }
 
@@ -1013,32 +1017,36 @@ const PostHome = () => {
               </div>
               {/* Story content */}
               <div className="story-viewer-content">
-                {stories[currentStoryIndex].content?.files &&
-                stories[currentStoryIndex].content.files[0]?.startsWith(
-                  "http"
-                ) ? (
-                  stories[currentStoryIndex].content.files[0].includes(
-                    ".mp4"
-                  ) ? (
-                    <video
-                      src={stories[currentStoryIndex].content.files[0]}
-                      className="story-viewer-media"
-                      autoPlay
-                      loop
-                      muted
-                    />
-                  ) : (
-                    <img
-                      src={stories[currentStoryIndex].content.files[0]}
-                      alt="Story"
-                      className="story-viewer-media"
-                    />
-                  )
-                ) : (
-                  <div className="story-viewer-text">
-                    {stories[currentStoryIndex].content?.text || ""}
+                {/* Media content */}
+                {stories[currentStoryIndex].content?.files && 
+                 stories[currentStoryIndex].content.files[0]?.startsWith("http") && (
+                  <div className="story-media-container">
+                    {stories[currentStoryIndex].content.files[0].includes(".mp4") ? (
+                      <video
+                        src={stories[currentStoryIndex].content.files[0]}
+                        className="story-viewer-media"
+                        autoPlay
+                        loop
+                        muted
+                      />
+                    ) : (
+                      <img
+                        src={stories[currentStoryIndex].content.files[0]}
+                        alt="Story"
+                        className="story-viewer-media"
+                      />
+                    )}
                   </div>
                 )}
+                
+                {/* Text content - positioned at bottom if media exists */}
+                {stories[currentStoryIndex].content?.text && (
+                  <div className={`story-viewer-text ${stories[currentStoryIndex].content?.files && 
+                    stories[currentStoryIndex].content.files[0]?.startsWith("http") ? 'with-media' : ''}`}>
+                    {stories[currentStoryIndex].content.text}
+                  </div>
+                )}
+                
                 {/* Like button và số lượt like */}
                 <div className="story-like-section">
                   <button
@@ -1096,120 +1104,122 @@ const PostHome = () => {
             </div>
           </div>
         )}
-        <div className="post-form">
-          <div className="post-form-header">
-            <img
-              src={currentUser.avatar || "https://via.placeholder.com/40"}
-              alt="User avatar"
-              className="user-avatar"
-            />
-            <div className="post-form-input">
-              <textarea
-                className="textarea"
-                placeholder={`${
-                  currentUser.fullname || "Bạn"
-                } ơi, bạn đang nghĩ gì?`}
-                value={newContent}
-                onChange={(e) => setNewContent(e.target.value)}
+        {/* Post creation section, chỉ hiển thị khi có userId */}
+        {userId && (
+          <div className="post-form">
+            <div className="post-form-header">
+              <img
+                src={currentUser.avatar || "https://via.placeholder.com/40"}
+                alt="User avatar"
+                className="user-avatar"
               />
-            </div>
-          </div>
-
-          {previewUrls.length > 0 && (
-            <div className="preview-container">
-              {previewUrls.map((url, index) => {
-                const file = files[index];
-                const isVideo = file.type.startsWith("video/");
-
-                return isVideo ? (
-                  <video
-                    key={index}
-                    src={url}
-                    className="media-preview"
-                    controls
-                  />
-                ) : (
-                  <img
-                    key={index}
-                    src={url}
-                    alt={`Preview ${index}`}
-                    className="media-preview"
-                  />
-                );
-              })}
-            </div>
-          )}
-
-          <div className="post-form-actions">
-            <label className="file-input-label">
-              <FontAwesomeIcon icon={faImage} className="icon" />
-              <span>Ảnh/Video</span>
-              <input
-                className="file-input"
-                type="file"
-                accept="image/*,video/*"
-                multiple
-                onChange={handleFileChange}
-              />
-            </label>
-
-            <div className="emoji-picker-container">
-              <button 
-                className="emoji-button"
-                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              >
-                <FontAwesomeIcon icon={faSmile} className="icon" />
-                <span>Emoji</span>
-              </button>
-              {showEmojiPicker && (
-                <div className="emoji-picker-popup">
-                  <EmojiPicker onEmojiClick={onEmojiClick} />
-                </div>
-              )}
-            </div>
-
-            <div className="privacy-selector">
-              <div
-                className="privacy-display"
-                onClick={() =>
-                  document.getElementById("privacy-select").click()
-                }
-              >
-                {getPrivacyIcon()}
-                <span>
-                  {postPrivacy === "PUBLIC"
-                    ? "Công khai"
-                    : postPrivacy === "FRIENDS"
-                    ? "Bạn bè"
-                    : "Riêng tư"}
-                </span>
+              <div className="post-form-input">
+                <textarea
+                  className="textarea"
+                  placeholder={`${
+                    currentUser.fullname || "Bạn"
+                  } ơi, bạn đang nghĩ gì?`}
+                  value={newContent}
+                  onChange={(e) => setNewContent(e.target.value)}
+                />
               </div>
-              <select
-                id="privacy-select"
-                className="privacy-select"
-                value={postPrivacy}
-                onChange={(e) => setPostPrivacy(e.target.value)}
-              >
-                <option value="PUBLIC">Công khai</option>
-                <option value="FRIENDS">Bạn bè</option>
-                <option value="PRIVATE">Riêng tư</option>
-              </select>
             </div>
 
-            <button
-              className={`post-button ${isSubmitting ? "submitting" : ""}`}
-              onClick={createPost}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <FontAwesomeIcon icon={faSpinner} spin />
-              ) : (
-                "Đăng"
-              )}
-            </button>
-          </div>
-        </div>
+            {previewUrls.length > 0 && (
+              <div className="preview-container">
+                {previewUrls.map((url, index) => {
+                  const file = files[index];
+                  const isVideo = file.type.startsWith("video/");
 
+                  return isVideo ? (
+                    <video
+                      key={index}
+                      src={url}
+                      className="media-preview"
+                      controls
+                    />
+                  ) : (
+                    <img
+                      key={index}
+                      src={url}
+                      alt={`Preview ${index}`}
+                      className="media-preview"
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="post-form-actions">
+              <label className="file-input-label">
+                <FontAwesomeIcon icon={faImage} className="icon" />
+                <span>Ảnh/Video</span>
+                <input
+                  className="file-input"
+                  type="file"
+                  accept="image/*,video/*"
+                  multiple
+                  onChange={handleFileChange}
+                />
+              </label>
+
+              <div className="emoji-picker-container">
+                <button
+                  className="emoji-button"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                >
+                  <FontAwesomeIcon icon={faSmile} className="icon" />
+                  <span>Emoji</span>
+                </button>
+                {showEmojiPicker && (
+                  <div className="emoji-picker-popup">
+                    <EmojiPicker onEmojiClick={onEmojiClick} />
+                  </div>
+                )}
+              </div>
+
+              <div className="privacy-selector">
+                <div
+                  className="privacy-display"
+                  onClick={() =>
+                    document.getElementById("privacy-select").click()
+                  }
+                >
+                  {getPrivacyIcon()}
+                  <span>
+                    {postPrivacy === "PUBLIC"
+                      ? "Công khai"
+                      : postPrivacy === "FRIENDS"
+                      ? "Bạn bè"
+                      : "Riêng tư"}
+                  </span>
+                </div>
+                <select
+                  id="privacy-select"
+                  className="privacy-select"
+                  value={postPrivacy}
+                  onChange={(e) => setPostPrivacy(e.target.value)}
+                >
+                  <option value="PUBLIC">Công khai</option>
+                  <option value="FRIENDS">Bạn bè</option>
+                  <option value="PRIVATE">Riêng tư</option>
+                </select>
+              </div>
+
+              <button
+                className={`post-button ${isSubmitting ? "submitting" : ""}`}
+                onClick={createPost}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <FontAwesomeIcon icon={faSpinner} spin />
+                ) : (
+                  "Đăng"
+                )}
+              </button>
+            </div>
+          </div>
+        )}
         <div className="posts-container">
           {loading ? (
             <div className="loading-container">
@@ -1261,7 +1271,7 @@ const PostHome = () => {
                         <Post
                           key={`post-${post.id}`}
                           postId={post.id}
-                          refreshPosts={refreshAfterShare} 
+                          refreshPosts={refreshAfterShare}
                         />
                       ) : (
                         <SharedPostView

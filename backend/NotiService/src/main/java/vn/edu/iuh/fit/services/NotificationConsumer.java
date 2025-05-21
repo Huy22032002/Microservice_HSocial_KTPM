@@ -35,6 +35,7 @@ public class NotificationConsumer {
 
         // Chuyển thành entity và lưu vào DB
         Notification notification = notificationDto.toEntity();
+        logger.info("Converted to entity: {}", notification);
         notification.setType(NotificationType.POST);
         notificationRepository.save(notification);
         logger.info("Notification saved: {}", notification);

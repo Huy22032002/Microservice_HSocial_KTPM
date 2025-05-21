@@ -172,6 +172,10 @@ public class PostController {
         allPosts.sort((post1, post2) -> post2.getCreatedAt().compareTo(post1.getCreatedAt()));
         //lọc tất cả bài viết, chỉ lấy post có isStory = true
         allPosts.removeIf(post -> post.isStory() == false);
+        //chỉ lấy bài viêt trong 24h
+        LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
+        allPosts.removeIf(post -> post.getCreatedAt().isBefore(oneDayAgo));
+
         return ResponseEntity.ok(allPosts);
     }
     //list post by userId
