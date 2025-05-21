@@ -1,5 +1,6 @@
 package vn.edu.iuh.fit.chatservice.controllers;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,6 @@ import vn.edu.iuh.fit.chatservice.models.Conversation;
 import vn.edu.iuh.fit.chatservice.services.ConversationService;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -48,6 +48,7 @@ public class ConversationController {
     }
 
     @GetMapping
+    @RateLimiter(name = "conversationApi")
     public ResponseEntity<?> getAll(){
         List<Conversation> lstConversation = conversationService.getAllConversations();
         if(lstConversation.isEmpty()){
@@ -55,6 +56,7 @@ public class ConversationController {
         }
         return ResponseEntity.ok(lstConversation);
     }
+    @RateLimiter(name = "conversationApi")
     @GetMapping("/{userId}")
     public ResponseEntity<?> getAllConversationsOfUser( @PathVariable String userId) {
         try {

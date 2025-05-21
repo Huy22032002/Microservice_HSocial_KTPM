@@ -25,6 +25,7 @@ export default function Chat() {
   //message
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [error, setError] = useState(null);
 
   //luu danh sach conversations
   const [conversations, setConversations] = useState([]);
@@ -128,9 +129,16 @@ export default function Chat() {
     if (!currentConversation) return;
     if (message.trim() !== "" && socket && user) {
       try {
+        setError(null);
+
         const data = await handlePostMessage(message);
-        socket.send(JSON.stringify(data.message));
-        setMessage("");
+
+        if (data && data.message) {
+          socket.send(JSON.stringify(data.message));
+          setMessage("");
+        } else {
+          alert("Bạn đã gửi quá nhiều tin nhắn cùng lúc, thử lại sau!");
+        }
       } catch (error) {
         console.log("Error sending message:", error);
       }
@@ -252,6 +260,7 @@ export default function Chat() {
             ))}
           </div>
         </div>
+        {error && <div style={{ color: "red", marginTop: "8px" }}>{error}</div>}
         {currentConversationId ? (
           <>
             {" "}

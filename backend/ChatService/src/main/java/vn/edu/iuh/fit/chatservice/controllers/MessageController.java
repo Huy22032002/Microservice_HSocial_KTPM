@@ -1,5 +1,6 @@
 package vn.edu.iuh.fit.chatservice.controllers;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class MessageController {
     private ConversationService conversationService;
 
     @PostMapping("/save-message")
+    @RateLimiter(name = "messageApi")
     public ResponseEntity<?> saveMessage(@RequestBody Message message) {
         try {
             Conversation conversation = conversationService.getConversationById(message.getConversationId(), message.getSender());

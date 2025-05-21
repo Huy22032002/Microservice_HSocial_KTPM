@@ -1,7 +1,5 @@
 import axios from "axios";
 import { fetchUserDetail } from "../api/userApi";
-import { head } from "lodash";
-//lay userId tu Redux
 
 const CONVER_API = process.env.REACT_APP_CONVER_API_URL;
 const MESSAGE_API = process.env.REACT_APP_MESSAGE_API_URL;
@@ -28,8 +26,12 @@ export async function fetchConversations(userId) {
     console.warn("API trả về object lỗi:", data);
     return [];
   } catch (error) {
-    console.log(error);
-    throw new Error("Error fetch list Conversation api: ", error.message);
+    if (error.response && error.response.status === 429) {
+      alert("Bạn đang tải quá nhiều tin nhắn. Vui lòng chờ rồi thử lại.");
+    } else {
+      console.error(`Lỗi khi tải tin nhắn: ${error}`);
+    }
+    return [];
   }
 }
 export const fetchMessages = async (id) => {
@@ -56,7 +58,12 @@ export const fetchMessages = async (id) => {
 
     return messages;
   } catch (error) {
-    console.log(`error fetch messages: ${error}`);
+    if (error.response && error.response.status === 429) {
+      alert("Bạn đang tải quá nhiều tin nhắn. Vui lòng chờ rồi thử lại.");
+    } else {
+      console.error(`Lỗi khi tải tin nhắn: ${error}`);
+    }
+    return [];
   }
 };
 export async function postMessage(
@@ -103,8 +110,14 @@ export async function postMessage(
       }
     );
     return response.data;
-  } catch (e) {
-    console.log(`Error save message ${e}`);
+  } catch (error) {
+    if (error.response && error.response.status === 429) {
+      // Lỗi vượt quá rate limit
+      throw new Error(
+        "Bạn đã gửi quá nhiều yêu cầu, vui lòng chờ một chút rồi thử lại."
+      );
+    }
+    throw error;
   }
 }
 export async function checkOrCreate(user1, user2) {
