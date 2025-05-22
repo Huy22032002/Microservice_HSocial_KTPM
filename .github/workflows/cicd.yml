@@ -22,14 +22,11 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Cấp quyền thực thi cho gradlew
+      - name: Grant execute permission for gradlew
         run: |
-          chmod +x ./backend/AuthService/gradlew
-          chmod +x ./backend/GatewayService/gradlew
-          chmod +x ./backend/ChatService/gradlew
-          chmod +x ./backend/NotiService/gradlew
-          chmod +x ./backend/PostService/gradlew
-          chmod +x ./backend/UserService/gradlew
+          find ./backend -name "gradlew" -type f -exec chmod +x {} \;
+          ls -la ./backend/*/gradlew || echo "Một số thư mục không có file gradlew"
+
       # Cache Gradle dependencies để tăng tốc build
       - name: Cache Gradle packages
         uses: actions/cache@v3
@@ -43,28 +40,58 @@ jobs:
 
       # Bước build và test các service
       - name: Build và test AuthService
-        working-directory: ./backend/AuthService
-        run: ./gradlew build -x test
+        run: |
+          if [ -f "./backend/AuthService/gradlew" ]; then
+            cd ./backend/AuthService && ./gradlew build -x test
+          else
+            echo "File gradlew không tồn tại trong AuthService"
+            exit 1
+          fi
 
       - name: Build và test GatewayService
-        working-directory: ./backend/GatewayService
-        run: ./gradlew build -x test
+        run: |
+          if [ -f "./backend/GatewayService/gradlew" ]; then
+            cd ./backend/GatewayService && ./gradlew build -x test
+          else
+            echo "File gradlew không tồn tại trong GatewayService"
+            exit 1
+          fi
 
       - name: Build và test ChatService
-        working-directory: ./backend/ChatService
-        run: ./gradlew build -x test
+        run: |
+          if [ -f "./backend/ChatService/gradlew" ]; then
+            cd ./backend/ChatService && ./gradlew build -x test
+          else
+            echo "File gradlew không tồn tại trong ChatService"
+            exit 1
+          fi
 
       - name: Build và test NotiService
-        working-directory: ./backend/NotiService
-        run: ./gradlew build -x test
+        run: |
+          if [ -f "./backend/NotiService/gradlew" ]; then
+            cd ./backend/NotiService && ./gradlew build -x test
+          else
+            echo "File gradlew không tồn tại trong NotiService"
+            exit 1
+          fi
 
       - name: Build và test PostService
-        working-directory: ./backend/PostService
-        run: ./gradlew build -x test
+        run: |
+          if [ -f "./backend/PostService/gradlew" ]; then
+            cd ./backend/PostService && ./gradlew build -x test
+          else
+            echo "File gradlew không tồn tại trong PostService"
+            exit 1
+          fi
 
       - name: Build và test UserService
-        working-directory: ./backend/UserService
-        run: ./gradlew build -x test
+        run: |
+          if [ -f "./backend/UserService/gradlew" ]; then
+            cd ./backend/UserService && ./gradlew build -x test
+          else
+            echo "File gradlew không tồn tại trong UserService"
+            exit 1
+          fi
 
 
   build-docker-images:
