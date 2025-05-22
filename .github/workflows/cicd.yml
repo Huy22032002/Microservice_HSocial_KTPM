@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     steps:
       - name: Checkout repo
@@ -43,7 +43,7 @@ jobs:
 
   build-docker-image:
     needs: build-and-test
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repo
@@ -78,7 +78,7 @@ jobs:
 
   deploy:
     needs: build-docker-image
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     
     steps:
@@ -122,7 +122,7 @@ jobs:
 
   notify:
     needs: [deploy]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: always()
     
     steps:
