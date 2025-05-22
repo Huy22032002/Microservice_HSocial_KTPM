@@ -3,10 +3,15 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/Header.module.css";
 import { fetchUserDetail, setUserStatus } from "../api/userApi";
-import { fetchNotifications, setAllNotiStatus } from "../api/notiApi";
+import {
+  deleteNotification,
+  fetchNotifications,
+  setAllNotiStatus,
+} from "../api/notiApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import SearchUser from "./SearchUser";
+import { accpeptFriend, removeFriendRequest } from "../api/friendApi";
 
 export default function Header() {
   const userId = useSelector((state) => state.user.userId);
@@ -25,17 +30,50 @@ export default function Header() {
       }
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
       alert("Có lỗi xảy ra khi đăng xuất!");
     }
   };
+
   const goToChatBot = () => {
     navigate("/chatbot");
   };
-  
+
+  const extractSenderId = (message) => {
+    const match = message.match(/\b\d+\b/);
+    return match ? parseInt(match[0], 10) : null;
+  };
+
+  const handleAcceptFriendRequest = async (notification) => {
+    try {
+      const senderId = extractSenderId(notification.message);
+      await accpeptFriend(userId, senderId);
+
+      const data = await deleteNotification(notification.id);
+      console.log("xoa noti: ", data);
+      setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
+      alert("Kết bạn thành công");
+    } catch (err) {
+      console.error("Chấp nhận lời mời thất bại:", err);
+    }
+  };
+
+  const handleRejectFriendRequest = async (notification) => {
+    try {
+      const senderId = extractSenderId(notification.message);
+      await removeFriendRequest(userId, senderId);
+
+      const data = await deleteNotification(notification.id);
+      console.log("xoa noti: ", data);
+      setNotifications((prev) => prev.filter((n) => n.id !== notification.id));
+      alert("Đã huỷ lời mời kết bạn thành công");
+    } catch (err) {
+      console.error("Từ chối lời mời thất bại:", err);
+    }
+  };
+
   useEffect(() => {
     getAvatarAndNameFromUserDetail();
   }, [userId]);
@@ -75,7 +113,7 @@ export default function Header() {
       const notis = await fetchNotifications(userId);
       setNotifications(notis || []);
       setShowNotifications(true);
-      setShowPopup(false); // Close user popup if open
+      setShowPopup(false);
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setNotifications([]);
@@ -85,11 +123,8 @@ export default function Header() {
   const markAllAsRead = async () => {
     try {
       await setAllNotiStatus(userId);
-      setNotifications((prevNotifications) =>
-        prevNotifications.map((noti) => ({
-          ...noti,
-          isRead: true,
-        }))
+      setNotifications((prev) =>
+        prev.map((noti) => ({ ...noti, isRead: true }))
       );
     } catch (error) {
       console.error("Error marking notifications as read:", error);
@@ -97,7 +132,6 @@ export default function Header() {
   };
 
   const handleNotificationItemClick = (notification) => {
-    // Navigate to the notification target URL if available
     if (notification.link) {
       navigate(notification.link);
     }
@@ -109,7 +143,6 @@ export default function Header() {
       <div className={styles.navContainer}>
         <h3>
           <Link to="/home">
-            {" "}
             <img
               src={require("../assets/logo.png")}
               alt="Logo"
@@ -119,14 +152,14 @@ export default function Header() {
                 borderRadius: "40px",
                 boxSizing: "border-box",
               }}
-            />{" "}
+            />
           </Link>
-
         </h3>
+
         <div className={styles.filterListChatt}>
-          {/* search */}
           <SearchUser />
         </div>
+
         <div
           className="ai-chatbot-button-container"
           style={{ textAlign: "center", margin: "15px 0" }}
@@ -136,7 +169,7 @@ export default function Header() {
             onClick={goToChatBot}
             style={{
               padding: "12px 20px",
-              backgroundColor: "#9c27b0", // Màu tím đồng nhất với màu avatar AI
+              backgroundColor: "#9c27b0",
               color: "white",
               border: "none",
               borderRadius: "10px",
@@ -172,7 +205,7 @@ export default function Header() {
         <nav className={styles.nav}>
           {userId ? (
             <>
-              {/* Notification Icon */}
+              {/* Notification */}
               <div
                 className={styles.notificationContainer}
                 ref={notificationRef}
@@ -189,12 +222,11 @@ export default function Header() {
                   )}
                 </div>
 
-                {/* Notifications Dropdown */}
                 {showNotifications && (
                   <div className={styles.notificationsDropdown}>
                     <div className={styles.notificationsHeader}>
                       <h4>Thông báo</h4>
-                      {notifications.filter((n) => !n.isRead).length > 0 && (
+                      {notifications.some((n) => !n.isRead) && (
                         <button
                           className={styles.markReadBtn}
                           onClick={markAllAsRead}
@@ -203,6 +235,7 @@ export default function Header() {
                         </button>
                       )}
                     </div>
+
                     <div className={styles.notificationsList}>
                       {notifications.length > 0 ? (
                         notifications.map((notification) => (
@@ -222,6 +255,29 @@ export default function Header() {
                                   notification.createdAt
                                 ).toLocaleString()}
                               </small>
+
+                              {notification.type === "FRIEND_REQUEST" && (
+                                <div className={styles.friendRequestActions}>
+                                  <button
+                                    className={styles.acceptBtn}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleAcceptFriendRequest(notification);
+                                    }}
+                                  >
+                                    Chấp nhận
+                                  </button>
+                                  <button
+                                    className={styles.rejectBtn}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRejectFriendRequest(notification);
+                                    }}
+                                  >
+                                    Xoá
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         ))
@@ -235,11 +291,12 @@ export default function Header() {
                 )}
               </div>
 
+              {/* User Info */}
               <div
                 className={styles.userInfo}
                 onClick={() => {
                   setShowPopup(!showPopup);
-                  setShowNotifications(false); // Close notifications if open
+                  setShowNotifications(false);
                 }}
               >
                 <img
@@ -250,7 +307,6 @@ export default function Header() {
                 <span className={styles.fullname}>{fullname}</span>
               </div>
 
-              {/* Popup đăng xuất */}
               {showPopup && (
                 <div className={styles.popup}>
                   <button onClick={handleLogout} className={styles.popupLink}>
