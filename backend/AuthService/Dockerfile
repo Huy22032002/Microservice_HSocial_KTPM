@@ -3,8 +3,9 @@ FROM gradle:jdk17-jammy AS builder
 WORKDIR /workspace/app
 # Sao chép toàn bộ mã nguồn của AuthService (từ Root Directory của bạn trên Render) vào image builder
 COPY . .
+# Cấp quyền thực thi cho gradlew
+RUN chmod +x ./gradlew
 # Chạy lệnh build Gradle. --no-daemon thường được khuyên dùng cho môi trường CI/CD.
-# Nếu tệp gradlew chưa có quyền thực thi, bạn có thể thêm: RUN chmod +x ./gradlew
 RUN ./gradlew build --no-daemon
 
 # Giai đoạn đóng gói (package stage)
