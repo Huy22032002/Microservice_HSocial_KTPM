@@ -6,7 +6,7 @@ build/
 !**/src/main/resources/application.yml
 !**/src/test/**/build/
 
-.env
+src/main/resources/.env
 .application.yml
 .application.properties
 
