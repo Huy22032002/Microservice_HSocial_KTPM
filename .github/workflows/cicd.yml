@@ -33,32 +33,30 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
       # Bước build và test các service
       - name: Build và test AuthService
         working-directory: ./backend/AuthService
-        run: ./gradlew build -x test
+        run: chmod +x ./gradlew ./gradlew build -x test
 
       - name: Build và test GatewayService
         working-directory: ./backend/GatewayService
-        run: ./gradlew build -x test
+        run: chmod +x ./gradlew ./gradlew build -x test
 
       - name: Build và test ChatService
         working-directory: ./backend/ChatService
-        run: ./gradlew build -x test
+        run: chmod +x ./gradlew ./gradlew build -x test
 
       - name: Build và test NotiService
         working-directory: ./backend/NotiService
-        run: ./gradlew build -x test
+        run: chmod +x ./gradlew ./gradlew build -x test
 
       - name: Build và test PostService
         working-directory: ./backend/PostService
-        run: ./gradlew build -x test
+        run: chmod +x ./gradlew ./gradlew build -x test
 
       - name: Build và test UserService
         working-directory: ./backend/UserService
-        run: ./gradlew build -x test
+        run: chmod +x ./gradlew ./gradlew build -x test
 
   build-docker-images:
     needs: build-and-test
