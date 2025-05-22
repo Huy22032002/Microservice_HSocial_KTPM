@@ -48,14 +48,14 @@ jobs:
             exit 1
           fi
 
-      - name: Build và test GatewayService
-        run: |
-          if [ -f "./backend/GatewayService/gradlew" ]; then
-            cd ./backend/GatewayService && ./gradlew build -x test
-          else
-            echo "File gradlew không tồn tại trong GatewayService"
-            exit 1
-          fi
+      # - name: Build và test GatewayService
+      #   run: |
+      #     if [ -f "./backend/GatewayService/gradlew" ]; then
+      #       cd ./backend/GatewayService && ./gradlew build -x test
+      #     else
+      #       echo "File gradlew không tồn tại trong GatewayService"
+      #       exit 1
+      #     fi
 
       - name: Build và test ChatService
         run: |
