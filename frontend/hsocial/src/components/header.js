@@ -97,7 +97,7 @@ export default function Header() {
     if (userId) {
       const userDetail = await fetchUserDetail(userId);
       if (userDetail) {
-        setAvatar(userDetail.avatar);
+        setAvatar(userDetail.avatar || require("../assets/default_avatar.png"));
         setFullname(userDetail.fullname);
       }
     }

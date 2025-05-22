@@ -41,6 +41,12 @@ dependencies {
     implementation "io.github.resilience4j:resilience4j-spring-boot3:2.1.0"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-aop"
+
+    //dotenv
+    implementation 'io.github.cdimascio:dotenv-java:3.2.0'
+
+    implementation platform("software.amazon.awssdk:bom:2.31.21")
+    implementation "software.amazon.awssdk:s3"
 }
 
 tasks.named('test') {

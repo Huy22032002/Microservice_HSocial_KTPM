@@ -34,7 +34,7 @@ export async function fetchConversations(userId) {
     return [];
   }
 }
-export const fetchMessages = async (id) => {
+export const fetchMessages = async (id, currentUserId) => {
   const token = localStorage.getItem("token");
 
   try {
@@ -44,16 +44,24 @@ export const fetchMessages = async (id) => {
         "Content-Type": "application/json",
       },
     });
+
     const messages = response.data;
 
-    //fetch user avatar voi moi message
-    // goi song song tat ca cac fetchUserDetail
-    const avatarPromises = messages.map((message) =>
-      fetchUserDetail(message.sender)
-    );
-    const userDetails = await Promise.all(avatarPromises);
-    messages.forEach((msg, i) => {
-      msg.avatar = userDetails[i].avatar;
+    // Tìm sender khác currentUserId => là friend
+    const friendMessage = messages.find((msg) => msg.sender !== currentUserId);
+    if (!friendMessage) return messages; // tất cả đều là message của mình
+
+    const friendId = friendMessage.sender;
+
+    // Chỉ fetch avatar của friend
+    const friendDetail = await fetchUserDetail(friendId);
+    const friendAvatar = friendDetail.avatar;
+
+    // Gán avatar vào message của friend thôi
+    messages.forEach((msg) => {
+      if (msg.sender === friendId) {
+        msg.avatar = friendAvatar;
+      }
     });
 
     return messages;
@@ -66,6 +74,7 @@ export const fetchMessages = async (id) => {
     return [];
   }
 };
+
 export async function postMessage(
   message,
   currentConversationId,
@@ -138,3 +147,5 @@ export async function checkOrCreate(user1, user2) {
     throw er;
   }
 }
+
+export async function postImageMesssaeg() {}

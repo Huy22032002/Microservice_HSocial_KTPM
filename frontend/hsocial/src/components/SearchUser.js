@@ -102,7 +102,7 @@ const SearchUser = () => {
                 }}
               >
                 <img
-                  src={user.avatar}
+                  src={user.avatar || require("../assets/default_avatar.png")}
                   alt="avatar"
                   style={{
                     width: "32px",
