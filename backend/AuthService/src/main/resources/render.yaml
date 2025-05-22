@@ -6,8 +6,16 @@ services:
     healthCheckPath: /actuator/health
     envVars:
       - key: SPRING_REDIS_HOST
-        value: redis-host-url
+        value: redis-16589.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com
       - key: SPRING_REDIS_PORT
-        value: 6379
+        value: 16589
+      - key: SPRING_REDIS_PASSWORD
+        value: IR6vR80riusw3BYH9j0BNXlb2Tf744lF
       - key: SPRING_RABBITMQ_HOST
-        value: rabbitmq-host-url
+        value: amqps://eamtmpan:elig7hs1qUHpa9EXFHUcM2ygKrzLkQID@armadillo.rmq.cloudamqp.com/eamtmpan
+      - key: SPRING_RABBITMQ_PORT
+        value: 5672
+      - key: SPRING_RABBITMQ_USERNAME
+        value: eamtmpan
+      - key: SPRING_RABBITMQ_PASSWORD
+        value: elig7hs1qUHpa9EXFHUcM2ygKrzLkQID
