@@ -23,7 +23,7 @@ COPY --from=builder /workspace/app/build/libs/*.jar /app/gateway-service.jar
 
 # Cấu hình mặc định
 ENV SPRING_PROFILES_ACTIVE=prod
-ENV JAVA_OPTS="-Xms512m -Xmx1024m"  # Gateway thường cần nhiều memory hơn
+ENV JAVA_OPTS="-Xms512m -Xmx1024m"  
 
 # Port mặc định
 EXPOSE 8080
