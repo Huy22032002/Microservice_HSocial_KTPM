@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@RedisHash("user")
+//@RedisHash("user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

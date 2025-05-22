@@ -1,0 +1,23 @@
+steps:
+  # Build các service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/${PROJECT_ID}/hsocial-repo/auth-service:${SHORT_SHA}', './AuthService']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/${PROJECT_ID}/hsocial-repo/chat-service:${SHORT_SHA}', './ChatService']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/${PROJECT_ID}/hsocial-repo/post-service:${SHORT_SHA}', './PostService']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/${PROJECT_ID}/hsocial-repo/noti-service:${SHORT_SHA}', './NotiService']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/${PROJECT_ID}/hsocial-repo/user-service:${SHORT_SHA}', './UserService']
+    
+images:
+  - 'asia-southeast1-docker.pkg.dev/${PROJECT_ID}/hsocial-repo/auth-service:${SHORT_SHA}'
+  - 'asia-southeast1-docker.pkg.dev/${PROJECT_ID}/hsocial-repo/chat-service:${SHORT_SHA}'
+  - 'asia-southeast1-docker.pkg.dev/${PROJECT_ID}/hsocial-repo/post-service:${SHORT_SHA}'
+  - 'asia-southeast1-docker.pkg.dev/${PROJECT_ID}/hsocial-repo/noti-service:${SHORT_SHA}'
+  - 'asia-southeast1-docker.pkg.dev/${PROJECT_ID}/hsocial-repo/user-service:${SHORT_SHA}'

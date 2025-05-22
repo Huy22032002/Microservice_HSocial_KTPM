@@ -8,6 +8,6 @@ RUN ./gradlew build -x test --no-daemon
 # Giai đoạn đóng gói
 FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY --from=builder /workspace/app/build/libs/AuthService-*.jar app.jar
-EXPOSE 8081
+COPY --from=builder /workspace/app/build/libs/ChatService-*.jar app.jar
+EXPOSE 8082
 ENTRYPOINT ["java","-jar","app.jar"]
