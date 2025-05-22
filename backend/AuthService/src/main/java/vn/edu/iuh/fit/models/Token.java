@@ -14,7 +14,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "tokens")
-@RedisHash("token")
+//@RedisHash("token")
 public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
