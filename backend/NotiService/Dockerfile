@@ -1,14 +1,13 @@
-# syntax=docker/dockerfile:1
+# Giai đoạn build
+FROM gradle:jdk17-jammy AS builder
+WORKDIR /workspace/app
+COPY . .
+RUN chmod +x ./gradlew
+RUN ./gradlew build -x test --no-daemon
+
+# Giai đoạn đóng gói
 FROM openjdk:17-jdk-slim
-
-# Thư mục làm việc trong container
 WORKDIR /app
-
-# Copy file JAR vào container
-COPY build/libs/*.jar app.jar
-
-# Expose port mà NotiService chạy (8084)
+COPY --from=builder /workspace/app/build/libs/NotiService-*.jar app.jar
 EXPOSE 8084
-
-# Lệnh chạy app
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]

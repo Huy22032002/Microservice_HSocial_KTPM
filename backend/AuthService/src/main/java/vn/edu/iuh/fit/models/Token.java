@@ -2,6 +2,7 @@ package vn.edu.iuh.fit.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.time.Instant;
 
@@ -13,6 +14,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "tokens")
+//@RedisHash("token")
 public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
