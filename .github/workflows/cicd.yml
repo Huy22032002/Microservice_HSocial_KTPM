@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
@@ -60,7 +60,7 @@ jobs:
 
   build-docker-images:
     needs: build-and-test
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
@@ -99,8 +99,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:${{ env.VERSION }}
-          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:buildcache,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:buildcache,mode=max
 
       - name: Build và push ChatService
         uses: docker/build-push-action@v4
@@ -154,7 +154,7 @@ jobs:
 
   deploy:
     needs: build-docker-images
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     
     steps:
@@ -198,7 +198,7 @@ jobs:
             
   notify:
     needs: [deploy]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: always()
     
     steps:
