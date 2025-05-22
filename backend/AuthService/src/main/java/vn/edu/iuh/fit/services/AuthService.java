@@ -34,6 +34,8 @@ public class AuthService {
     private TokenService tokenService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserCacheService userCacheService;
 
 public ResponseEntity<?> login(String username, String password) {
     Map<String, String> errors = new HashMap<>();
@@ -83,6 +85,13 @@ public ResponseEntity<?> login(String username, String password) {
         response.put("token", jwt);
         response.put("user", user);
 
+        // Lưu thông tin user vào cache
+        userCacheService.cacheUser(String.valueOf(user.getId()), user);
+        // Lưu trạng thái online của user
+        userCacheService.setUserOnlineStatus(String.valueOf(user.getId()), true);
+        // Lưu token vào Redis
+        tokenService.saveToken(String.valueOf(user.getId()), jwt, 3600); // 1 hour expiration
+
         return ResponseEntity.ok(response);
 
     } catch (Exception e) {
@@ -90,4 +99,33 @@ public ResponseEntity<?> login(String username, String password) {
     }
 }
 
+    public ResponseEntity<?> logout(Long userId,String token) {
+        Map<String, String> errors = new HashMap<>();
+
+        if(userId == null) {
+            errors.put("userId", "User ID is required");
+        }
+        if(StringUtils.isBlank(token)) {
+            errors.put("token", "Token is required");
+        }
+        if(!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("errors", errors));
+        }
+
+        // Xóa token khỏi Redis
+        tokenService.invalidateToken(String.valueOf(userId));
+        // Thêm token vào blacklist
+        tokenService.addToBlacklist(token, 3600); // 1 hour expiration
+        // offline user
+        userCacheService.setUserOnlineStatus(String.valueOf(userId), false);
+
+        // Đánh dấu token là revoked
+        Token tokenEntity = tokenService.findByToken(token);
+        if (tokenEntity != null) {
+            tokenEntity.setRevoked(true);
+            tokenService.save(tokenEntity);
+        }
+
+        return ResponseEntity.ok(Map.of("message", "Logout successful"));
+    }
 }

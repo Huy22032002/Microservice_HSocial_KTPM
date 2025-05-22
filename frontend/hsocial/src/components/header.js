@@ -7,7 +7,6 @@ import { fetchNotifications, setAllNotiStatus } from "../api/notiApi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import SearchUser from "./SearchUser";
-import ChatBot from "../screens/ChatBot";
 
 export default function Header() {
   const userId = useSelector((state) => state.user.userId);

@@ -129,7 +129,6 @@ public class PostController {
 //    public List<Post> listAllPublicPosts(){
 //        return postService.getAllPublicPosts();
 //    }
-    //list
     @PostMapping("/listPost")
     public ResponseEntity<List<Post>> listPost(@RequestBody PostFetchRequest request) {
         int userId = request.getUserId();

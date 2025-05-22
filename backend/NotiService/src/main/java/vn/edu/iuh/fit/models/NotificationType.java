@@ -6,4 +6,6 @@ public enum NotificationType {
     COMMENT,
     FOLLOW,
     SYSTEM_UPDATE,
-    MESSAGE, FRIEND_REQUEST}
+    MESSAGE,
+    FRIEND_REQUEST
+}

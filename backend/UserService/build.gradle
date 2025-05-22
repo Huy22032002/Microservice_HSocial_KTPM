@@ -48,6 +48,8 @@ dependencies {
 	//AMQP
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.4.3'
+
 }
 
 tasks.named('test') {
