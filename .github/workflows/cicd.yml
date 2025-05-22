@@ -1,0 +1,215 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      # Cache Gradle dependencies để tăng tốc build
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # Bước build và test các service
+      - name: Build và test AuthService
+        working-directory: ./AuthService
+        run: ./gradlew build -x test
+
+      - name: Build và test GatewayService
+        working-directory: ./GatewayService
+        run: ./gradlew build -x test
+
+      - name: Build và test ChatService
+        working-directory: ./ChatService
+        run: ./gradlew build -x test
+
+      - name: Build và test NotiService
+        working-directory: ./NotiService
+        run: ./gradlew build -x test
+
+      - name: Build và test PostService
+        working-directory: ./PostService
+        run: ./gradlew build -x test
+
+      - name: Build và test UserService
+        working-directory: ./UserService
+        run: ./gradlew build -x test
+
+  build-docker-images:
+    needs: build-and-test
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Thiết lập biến môi trường
+        run: |
+          echo "VERSION=$(date +'%Y.%m.%d.%H%M')" >> $GITHUB_ENV
+
+      # Build và push Docker image cho từng service
+      - name: Build và push AuthService
+        uses: docker/build-push-action@v4
+        with:
+          context: ./AuthService
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-auth-service:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-auth-service:${{ env.VERSION }}
+          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-auth-service:buildcache
+          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-auth-service:buildcache,mode=max
+
+      - name: Build và push GatewayService
+        uses: docker/build-push-action@v4
+        with:
+          context: ./GatewayService
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:${{ env.VERSION }}
+          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:buildcache
+          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:buildcache,mode=max
+
+      - name: Build và push ChatService
+        uses: docker/build-push-action@v4
+        with:
+          context: ./ChatService
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-chat-service:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-chat-service:${{ env.VERSION }}
+          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-chat-service:buildcache
+          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-chat-service:buildcache,mode=max
+
+      - name: Build và push NotiService
+        uses: docker/build-push-action@v4
+        with:
+          context: ./NotiService
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-noti-service:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-noti-service:${{ env.VERSION }}
+          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-noti-service:buildcache
+          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-noti-service:buildcache,mode=max
+
+      - name: Build và push PostService
+        uses: docker/build-push-action@v4
+        with:
+          context: ./PostService
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-post-service:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-post-service:${{ env.VERSION }}
+          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-post-service:buildcache
+          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-post-service:buildcache,mode=max
+
+      - name: Build và push UserService
+        uses: docker/build-push-action@v4
+        with:
+          context: ./UserService
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-user-service:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-user-service:${{ env.VERSION }}
+          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-user-service:buildcache
+          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-user-service:buildcache,mode=max
+
+      # Truyền thông tin image mới nhất cho job deploy
+      - name: Lưu version image
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        run: echo "VERSION=${{ env.VERSION }}" >> $GITHUB_OUTPUT
+        id: version
+
+  deploy:
+    needs: build-docker-images
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        
+      - name: Copy docker-compose.yml và deploy.sh to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "docker-compose.yml,deploy.sh"
+          target: "/home/${{ secrets.SSH_USERNAME }}/hsocial-app"
+      
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /home/${{ secrets.SSH_USERNAME }}/hsocial-app
+            chmod +x deploy.sh
+            export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            ./deploy.sh
+            
+      - name: Kiểm tra trạng thái services
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /home/${{ secrets.SSH_USERNAME }}/hsocial-app
+            docker-compose ps
+            echo "Deployment completed at $(date)"
+            
+  notify:
+    needs: [deploy]
+    runs-on: self-hosted
+    if: always()
+    
+    steps:
+      - name: Thông báo thành công
+        if: ${{ needs.deploy.result == 'success' }}
+        run: |
+          echo "Deployment đã hoàn tất thành công!"
+          # Thêm code gửi thông báo qua Slack/Discord/Email nếu cần
+          
+      - name: Thông báo thất bại
+        if: ${{ needs.deploy.result == 'failure' }}
+        run: |
+          echo "Deployment thất bại!"
+          # Thêm code gửi thông báo qua Slack/Discord/Email nếu cần
