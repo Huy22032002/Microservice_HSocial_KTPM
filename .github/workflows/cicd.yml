@@ -35,27 +35,27 @@ jobs:
 
       # Bước build và test các service
       - name: Build và test AuthService
-        working-directory: ./AuthService
+        working-directory: ./backend/AuthService
         run: ./gradlew build -x test
 
       - name: Build và test GatewayService
-        working-directory: ./GatewayService
+        working-directory: ./backend/GatewayService
         run: ./gradlew build -x test
 
       - name: Build và test ChatService
-        working-directory: ./ChatService
+        working-directory: ./backend/ChatService
         run: ./gradlew build -x test
 
       - name: Build và test NotiService
-        working-directory: ./NotiService
+        working-directory: ./backend/NotiService
         run: ./gradlew build -x test
 
       - name: Build và test PostService
-        working-directory: ./PostService
+        working-directory: ./backend/PostService
         run: ./gradlew build -x test
 
       - name: Build và test UserService
-        working-directory: ./UserService
+        working-directory: ./backend/UserService
         run: ./gradlew build -x test
 
   build-docker-images:
@@ -83,7 +83,7 @@ jobs:
       - name: Build và push AuthService
         uses: docker/build-push-action@v4
         with:
-          context: ./AuthService
+          context: ./backend/AuthService
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-auth-service:latest
@@ -94,7 +94,7 @@ jobs:
       - name: Build và push GatewayService
         uses: docker/build-push-action@v4
         with:
-          context: ./GatewayService
+          context: ./backend/GatewayService
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:latest
@@ -105,7 +105,7 @@ jobs:
       - name: Build và push ChatService
         uses: docker/build-push-action@v4
         with:
-          context: ./ChatService
+          context: ./backend/ChatService
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-chat-service:latest
@@ -116,7 +116,7 @@ jobs:
       - name: Build và push NotiService
         uses: docker/build-push-action@v4
         with:
-          context: ./NotiService
+          context: ./backend/NotiService
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-noti-service:latest
@@ -127,7 +127,7 @@ jobs:
       - name: Build và push PostService
         uses: docker/build-push-action@v4
         with:
-          context: ./PostService
+          context: ./backend/PostService
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-post-service:latest
@@ -138,7 +138,7 @@ jobs:
       - name: Build và push UserService
         uses: docker/build-push-action@v4
         with:
-          context: ./UserService
+          context: ./backend/UserService
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-user-service:latest
