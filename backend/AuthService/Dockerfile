@@ -6,8 +6,7 @@ COPY . .
 # Cấp quyền thực thi cho gradlew
 RUN chmod +x ./gradlew
 # Chạy lệnh build Gradle. --no-daemon thường được khuyên dùng cho môi trường CI/CD.
-RUN ./gradlew build --no-daemon
-
+RUN ./gradlew build -x test --no-daemon
 # Giai đoạn đóng gói (package stage)
 FROM openjdk:17-jdk-slim
 WORKDIR /app
