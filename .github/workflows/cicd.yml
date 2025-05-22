@@ -22,6 +22,14 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Cấp quyền thực thi cho gradlew
+        run: |
+          chmod +x ./backend/AuthService/gradlew
+          chmod +x ./backend/GatewayService/gradlew
+          chmod +x ./backend/ChatService/gradlew
+          chmod +x ./backend/NotiService/gradlew
+          chmod +x ./backend/PostService/gradlew
+          chmod +x ./backend/UserService/gradlew
       # Cache Gradle dependencies để tăng tốc build
       - name: Cache Gradle packages
         uses: actions/cache@v3
@@ -36,27 +44,28 @@ jobs:
       # Bước build và test các service
       - name: Build và test AuthService
         working-directory: ./backend/AuthService
-        run: chmod +x ./gradlew ./gradlew build -x test
+        run: ./gradlew build -x test
 
       - name: Build và test GatewayService
         working-directory: ./backend/GatewayService
-        run: chmod +x ./gradlew ./gradlew build -x test
+        run: ./gradlew build -x test
 
       - name: Build và test ChatService
         working-directory: ./backend/ChatService
-        run: chmod +x ./gradlew ./gradlew build -x test
+        run: ./gradlew build -x test
 
       - name: Build và test NotiService
         working-directory: ./backend/NotiService
-        run: chmod +x ./gradlew ./gradlew build -x test
+        run: ./gradlew build -x test
 
       - name: Build và test PostService
         working-directory: ./backend/PostService
-        run: chmod +x ./gradlew ./gradlew build -x test
+        run: ./gradlew build -x test
 
       - name: Build và test UserService
         working-directory: ./backend/UserService
-        run: chmod +x ./gradlew ./gradlew build -x test
+        run: ./gradlew build -x test
+
 
   build-docker-images:
     needs: build-and-test
