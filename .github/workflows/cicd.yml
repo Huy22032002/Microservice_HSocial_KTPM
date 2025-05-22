@@ -1,10 +1,10 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline - AuthService
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, production ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, production ]
   workflow_dispatch:
 
 jobs:
@@ -24,10 +24,8 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: |
-          find ./backend -name "gradlew" -type f -exec chmod +x {} \;
-          ls -la ./backend/*/gradlew || echo "Một số thư mục không có file gradlew"
+          chmod +x ./backend/AuthService/gradlew
 
-      # Cache Gradle dependencies để tăng tốc build
       - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
@@ -38,63 +36,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Bước build và test các service
       - name: Build và test AuthService
         run: |
-          if [ -f "./backend/AuthService/gradlew" ]; then
-            cd ./backend/AuthService && ./gradlew build -x test
-          else
-            echo "File gradlew không tồn tại trong AuthService"
-            exit 1
-          fi
+          cd ./backend/AuthService
+          ./gradlew build -x test
 
-      # - name: Build và test GatewayService
-      #   run: |
-      #     if [ -f "./backend/GatewayService/gradlew" ]; then
-      #       cd ./backend/GatewayService && ./gradlew build -x test
-      #     else
-      #       echo "File gradlew không tồn tại trong GatewayService"
-      #       exit 1
-      #     fi
-
-      - name: Build và test ChatService
-        run: |
-          if [ -f "./backend/ChatService/gradlew" ]; then
-            cd ./backend/ChatService && ./gradlew build -x test
-          else
-            echo "File gradlew không tồn tại trong ChatService"
-            exit 1
-          fi
-
-      - name: Build và test NotiService
-        run: |
-          if [ -f "./backend/NotiService/gradlew" ]; then
-            cd ./backend/NotiService && ./gradlew build -x test
-          else
-            echo "File gradlew không tồn tại trong NotiService"
-            exit 1
-          fi
-
-      - name: Build và test PostService
-        run: |
-          if [ -f "./backend/PostService/gradlew" ]; then
-            cd ./backend/PostService && ./gradlew build -x test
-          else
-            echo "File gradlew không tồn tại trong PostService"
-            exit 1
-          fi
-
-      - name: Build và test UserService
-        run: |
-          if [ -f "./backend/UserService/gradlew" ]; then
-            cd ./backend/UserService && ./gradlew build -x test
-          else
-            echo "File gradlew không tồn tại trong UserService"
-            exit 1
-          fi
-
-
-  build-docker-images:
+  build-docker-image:
     needs: build-and-test
     runs-on: ubuntu-latest
 
@@ -115,8 +62,7 @@ jobs:
         run: |
           echo "VERSION=$(date +'%Y.%m.%d.%H%M')" >> $GITHUB_ENV
 
-      # Build và push Docker image cho từng service
-      - name: Build và push AuthService
+      - name: Build và push AuthService image
         uses: docker/build-push-action@v4
         with:
           context: ./backend/AuthService
@@ -124,72 +70,14 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-auth-service:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-auth-service:${{ env.VERSION }}
-          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-auth-service:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-auth-service:buildcache,mode=max
 
-      - name: Build và push GatewayService
-        uses: docker/build-push-action@v4
-        with:
-          context: ./backend/GatewayService
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:${{ env.VERSION }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-gateway-service:buildcache,mode=max
-
-      - name: Build và push ChatService
-        uses: docker/build-push-action@v4
-        with:
-          context: ./backend/ChatService
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-chat-service:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-chat-service:${{ env.VERSION }}
-          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-chat-service:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-chat-service:buildcache,mode=max
-
-      - name: Build và push NotiService
-        uses: docker/build-push-action@v4
-        with:
-          context: ./backend/NotiService
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-noti-service:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-noti-service:${{ env.VERSION }}
-          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-noti-service:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-noti-service:buildcache,mode=max
-
-      - name: Build và push PostService
-        uses: docker/build-push-action@v4
-        with:
-          context: ./backend/PostService
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-post-service:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-post-service:${{ env.VERSION }}
-          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-post-service:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-post-service:buildcache,mode=max
-
-      - name: Build và push UserService
-        uses: docker/build-push-action@v4
-        with:
-          context: ./backend/UserService
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-user-service:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/hsocial-user-service:${{ env.VERSION }}
-          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-user-service:buildcache
-          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/hsocial-user-service:buildcache,mode=max
-
-      # Truyền thông tin image mới nhất cho job deploy
       - name: Lưu version image
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         run: echo "VERSION=${{ env.VERSION }}" >> $GITHUB_OUTPUT
         id: version
 
   deploy:
-    needs: build-docker-images
+    needs: build-docker-image
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     
@@ -231,7 +119,7 @@ jobs:
             cd /home/${{ secrets.SSH_USERNAME }}/hsocial-app
             docker-compose ps
             echo "Deployment completed at $(date)"
-            
+
   notify:
     needs: [deploy]
     runs-on: ubuntu-latest
@@ -240,12 +128,8 @@ jobs:
     steps:
       - name: Thông báo thành công
         if: ${{ needs.deploy.result == 'success' }}
-        run: |
-          echo "Deployment đã hoàn tất thành công!"
-          # Thêm code gửi thông báo qua Slack/Discord/Email nếu cần
-          
+        run: echo "Deployment AuthService đã hoàn tất thành công!"
+
       - name: Thông báo thất bại
         if: ${{ needs.deploy.result == 'failure' }}
-        run: |
-          echo "Deployment thất bại!"
-          # Thêm code gửi thông báo qua Slack/Discord/Email nếu cần
+        run: echo "Deployment AuthService thất bại!"
