@@ -260,3 +260,26 @@ body {
     transform: translateY(0);
   }
 }
+.friendRequestActions {
+  margin-top: 5px;
+  display: flex;
+  gap: 8px;
+}
+
+.acceptBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.rejectBtn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}

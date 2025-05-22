@@ -23,6 +23,12 @@ public class FriendController {
     @Autowired
     private MessageProducer messageProducer;
 
+    @GetMapping("/suggest/{userId}")
+    public ResponseEntity<?> suggestFriends(@PathVariable int userId) {
+        List<Map<String, Object>> suggestions = friendService.suggestFriends(userId);
+        return ResponseEntity.ok(suggestions);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getListFriend(@PathVariable int id) {
         try {

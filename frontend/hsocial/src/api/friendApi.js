@@ -41,6 +41,23 @@ export async function getListFriend(id) {
     return [];
   }
 }
+
+export async function getSuggestFriends(userId) {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.get(`${FRIEND_API}/suggest/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.data) return response.data;
+    else return [];
+  } catch (e) {
+    throw e;
+  }
+}
+
 export async function getListPending(id) {
   const token = localStorage.getItem("token");
 
@@ -83,7 +100,7 @@ export async function sendFriendRequest(userId, friendId) {
       return response;
     }
   } catch (err) {
-    throw new Error("Error send friend request api: ", err);
+    alert("Bạn đã gửi lời mời kết bạn");
   }
 }
 export async function accpeptFriend(userId, friendId) {

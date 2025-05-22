@@ -1,16 +1,20 @@
 package vn.edu.iuh.fit.chatservice.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.iuh.fit.chatservice.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.chatservice.models.*;
 import vn.edu.iuh.fit.chatservice.services.ConversationService;
 import vn.edu.iuh.fit.chatservice.services.MessageService;
+import vn.edu.iuh.fit.chatservice.services.S3Service;
 import vn.edu.iuh.fit.chatservice.services.UserServiceClient;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +27,8 @@ public class MessageController {
     private MessageService messageService;
     @Autowired
     private ConversationService conversationService;
+    @Autowired
+    private S3Service s3Service;
 
     @PostMapping("/save-message")
     @RateLimiter(name = "messageApi")
@@ -49,6 +55,7 @@ public class MessageController {
                     .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getMessageByConversationId(@PathVariable String id){
         try {
