@@ -11,6 +11,7 @@ import vn.edu.iuh.fit.dto.UserDTO;
 import vn.edu.iuh.fit.exceptions.ErrorResponse;
 import vn.edu.iuh.fit.models.User;
 import vn.edu.iuh.fit.services.AuthService;
+import vn.edu.iuh.fit.services.UserCacheService;
 import vn.edu.iuh.fit.services.UserService;
 
 import java.io.IOException;
@@ -32,6 +33,9 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
+    private UserCacheService userCacheService;
+
+    @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
@@ -40,6 +44,27 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         logger.info("Login request received: {}", loginRequest);
         return authService.login(loginRequest.getUsername(), loginRequest.getPassword());
+    }
+
+    //logout
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") Long userId, @RequestBody String token) {
+        Map<String, String> errorMap = new HashMap<>();
+
+        if(userId == null) errorMap.put("userId", "User ID is required");
+        if(token == null) errorMap.put("token", "Token is required");
+
+        if(!errorMap.isEmpty()) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", errorMap.toString(), Instant.now()));
+        }
+        try {
+            authService.logout(userId, token);
+            return ResponseEntity.ok(Map.of("message", "Logout successful"));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
     }
 
     @PostMapping("/signup")

@@ -18,6 +18,17 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --save 60 1 --loglevel warning
+    restart: always
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -37,16 +48,20 @@ services:
       - rabbitmq
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
 
   user-service:
     build: ./UserService
     container_name: UserService
     ports:
-      - "8082:8082"
+      - "8085:8085"
     depends_on:
       - rabbitmq
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq 
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
 
   noti-service:
     build: ./NotiService
@@ -57,5 +72,18 @@ services:
       - rabbitmq
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
-  
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
 
+  chat-service:
+    build: ./ChatService
+    container_name: ChatService
+    ports:
+      - "8082:8082"
+  post-service:
+    build: ./PostService
+    container_name: PostService
+    ports:
+      - "8083:8083"
+volumes:
+  redis-data:

@@ -171,72 +171,80 @@ const AnotherUserProfile = () => {
       <div className={styles.centerWrapper}>
         <div className={styles.profileContainer}>
           {/* header */}
-          <div className={styles.profileHeader}>
-            <div className={styles.headerWallpaper}>
-              <img
-                alt="wallpaper"
-                src={require("../assets/default_wallpaper.jpg")}
-                style={{
-                  objectFit: "cover",
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: "0 0 12px 12px",
-                }}
-              />
-            </div>
-            <div className={styles.headerInfo}>
-              <div className={styles.headerInfoLeft}>
-                <img
-                  src={
+                <div className={styles.profileHeader}>
+                <div className={styles.headerWallpaper}>
+                  <img
+                  alt="wallpaper"
+                  src={require("../assets/default_wallpaper.jpg")}
+                  style={{
+                    objectFit: "cover",
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "0 0 12px 12px",
+                  }}
+                  />
+                </div>
+                <div className={styles.headerInfo}>
+                  <div className={styles.headerInfoLeft}>
+                  <img
+                    src={
                     userDetails?.avatar ||
                     require("../assets/default_avatar.png")
-                  }
-                  className={styles.headerInfoAvatar}
-                  alt="avatar"
-                />
-                <div className={styles.headerInfoUser}>
-                  <p style={{ fontSize: 28, fontWeight: "bold" }}>
+                    }
+                    className={styles.headerInfoAvatar}
+                    alt="avatar"
+                  />
+                  <div className={styles.headerInfoUser}>
+                    <p style={{ fontSize: 28, fontWeight: "bold" }}>
                     {userDetails?.fullname || "Người dùng"}
-                  </p>
-                  <p
+                    </p>
+                    <p
                     style={{ fontSize: 16, color: "gray", fontWeight: "bold" }}
-                  >
+                    >
                     {friends.length} người bạn
-                  </p>
+                    </p>
+                  </div>
+                  </div>
+                  { userIdRedux && (
+                  <div className={styles.headerInfoRight}>
+                    <button
+                    className={styles.headerInfoBtn}
+                    onClick={handleButton}
+                    >
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      style={{ marginRight: 4, height: 16 }}
+                    />
+                    <p style={{ fontWeight: "bold", fontSize: 14 }}>
+                      {friendStatus}
+                    </p>
+                    </button>
+                    <button
+                    onClick={handleBtnChat}
+                    className={[styles.headerInfoBtn, styles.btnChat].join(" ")}
+                    >
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      style={{ marginRight: 4, height: 16 }}
+                    />
+                    <p style={{ fontWeight: "bold", fontSize: 14 }}>
+                      {" "}
+                      Nhắn tin
+                    </p>
+                    </button>
+                  </div>
+                  )}
                 </div>
-              </div>
-              <div className={styles.headerInfoRight}>
-                <button className={styles.headerInfoBtn} onClick={handleButton}>
-                  <FontAwesomeIcon
-                    icon={faUser}
-                    style={{ marginRight: 4, height: 16 }}
-                  />
-                  <p style={{ fontWeight: "bold", fontSize: 14 }}>
-                    {friendStatus}
-                  </p>
-                </button>
-                <button
-                  onClick={handleBtnChat}
-                  className={[styles.headerInfoBtn, styles.btnChat].join(" ")}
-                >
-                  <FontAwesomeIcon
-                    icon={faUser}
-                    style={{ marginRight: 4, height: 16 }}
-                  />
-                  <p style={{ fontWeight: "bold", fontSize: 14 }}> Nhắn tin</p>
-                </button>
-              </div>
-            </div>
-            <hr
-              style={{
-                background: "rgba(0,0,0,0.1)",
-                margin: "10px 40px",
-                border: "none",
-                height: "1px",
-              }}
-            />
-            <ProfileMenu />
-            {/* menu */}
+                <hr
+                  style={{
+                  background: "rgba(0,0,0,0.1)",
+                  margin: "10px 40px",
+                  border: "none",
+                  height: "1px",
+                  }}
+                />
+                <ProfileMenu />
+                {/* menu */}
           </div>
           <div className={styles.profileContent}>
             {isRootRoute ? (
