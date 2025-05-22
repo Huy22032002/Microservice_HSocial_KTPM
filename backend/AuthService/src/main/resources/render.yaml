@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: auth-service
+    runtime: docker
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_REDIS_HOST
+        value: redis-host-url
+      - key: SPRING_REDIS_PORT
+        value: 6379
+      - key: SPRING_RABBITMQ_HOST
+        value: rabbitmq-host-url
