@@ -1,4 +1,3 @@
-
 .header {
   border-bottom: 1px solid #e0e0e0;
   padding: 10px 20px;
@@ -9,7 +8,7 @@
   margin-bottom: 5px;
   /* height: 20px; */
 }
-  /* =======
+/* =======
 
 /* Keep your existing styles and add these new styles for notifications */
 
@@ -260,4 +259,3 @@
     margin: 10px 0 0;
   }
 }
-

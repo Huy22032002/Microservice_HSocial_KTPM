@@ -3,7 +3,7 @@ import { fetchUserDetail } from "../api/userApi";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { fetchPostById } from "../api/postApi";
-import "../styles/Post.css";
+import "../styles/post.css";
 import {
   faThumbsUp,
   faShare,
@@ -20,7 +20,7 @@ import {
   faSmile,
 } from "@fortawesome/free-solid-svg-icons";
 import EmojiPicker from "emoji-picker-react";
-import { containsBannedWords } from "./BannedWords"; 
+import { containsBannedWords } from "./BannedWords";
 
 import FullScreen from "./FullScreen";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,7 +28,7 @@ import { set } from "lodash";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-const Post = ({ postId,refreshPosts }) => {
+const Post = ({ postId, refreshPosts }) => {
   const userId = useSelector((state) => state.user.userId);
   const [post, setPost] = useState(null);
   const [userCommentDetail, setUserCommentDetail] = useState({});
@@ -260,7 +260,9 @@ const Post = ({ postId,refreshPosts }) => {
 
     const { hasBannedWords, bannedWordsFound } = containsBannedWords(comment);
     if (hasBannedWords) {
-      alert(`Bình luận có chứa từ không phù hợp: ${bannedWordsFound.join(', ')}`);
+      alert(
+        `Bình luận có chứa từ không phù hợp: ${bannedWordsFound.join(", ")}`
+      );
       return;
     }
 
@@ -283,7 +285,7 @@ const Post = ({ postId,refreshPosts }) => {
   };
 
   const onCommentEmojiClick = (emojiObject) => {
-    setComment(prevComment => prevComment + emojiObject.emoji);
+    setComment((prevComment) => prevComment + emojiObject.emoji);
     setShowCommentEmojiPicker(false);
   };
 
@@ -347,21 +349,24 @@ const Post = ({ postId,refreshPosts }) => {
               minute: "2-digit",
             })}
           </span>
-          <span className="p-privacy-icon" title={
-              post.postPrivacy === "PUBLIC" 
-                ? "Công khai" 
-                : post.postPrivacy === "FRIENDS" 
-                  ? "Bạn bè" 
-                  : "Chỉ mình tôi"
-            }>
-              {post.postPrivacy === "PUBLIC" ? (
-                <FontAwesomeIcon icon={faGlobe} />
-              ) : post.postPrivacy === "FRIENDS" ? (
-                <FontAwesomeIcon icon={faUsers} />
-              ) : (
-                <FontAwesomeIcon icon={faLock} />
-              )}
-            </span>
+          <span
+            className="p-privacy-icon"
+            title={
+              post.postPrivacy === "PUBLIC"
+                ? "Công khai"
+                : post.postPrivacy === "FRIENDS"
+                ? "Bạn bè"
+                : "Chỉ mình tôi"
+            }
+          >
+            {post.postPrivacy === "PUBLIC" ? (
+              <FontAwesomeIcon icon={faGlobe} />
+            ) : post.postPrivacy === "FRIENDS" ? (
+              <FontAwesomeIcon icon={faUsers} />
+            ) : (
+              <FontAwesomeIcon icon={faLock} />
+            )}
+          </span>
         </div>
 
         {canModifyPost && (
@@ -523,10 +528,10 @@ const Post = ({ postId,refreshPosts }) => {
             onChange={(e) => setComment(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
           />
-          <button 
-              className="p-emoji-button"
-              onClick={() => setShowCommentEmojiPicker(!showCommentEmojiPicker)}
-            >
+          <button
+            className="p-emoji-button"
+            onClick={() => setShowCommentEmojiPicker(!showCommentEmojiPicker)}
+          >
             <FontAwesomeIcon icon={faSmile} />
           </button>
           {showCommentEmojiPicker && (

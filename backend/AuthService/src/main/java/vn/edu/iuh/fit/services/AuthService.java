@@ -86,11 +86,9 @@ public ResponseEntity<?> login(String username, String password) {
         response.put("user", user);
 
         // Lưu thông tin user vào cache
-        userCacheService.cacheUser(String.valueOf(user.getId()), user);
+//        userCacheService.cacheUser(String.valueOf(user.getId()), user);
         // Lưu trạng thái online của user
-        userCacheService.setUserOnlineStatus(String.valueOf(user.getId()), true);
-        // Lưu token vào Redis
-        tokenService.saveToken(String.valueOf(user.getId()), jwt, 3600); // 1 hour expiration
+//        userCacheService.setUserOnlineStatus(String.valueOf(user.getId()), true);
 
         return ResponseEntity.ok(response);
 

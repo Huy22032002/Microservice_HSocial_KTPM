@@ -15,9 +15,11 @@ import { fetchConversations, fetchMessages, postMessage } from "../api/chatApi";
 import { fetchUserDetail, fetchUser } from "../api/userApi";
 import Header from "../components/header";
 import moment from "moment/moment";
-
+import EmojiPicker from "emoji-picker-react";
+import axios from "axios";
 export default function Chat() {
   const navigate = useNavigate();
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   //socket
   const [socket, setSocket] = useState(null);
@@ -217,7 +219,6 @@ export default function Chat() {
 
           <div className={styles.containerBtnList}>
             <button className={styles.btnFilter}>Hộp thoại</button>
-            <button className={styles.btnFilter}>Đang chờ</button>
           </div>
 
           <div className={styles.mainListChat}>
@@ -313,14 +314,11 @@ export default function Chat() {
                         isMyMessage ? styles.myMessage : styles.otherMessage
                       }
                     >
-                      <strong>
+                      {!isMyMessage && (
                         <img
                           src={
-                            isMyMessage
-                              ? msg.avatar ||
-                                require("../assets/default_avatar.png")
-                              : msg.avatar ||
-                                require("../assets/default_avatar.png")
+                            msg.avatar ||
+                            require("../assets/default_avatar.png")
                           }
                           alt="avatar"
                           style={{
@@ -332,17 +330,33 @@ export default function Chat() {
                             verticalAlign: "middle",
                           }}
                         />
-                      </strong>
+                      )}
                       {msg.content}
                     </div>
                   );
                 })}
               </div>
               <div className={styles.chatBoxFooter}>
-                <button className={styles.btnTypeMessage}>
-                  <FontAwesomeIcon icon={faImage} />
-                </button>
-                <button className={styles.btnTypeMessage}>
+                <button
+                  onClick={() => setShowEmojiPicker((prev) => !prev)}
+                  className={styles.btnTypeMessage}
+                >
+                  {showEmojiPicker && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "60px",
+                        right: "20px",
+                        zIndex: 999,
+                      }}
+                    >
+                      <EmojiPicker
+                        onEmojiClick={(emojiData) => {
+                          setMessage((prev) => prev + emojiData.emoji);
+                        }}
+                      />
+                    </div>
+                  )}
                   <FontAwesomeIcon icon={faIcons} />
                 </button>
                 <input
@@ -409,20 +423,6 @@ export default function Chat() {
                     }}
                   >
                     Trang cá nhân
-                  </p>
-                </div>
-                <div className={styles.containerBtnInfo}>
-                  <button className={styles.btnChatInfo}>
-                    <FontAwesomeIcon icon={faSearch} />
-                  </button>
-                  <p
-                    style={{
-                      color: "#000",
-                      fontSize: 14,
-                      marginTop: "5px",
-                    }}
-                  >
-                    Tìm kiếm
                   </p>
                 </div>
               </div>

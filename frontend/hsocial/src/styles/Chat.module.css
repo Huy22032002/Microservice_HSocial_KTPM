@@ -3,7 +3,7 @@
   flex-direction: column;
   background-color: rgb(247, 241, 241);
 
-  /* height: 100vh; */
+  height: 100vh;
   overflow: hidden;
   box-sizing: border-box;
 }

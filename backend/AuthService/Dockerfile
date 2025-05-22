@@ -2,6 +2,7 @@
 FROM gradle:jdk17-jammy AS builder
 WORKDIR /workspace/app
 
+
 # Copy gradle files trước để tận dụng cache
 COPY build.gradle settings.gradle gradlew ./
 COPY gradle ./gradle
@@ -18,6 +19,7 @@ RUN ./gradlew build -x test --no-daemon
 FROM openjdk:17-jdk-slim
 WORKDIR /app
 
+
 # Sao chép JAR file từ giai đoạn build
 COPY --from=builder /workspace/app/build/libs/*.jar /app/app.jar
 
@@ -33,3 +35,4 @@ HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:8081/actuat
 
 # Chạy ứng dụng
 CMD java $JAVA_OPTS -jar /app/app.jar
+

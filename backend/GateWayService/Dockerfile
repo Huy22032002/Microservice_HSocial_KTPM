@@ -1,6 +1,8 @@
 # Giai đoạn build
 FROM gradle:jdk17-jammy AS builder
 WORKDIR /workspace/app
+["java","-jar","app.jar"]
+
 
 # Copy gradle files để tận dụng cache
 COPY build.gradle settings.gradle gradlew ./
