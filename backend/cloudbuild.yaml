@@ -1,0 +1,27 @@
+steps:
+  # Build Auth Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/hsocial-repo/auth-service:$BUILD_ID', './AuthService']
+  
+  # Build Chat Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/hsocial-repo/chat-service:$BUILD_ID', './ChatService']
+  
+  # Build Post Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/hsocial-repo/post-service:$BUILD_ID', './PostService']
+  
+  # Build Notification Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/hsocial-repo/noti-service:$BUILD_ID', './NotiService']
+  
+  # Build User Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/hsocial-repo/user-service:$BUILD_ID', './UserService']
+  
+images:
+  - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/hsocial-repo/auth-service:$BUILD_ID'
+  - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/hsocial-repo/chat-service:$BUILD_ID'
+  - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/hsocial-repo/post-service:$BUILD_ID'
+  - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/hsocial-repo/noti-service:$BUILD_ID'
+  - 'asia-southeast1-docker.pkg.dev/$PROJECT_ID/hsocial-repo/user-service:$BUILD_ID'

@@ -13,5 +13,5 @@ RUN mkdir -p /app/libs
 # Copy tất cả file JAR vào thư mục
 COPY --from=builder /workspace/app/build/libs/*.jar /app/libs/
 # Đổi ENTRYPOINT để chạy file JAR đầu tiên tìm thấy
-EXPOSE 8084
+EXPOSE 8083
 CMD ["sh", "-c", "java -jar /app/libs/*.jar"]

@@ -1,16 +1,17 @@
-# Giai đoạn build (builder stage)
+# Giai đoạn build
 FROM gradle:jdk17-jammy AS builder
 WORKDIR /workspace/app
-# Sao chép toàn bộ mã nguồn của AuthService (từ Root Directory của bạn trên Render) vào image builder
 COPY . .
-# Cấp quyền thực thi cho gradlew
 RUN chmod +x ./gradlew
-# Chạy lệnh build Gradle. --no-daemon thường được khuyên dùng cho môi trường CI/CD.
 RUN ./gradlew build -x test --no-daemon
-# Giai đoạn đóng gói (package stage)
+
+# Giai đoạn đóng gói
 FROM openjdk:17-jdk-slim
 WORKDIR /app
-# Sao chép tệp JAR đã được build từ giai đoạn builder vào image cuối cùng
-COPY --from=builder /workspace/app/build/libs/*.jar app.jar
+# Tạo thư mục cho file JAR
+RUN mkdir -p /app/libs
+# Copy tất cả file JAR vào thư mục
+COPY --from=builder /workspace/app/build/libs/*.jar /app/libs/
+# Đổi ENTRYPOINT để chạy file JAR đầu tiên tìm thấy
 EXPOSE 8081
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+CMD ["sh", "-c", "java -jar /app/libs/*.jar"]
