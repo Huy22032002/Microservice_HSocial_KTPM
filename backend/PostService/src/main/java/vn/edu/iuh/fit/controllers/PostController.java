@@ -37,6 +37,8 @@ public class PostController {
     private CommentService commentService;
     @Autowired
     private SharedPostService sharedPostService;
+    @Autowired
+    private MessageProducer messageProducer;
 
 
 
@@ -109,16 +111,12 @@ public class PostController {
 
 
         // Tạo thông báo
-        NotificationDto notificationDto = new NotificationDto(
-                savedPost.getUserId(),
-                "Bạn có một story mới!",
-                latestPost.getPostId(),
-                LocalDateTime.now(),
-                "POST"
-
-        );
-        notificationProducer.sendNotification(notificationDto);
-
+        NotificationDto notificationDto = new NotificationDto();
+        notificationDto.setUserId(post.getUserId());
+        notificationDto.setContentId(savedPost.getPostId());
+        notificationDto.setType("POST");
+//        notificationProducer.sendNotification(notificationDto);
+        messageProducer.sendToNotificationService(notificationDto);
         return ResponseEntity.ok(savedPost);
     }
 
@@ -386,14 +384,12 @@ public class PostController {
 
             // Create notification for original poster
             if (post.getUserId() != userId) { // Don't notify if user shares their own post
-                NotificationDto notificationDto = new NotificationDto(
-                        post.getUserId(),
-                        "Bài viết của bạn đã được chia sẻ!",
-                        post.getPostId(),
-                        LocalDateTime.now(),
-                        "SHARE"
-                );
-                notificationProducer.sendNotification(notificationDto);
+                NotificationDto notificationDto = new NotificationDto();
+                notificationDto.setUserId(post.getUserId());
+                notificationDto.setContentId(savedShare.getSharedPostId());
+                notificationDto.setType("SHARE_POST");
+//                notificationProducer.sendNotification(notificationDto);
+                messageProducer.sendToNotificationService(notificationDto);
             }
 
             return ResponseEntity.ok(Map.of(
@@ -428,6 +424,17 @@ public class PostController {
     @PostMapping("/{postId}/like/{userId}")
     public ResponseEntity<Map<String, Object>> likePost(@PathVariable Long postId, @PathVariable int userId) {
         Optional<Post> updatedPost = postService.toggleLike(postId, userId);
+        NotificationDto notificationDto = new NotificationDto();
+        notificationDto.setUserId(userId);
+        notificationDto.setContentId(postId);
+        notificationDto.setType("POST_LIKE");
+        // Send notification to the post owner
+        Post post1 = postService.getPostById(postId);
+        if (post1.getUserId() != userId) { // Don't notify if user likes their own post
+            notificationDto.setUserId(post1.getUserId());
+            messageProducer.sendToNotificationService(notificationDto);
+        }
+
 
         if (updatedPost.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of(
@@ -478,6 +485,16 @@ public class PostController {
             postService.savePost(post);
 
             commentService.saveComment(comment);
+            // Tạo thông báo cho người dùng đã bình luận
+            NotificationDto notificationDto = new NotificationDto();
+            notificationDto.setUserId(post.getUserId());
+            notificationDto.setContentId(postId);
+            notificationDto.setType("COMMENT");
+            // Gửi thông báo cho người dùng đã bình luận
+            if (post.getUserId() != userId) { // Don't notify if user comments on their own post
+                notificationDto.setUserId(post.getUserId());
+                messageProducer.sendToNotificationService(notificationDto);
+            }
 
             return ResponseEntity.ok("Bình luận đã được thêm.");
         } catch (Exception e) {

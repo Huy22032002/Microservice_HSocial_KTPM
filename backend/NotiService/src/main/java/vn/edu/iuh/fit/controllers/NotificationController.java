@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.iuh.fit.dtos.NotificationDto;
 import vn.edu.iuh.fit.models.Notification;
+import vn.edu.iuh.fit.models.NotificationType;
 import vn.edu.iuh.fit.services.NotificationService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -20,8 +22,15 @@ public class NotificationController {
     // Gửi thông báo mới
     @PostMapping
     public ResponseEntity<Notification> sendNotification(@RequestBody NotificationDto notificationDto) {
-        notificationService.saveNotification(notificationDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(notificationDto.toEntity());
+        Notification notification = new Notification();
+        notification.setUserId(notificationDto.getUserId());
+        notification.setRead(false);
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setMessage("Bạn có một thông báo mới từ bài viết với ID: " + notificationDto.getContentId());
+        notification.setType(NotificationType.POST);
+        notificationService.saveOneNotification(notification);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(notification);
     }
 
     // Lấy danh sách thông báo của người dùng

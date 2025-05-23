@@ -7,5 +7,6 @@ public enum NotificationType {
     FOLLOW,
     SYSTEM_UPDATE,
     MESSAGE,
-    FRIEND_REQUEST
+    FRIEND_REQUEST,
+    SHARE_POST,
 }

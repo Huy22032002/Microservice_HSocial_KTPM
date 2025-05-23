@@ -24,7 +24,7 @@ import {
   Language,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { lang } from "moment/moment";
+import moment from "moment";
 
 const GEMINI_API_KEY =
   process.env.REACT_APP_GEMINI_API_KEY ||
@@ -65,11 +65,8 @@ const PREDEFINED_QUESTIONS = [
     icon: "💬",
   },
 ];
-<<<<<<< Updated upstream
-=======
-lang.setLocale("vi");
+moment.locale("vi");
 
->>>>>>> Stashed changes
 const ChatBot = () => {
   const [messages, setMessages] = useState([
     {

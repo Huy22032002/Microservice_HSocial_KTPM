@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="0@localhost" uuid="19dc956f-657f-4e25-a0df-d284f9b327a8">
-      <driver-ref>redis</driver-ref>
+    <data-source source="LOCAL" name="hsocial@hsocial.cd0ce8sgc7vf.ap-southeast-1.rds.amazonaws.com" uuid="c743a438-711d-447f-b3f2-4f2f5f0de308">
+      <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
-      <imported>true</imported>
-      <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
-      <jdbc-url>jdbc:redis://localhost:6379/0</jdbc-url>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://hsocial.cd0ce8sgc7vf.ap-southeast-1.rds.amazonaws.com:3306/hsocial</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
@@ -15,51 +14,35 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="hsocial@hsocial.cd0ce8sgc7vf.ap-southeast-1.rds.amazonaws.com" uuid="216b74a7-5d2c-4d87-ae78-65c606a343a6">
-      <driver-ref>mariadb</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mariadb://hsocial.cd0ce8sgc7vf.ap-southeast-1.rds.amazonaws.com:3306/hsocial</jdbc-url>
-      <jdbc-additional-properties>
-        <property name="com.intellij.clouds.kubernetes.db.host.port" />
-        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
-        <property name="com.intellij.clouds.kubernetes.db.container.port" />
-      </jdbc-additional-properties>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="hsocial@atlas-sql-682f1f68002ad476469c0b4c-jve7j.a.query.mongodb.net" uuid="b97b2344-e890-4ad1-b3ae-21954aa3f360">
-      <driver-ref>mongo</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
-      <jdbc-url>mongodb://atlas-sql-682f1f68002ad476469c0b4c-jve7j.a.query.mongodb.net/hsocial?ssl=true&amp;authSource=admin:27017/hsocial</jdbc-url>
-      <jdbc-additional-properties>
-        <property name="com.intellij.clouds.kubernetes.db.host.port" />
-        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
-        <property name="com.intellij.clouds.kubernetes.db.container.port" />
-      </jdbc-additional-properties>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-<<<<<<< Updated upstream
-    <data-source source="LOCAL" name="authdb@authdb.cd0ce8sgc7vf.ap-southeast-1.rds.amazonaws.com" uuid="674284a3-856d-41f5-979a-51f919366589">
-      <driver-ref>mariadb</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mariadb://authdb.cd0ce8sgc7vf.ap-southeast-1.rds.amazonaws.com:3306/authdb</jdbc-url>
-      <jdbc-additional-properties>
-        <property name="com.intellij.clouds.kubernetes.db.host.port" />
-        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
-        <property name="com.intellij.clouds.kubernetes.db.container.port" />
-      </jdbc-additional-properties>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="0@redis-16589.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com" uuid="8d321a7c-2218-46e8-8987-5e4f3cab3e2c">
-=======
-    <data-source source="LOCAL" name="0@redis-16589.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com" uuid="5a86dbe5-7df2-475d-a151-c299c81fbbcf">
->>>>>>> Stashed changes
+    <data-source source="LOCAL" name="0@redis-16589.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com" uuid="2550cadc-e562-4e4e-bd15-a071fd02091a">
       <driver-ref>redis</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
       <jdbc-url>jdbc:redis://redis-16589.c252.ap-southeast-1-1.ec2.redns.redis-cloud.com:16589/0</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.host.port" />
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+        <property name="com.intellij.clouds.kubernetes.db.container.port" />
+      </jdbc-additional-properties>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="notidb@notidb.cd0ce8sgc7vf.ap-southeast-1.rds.amazonaws.com" uuid="64a09105-26d4-43d2-a2d6-11fda28657b8">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://notidb.cd0ce8sgc7vf.ap-southeast-1.rds.amazonaws.com:3306/notidb</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.host.port" />
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+        <property name="com.intellij.clouds.kubernetes.db.container.port" />
+      </jdbc-additional-properties>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="authdb.cd0ce8sgc7vf.ap-southeast-1.rds.amazonaws.com:3306" uuid="b36cd740-1e78-43d5-81ec-03f23f96fe57">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://authdb.cd0ce8sgc7vf.ap-southeast-1.rds.amazonaws.com:3306:3306/authdb</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
