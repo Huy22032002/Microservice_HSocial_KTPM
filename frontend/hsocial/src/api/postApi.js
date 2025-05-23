@@ -86,13 +86,17 @@ export const commentOnPost = async (postId, userId, comment) => {
 };
 
 export const fetchPostsUser = async (user_id) => {
+  const tokenn = localStorage.getItem("token");
   try {
-    const response = await axios.get(`${API_URL}/api/posts/listPost/${user_id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.get(
+      `${API_URL}/api/posts/listPost/${user_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${tokenn}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     console.log("list post of user:  ", response.data);
     return response.data;
   } catch (e) {

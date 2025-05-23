@@ -9,6 +9,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { containsBannedWords } from "../components/BannedWords.js"; // Import banned words utility
+import { fetchPostsUser } from "../api/postApi";
 
 const CreatePost = ({ currentUser, onPostCreated }) => {
   const userId = useSelector((state) => state.user.userId);
@@ -21,27 +23,18 @@ const CreatePost = ({ currentUser, onPostCreated }) => {
   const [previewUrls, setPreviewUrls] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleFileChange = (event) => {
-    const selectedFiles = Array.from(event.target.files);
-    const maxSize = 10 * 1024 * 1024;
-    if (selectedFiles.length > 3) {
-      alert("Chỉ được chọn tối đa 3 file.");
-      return;
-    }
-    const validFiles = selectedFiles.filter((file) => file.size <= maxSize);
-    if (validFiles.length < selectedFiles.length) {
-      alert("Một số file quá lớn, chỉ chọn file dưới 10MB.");
-    }
-    setFiles(validFiles);
-
-    // Create preview URLs
-    const newPreviewUrls = validFiles.map((file) => URL.createObjectURL(file));
-    setPreviewUrls(newPreviewUrls);
-  };
-
   const createPost = async () => {
     if (!newContent.trim()) {
       alert("Vui lòng nhập nội dung bài viết");
+      return;
+    }
+
+    const { hasBannedWords, bannedWordsFound } =
+      containsBannedWords(newContent);
+    if (hasBannedWords) {
+      alert(
+        `Nội dung có chứa từ không phù hợp: ${bannedWordsFound.join(", ")}`
+      );
       return;
     }
 
@@ -52,7 +45,7 @@ const CreatePost = ({ currentUser, onPostCreated }) => {
       files.forEach((file) => formData.append("files", file));
       try {
         const response = await axios.post(
-          `${API_URL}/posts/s3upload`,
+          `${API_URL}/api/posts/s3upload`,
           formData,
           {
             headers: {
@@ -73,28 +66,24 @@ const CreatePost = ({ currentUser, onPostCreated }) => {
       post: {
         userId,
         postPrivacy,
-        createdAt: new Date().toISOString(),
+        // createdAt: new Date(),
       },
       content: newContent,
       mediaUrls,
     };
 
     try {
-      await axios.post(`${API_URL}/posts/create`, postData, {
+      await axios.post(`${API_URL}/api/posts/create`, postData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      // Gọi lại callback để cập nhật danh sách bài viết
-      onPostCreated();
-      alert("Đăng bài thành công");
-
       setNewContent("");
       setFiles([]);
       setPreviewUrls([]);
-      //   fetchPostIds();
+      onPostCreated();
     } catch (error) {
       alert("Lỗi khi tạo bài viết!");
       console.error("Lỗi khi tạo bài viết:", error);
@@ -103,6 +92,23 @@ const CreatePost = ({ currentUser, onPostCreated }) => {
     }
   };
 
+  const handleFileChange = (event) => {
+    const selectedFiles = Array.from(event.target.files);
+    const maxSize = 10 * 1024 * 1024;
+    if (selectedFiles.length > 3) {
+      alert("Chỉ được chọn tối đa 3 file.");
+      return;
+    }
+    const validFiles = selectedFiles.filter((file) => file.size <= maxSize);
+    if (validFiles.length < selectedFiles.length) {
+      alert("Một số file quá lớn, chỉ chọn file dưới 10MB.");
+    }
+    setFiles(validFiles);
+
+    // Create preview URLs
+    const newPreviewUrls = validFiles.map((file) => URL.createObjectURL(file));
+    setPreviewUrls(newPreviewUrls);
+  };
   const getPrivacyIcon = () => {
     switch (postPrivacy) {
       case "PUBLIC":

@@ -1,5 +1,13 @@
 backend/PostService/src/main/resources/application.properties
 backend/AuthService/src/main/resources/application.properties
 backend/NotiService/src/main/resources/application.properties
+backend/PostService/src/main/resources/.env
+backend/AuthService/src/main/resources/.env
+backend/NotiService/src/main/resources/.env
+backend/UserService/src/main/resources/.env
+backend/ChatService/src/main/resources/.env
+
 backend/.env
+frontend/hsocial/.env
+!**/src/main/resources/.env
 *.properties

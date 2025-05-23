@@ -29,6 +29,27 @@ public class FriendController {
         return ResponseEntity.ok(suggestions);
     }
 
+    @PostMapping("/add")
+    public ResponseEntity<?> addFriend(@RequestBody FriendRequest friendRequest) {
+        System.out.println("UserId: " + friendRequest.getUserId() + ", FriendId: " + friendRequest.getFriendId());
+
+        try {
+            if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
+                return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
+            }
+            //gui message qua notification service
+            messageProducer.sendToNotificationService(friendRequest);
+            //loai bo khoi danh sach goi y
+            friendService.removeSuggestion(friendRequest.getUserId(), friendRequest.getFriendId());
+
+            return ResponseEntity.ok(friendService.addFriend(friendRequest));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getListFriend(@PathVariable int id) {
         try {
@@ -64,24 +85,7 @@ public class FriendController {
                     .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
         }
     }
-    @PostMapping("/add")
-    public ResponseEntity<?> addFriend(@RequestBody FriendRequest friendRequest) {
-        System.out.println("UserId: " + friendRequest.getUserId() + ", FriendId: " + friendRequest.getFriendId());
 
-        try {
-            if (friendRequest == null || friendRequest.getUserId() == 0 || friendRequest.getFriendId() == 0) {
-                return ResponseEntity.badRequest().body(new ErrorResponse(400, "Bad Request", "Thiếu thông tin bạn bè", Instant.now()));
-            }
-            //gui message qua notification service
-            messageProducer.sendToNotificationService(friendRequest);
-
-            return ResponseEntity.ok(friendService.addFriend(friendRequest));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse(500, "Internal Server Error", e.getMessage(), Instant.now()));
-        }
-    }
     @PutMapping("/accept")
     public ResponseEntity<?> acceptFriend(@RequestBody FriendRequest friendRequest) {
         System.out.println("UserId: " + friendRequest.getUserId() + ", FriendId: " + friendRequest.getFriendId());
