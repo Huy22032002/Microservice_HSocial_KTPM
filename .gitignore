@@ -8,5 +8,6 @@ backend/UserService/src/main/resources/.env
 backend/ChatService/src/main/resources/.env
 
 backend/.env
+frontend/hsocial/.env
 !**/src/main/resources/.env
 *.properties
