@@ -2,7 +2,7 @@ resilience4j:
   ratelimiter:
     instances:
       messageApi:
-        limitForPeriod: 3
+        limitForPeriod: 5
         limitRefreshPeriod: 10s
         timeoutDuration: 0
       conversationApi:

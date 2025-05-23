@@ -10,6 +10,7 @@ import vn.edu.iuh.fit.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -45,4 +46,12 @@ public class UserService {
     }
 
 
+    public Optional<Object> getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            return Optional.of(user);
+        } else {
+            return Optional.empty();
+        }
+    }
 }

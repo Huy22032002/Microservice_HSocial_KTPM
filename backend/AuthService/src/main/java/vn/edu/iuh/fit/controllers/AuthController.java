@@ -42,6 +42,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        //lay userid tu username,pass
+//        userService.getUserByUsername(loginRequest.getUsername());
+//
+//        //kiem tra redis xem user da ton tai chua neu co thi ko cho dang nhap
+//        User user = userCacheService.getCachedUser(loginRequest.getUsername());
+//        if (user != null) {
+//            return ResponseEntity.status(400).body(new ErrorResponse(400, "Bad Request", "User already logged in", Instant.now()));
+//        }
         logger.info("Login request received: {}", loginRequest);
         return authService.login(loginRequest.getUsername(), loginRequest.getPassword());
     }
