@@ -6,13 +6,13 @@ const BannerHome = () => {
       id: 1,
       name: "Free MongoDB!",
       image: require("../assets/banner1.png"),
-      link: "mongodb.com",
+      link: "https://mongodb.com",
     },
     {
       id: 2,
       name: "Watch Now!",
       image: require("../assets/banner2.jpg"),
-      link: "youtube.com",
+      link: "https://youtube.com",
     },
   ];
 
@@ -36,9 +36,9 @@ const BannerHome = () => {
           />
           <div>
             <h3 style={{ boxSizing: "border-box" }}>{item.name}</h3>
-            <p style={{ boxSizing: "border-box", color: "gray" }}>
+            <a style={{ boxSizing: "border-box", color: "gray" }} href={item.link}>
               {item.link}
-            </p>
+            </a>
           </div>
         </div>
       ))}

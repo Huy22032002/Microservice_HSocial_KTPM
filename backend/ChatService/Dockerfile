@@ -2,6 +2,7 @@
 FROM gradle:jdk17-jammy AS builder
 WORKDIR /workspace/app
 
+
 # Copy gradle files để tận dụng cache
 COPY build.gradle settings.gradle gradlew ./
 COPY gradle ./gradle

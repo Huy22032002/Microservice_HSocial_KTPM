@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/main/resources/application.yml
 !**/src/test/**/build/
+!**/src/main/resources/.env
 
 src/main/resources/.env
 .application.yml

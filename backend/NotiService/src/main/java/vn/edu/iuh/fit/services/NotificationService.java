@@ -44,10 +44,9 @@ public class NotificationService {
 
         Notification notification = new Notification();
         notification.setUserId(dto.getUserId());
-        notification.setMessage(dto.getMessage());
-        notification.setType(NotificationType.valueOf(dto.getType()));
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
+        notification.setMessage("Bạn có một thông báo mới từ bài viết với ID: " + dto.getContentId());
 
         String key = NOTIFICATION_KEY_PREFIX + userId;
         redisTemplate.opsForList().leftPush(key, notification);

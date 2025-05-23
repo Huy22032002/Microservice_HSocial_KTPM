@@ -44,10 +44,6 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.4.3'
     //oauth2
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '3.4.3'
-    //kafka
-    implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '3.1.2'
-    //spring kafka 4.0s
-//    implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '4.0.0'
     //mongodb
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '3.4.3'
     //netty-http

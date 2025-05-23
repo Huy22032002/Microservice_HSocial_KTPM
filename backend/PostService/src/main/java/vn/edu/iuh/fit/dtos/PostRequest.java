@@ -20,5 +20,4 @@ public class PostRequest {
     public boolean getIsStory() {
         return story;
     }
-
 }

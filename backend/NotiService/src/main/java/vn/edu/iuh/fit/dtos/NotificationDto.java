@@ -20,16 +20,7 @@ import java.time.LocalDateTime;
 //@JsonDeserialize
 public class NotificationDto implements Serializable {
     private Long userId;
-    private String message;
-
     private Long ContentId;
-    private LocalDateTime createdAt;
-//    @Enumerated(EnumType.STRING)
     private String type;
 
-    public Notification toEntity() {
-        Notification notification = new Notification(userId, message, ContentId,type, false,createdAt);
-        return notification;
-
-    }
 }

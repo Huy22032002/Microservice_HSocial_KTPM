@@ -13,13 +13,13 @@ public class MongoDBConfig {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    @PostConstruct
-    public void initCollections() {
-        if (!mongoTemplate.collectionExists(Conversation.class)) {
-            mongoTemplate.createCollection(Conversation.class);
-        }
-        if (!mongoTemplate.collectionExists(Message.class)) {
-            mongoTemplate.createCollection(Message.class);
-        }
-    }
+//    @PostConstruct
+//    public void initCollections() {
+//        if (!mongoTemplate.collectionExists(Conversation.class)) {
+//            mongoTemplate.createCollection(Conversation.class);
+//        }
+//        if (!mongoTemplate.collectionExists(Message.class)) {
+//            mongoTemplate.createCollection(Message.class);
+//        }
+//    }
 }

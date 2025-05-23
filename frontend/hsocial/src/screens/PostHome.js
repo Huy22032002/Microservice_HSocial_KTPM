@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import "../styles/PostHome.css";
@@ -28,13 +28,19 @@ import ListChatFriend from "../components/ListChatFriend.js";
 import SharedPostView from "../components/SharedPostView.js";
 import { containsBannedWords } from "../components/BannedWords.js"; // Import banned words utility
 import EmojiPicker from "emoji-picker-react";
+import { getSuggestFriends, sendFriendRequest } from "../api/friendApi.js";
+import { useNavigate } from "react-router-dom";
 
 const PostHome = () => {
+  const navigate = useNavigate();
+
   const [friends, setFriends] = useState([]);
   const [postIds, setPostIds] = useState([]);
   const [sharedPostIds, setSharedPostIds] = useState([]);
   const [combinedPosts, setCombinedPosts] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [suggestFriends, setSuggestFriends] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [newContent, setNewContent] = useState("");
@@ -63,6 +69,19 @@ const PostHome = () => {
 
   const userId = useSelector((state) => state.user.userId);
   const API_URL = process.env.REACT_APP_API_URL;
+
+  const fetchSuggest = async () => {
+    const data = await getSuggestFriends(userId);
+    console.log("danh sách đề xuất: ", data);
+    if (data) {
+      setSuggestFriends(data);
+    }
+  };
+
+  const sendFrRequest = async (friendId) => {
+    await sendFriendRequest(userId, friendId);
+    setSuggestFriends((prev) => prev.filter((f) => f.userId !== friendId));
+  };
 
   const fetchFriends = async () => {
     try {
@@ -695,8 +714,11 @@ const PostHome = () => {
 
   // useEffect lifecycle
   useEffect(() => {
-    fetchFriends();
-    fetchCurrentUser();
+    if (userId) {
+      fetchCurrentUser();
+      fetchFriends();
+      fetchSuggest();
+    }
     fetchStories();
   }, [userId]);
 
@@ -724,22 +746,25 @@ const PostHome = () => {
         {/* Story section */}
         <div className="stories-container">
           {/* Create story card */}
-          <div
-            className="story-card create-story"
-            onClick={() => setShowStoryModal(true)}
-          >
-            <div className="story-create-overlay">
-              <div className="add-story-icon">
-                <FontAwesomeIcon icon={faPlus} />
+          {userId && (
+            <div
+              className="story-card create-story"
+              onClick={() => setShowStoryModal(true)}
+            >
+              <div className="story-create-overlay">
+                <div className="add-story-icon">
+                  <FontAwesomeIcon icon={faPlus} />
+                </div>
               </div>
+              <img
+                src={currentUser.avatar || require("../assets/default_avatar.png")}
+                alt="Your profile"
+                className="story-avatar"
+              />
+              <div className="story-footer">Tạo story</div>
             </div>
-            <img
-              src={currentUser.avatar || "https://via.placeholder.com/40"}
-              alt="Your profile"
-              className="story-avatar"
-            />
-            <div className="story-footer">Tạo story</div>
-          </div>
+          )}
+
           {/* Stories list */}
           {stories.map((story, index) => (
             <div
@@ -1018,35 +1043,47 @@ const PostHome = () => {
               {/* Story content */}
               <div className="story-viewer-content">
                 {/* Media content */}
-                {stories[currentStoryIndex].content?.files && 
-                 stories[currentStoryIndex].content.files[0]?.startsWith("http") && (
-                  <div className="story-media-container">
-                    {stories[currentStoryIndex].content.files[0].includes(".mp4") ? (
-                      <video
-                        src={stories[currentStoryIndex].content.files[0]}
-                        className="story-viewer-media"
-                        autoPlay
-                        loop
-                        muted
-                      />
-                    ) : (
-                      <img
-                        src={stories[currentStoryIndex].content.files[0]}
-                        alt="Story"
-                        className="story-viewer-media"
-                      />
-                    )}
-                  </div>
-                )}
-                
+                {stories[currentStoryIndex].content?.files &&
+                  stories[currentStoryIndex].content.files[0]?.startsWith(
+                    "http"
+                  ) && (
+                    <div className="story-media-container">
+                      {stories[currentStoryIndex].content.files[0].includes(
+                        ".mp4"
+                      ) ? (
+                        <video
+                          src={stories[currentStoryIndex].content.files[0]}
+                          className="story-viewer-media"
+                          autoPlay
+                          loop
+                          muted
+                        />
+                      ) : (
+                        <img
+                          src={stories[currentStoryIndex].content.files[0]}
+                          alt="Story"
+                          className="story-viewer-media"
+                        />
+                      )}
+                    </div>
+                  )}
+
                 {/* Text content - positioned at bottom if media exists */}
                 {stories[currentStoryIndex].content?.text && (
-                  <div className={`story-viewer-text ${stories[currentStoryIndex].content?.files && 
-                    stories[currentStoryIndex].content.files[0]?.startsWith("http") ? 'with-media' : ''}`}>
+                  <div
+                    className={`story-viewer-text ${
+                      stories[currentStoryIndex].content?.files &&
+                      stories[currentStoryIndex].content.files[0]?.startsWith(
+                        "http"
+                      )
+                        ? "with-media"
+                        : ""
+                    }`}
+                  >
                     {stories[currentStoryIndex].content.text}
                   </div>
                 )}
-                
+
                 {/* Like button và số lượt like */}
                 <div className="story-like-section">
                   <button
@@ -1109,7 +1146,7 @@ const PostHome = () => {
           <div className="post-form">
             <div className="post-form-header">
               <img
-                src={currentUser.avatar || "https://via.placeholder.com/40"}
+                src={currentUser.avatar || require("../assets/default_avatar.png")}
                 alt="User avatar"
                 className="user-avatar"
               />
@@ -1293,35 +1330,37 @@ const PostHome = () => {
         <div className="sidebar-section">
           <h3>Gợi ý kết bạn</h3>
           <div className="suggestion-list">
-            {/* Placeholder for friend suggestions */}
-            <div className="suggestion-item">
-              <img
-                src={
-                  "https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png" ||
-                  require("../../public/default_avatar.png")
-                }
-                alt="Suggested user"
-              />
-              <div className="suggestion-info">
-                <span className="suggestion-name">Jane Doe</span>
-                <span className="suggestion-meta">12 bạn chung</span>
-              </div>
-              <button className="suggestion-action">Kết bạn</button>
-            </div>
-            <div className="suggestion-item">
-              <img
-                src={
-                  "https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png" ||
-                  require("../../public/default_avatar.png")
-                }
-                alt="Suggested user"
-              />
-              <div className="suggestion-info">
-                <span className="suggestion-name">John Smith</span>
-                <span className="suggestion-meta">5 bạn chung</span>
-              </div>
-              <button className="suggestion-action">Kết bạn</button>
-            </div>
+            {suggestFriends.length > 0 &&
+            userId &&
+            localStorage.getItem("token") ? (
+              suggestFriends.map((s) => (
+                <div key={s.userId} className="suggestion-item">
+                  <img
+                    src={s.avatar || require("../assets/default_avatar.png")}
+                    alt={s.name}
+                    width={40}
+                    height={40}
+                  />
+                  <div
+                    onClick={() => navigate(`/anotherUserProfile/${s.userId}`)}
+                    className="suggestion-info"
+                  >
+                    <p className="suggestion-name">{s.name}</p>
+                    <p className="suggestion-meta">
+                      {s.mutualFriends} Bạn chung
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => sendFrRequest(s.userId)}
+                    className="suggestion-action"
+                  >
+                    Kết bạn
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p>No suggestions</p>
+            )}
           </div>
         </div>
 

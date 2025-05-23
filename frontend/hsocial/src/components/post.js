@@ -20,7 +20,7 @@ import {
   faSmile,
 } from "@fortawesome/free-solid-svg-icons";
 import EmojiPicker from "emoji-picker-react";
-import { containsBannedWords } from "./BannedWords"; 
+import { containsBannedWords } from "./BannedWords";
 
 import FullScreen from "./FullScreen";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,7 +28,7 @@ import { set } from "lodash";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-const Post = ({ postId,refreshPosts }) => {
+const Post = ({ postId, refreshPosts }) => {
   const userId = useSelector((state) => state.user.userId);
   const [post, setPost] = useState(null);
   const [userCommentDetail, setUserCommentDetail] = useState({});
@@ -201,8 +201,7 @@ const Post = ({ postId,refreshPosts }) => {
       const user = await fetchUserDetail(fetchedPost.userId);
       setPostUser(
         user || {
-          avatar:
-            "https://icons.veryicon.com/png/o/miscellaneous/rookie-official-icon-gallery/225-default-avatar.png",
+          avatar: require("../assets/default_avatar.png"),
           fullname: "Người dùng không xác định",
         }
       );
@@ -260,7 +259,9 @@ const Post = ({ postId,refreshPosts }) => {
 
     const { hasBannedWords, bannedWordsFound } = containsBannedWords(comment);
     if (hasBannedWords) {
-      alert(`Bình luận có chứa từ không phù hợp: ${bannedWordsFound.join(', ')}`);
+      alert(
+        `Bình luận có chứa từ không phù hợp: ${bannedWordsFound.join(", ")}`
+      );
       return;
     }
 
@@ -283,7 +284,7 @@ const Post = ({ postId,refreshPosts }) => {
   };
 
   const onCommentEmojiClick = (emojiObject) => {
-    setComment(prevComment => prevComment + emojiObject.emoji);
+    setComment((prevComment) => prevComment + emojiObject.emoji);
     setShowCommentEmojiPicker(false);
   };
 
@@ -335,7 +336,7 @@ const Post = ({ postId,refreshPosts }) => {
   return (
     <div className="post-container">
       <div className="p-post-header">
-        <img src={postUser.avatar} alt="avatar" className="p-avatar" />
+        <img src={postUser.avatar || require('../assets/default_avatar.png')} alt="avatar" className="p-avatar" />
         <div className="p-post-user-info">
           <h3>{postUser.fullname}</h3>
           <span className="p-post-time">
@@ -347,21 +348,24 @@ const Post = ({ postId,refreshPosts }) => {
               minute: "2-digit",
             })}
           </span>
-          <span className="p-privacy-icon" title={
-              post.postPrivacy === "PUBLIC" 
-                ? "Công khai" 
-                : post.postPrivacy === "FRIENDS" 
-                  ? "Bạn bè" 
-                  : "Chỉ mình tôi"
-            }>
-              {post.postPrivacy === "PUBLIC" ? (
-                <FontAwesomeIcon icon={faGlobe} />
-              ) : post.postPrivacy === "FRIENDS" ? (
-                <FontAwesomeIcon icon={faUsers} />
-              ) : (
-                <FontAwesomeIcon icon={faLock} />
-              )}
-            </span>
+          <span
+            className="p-privacy-icon"
+            title={
+              post.postPrivacy === "PUBLIC"
+                ? "Công khai"
+                : post.postPrivacy === "FRIENDS"
+                ? "Bạn bè"
+                : "Chỉ mình tôi"
+            }
+          >
+            {post.postPrivacy === "PUBLIC" ? (
+              <FontAwesomeIcon icon={faGlobe} />
+            ) : post.postPrivacy === "FRIENDS" ? (
+              <FontAwesomeIcon icon={faUsers} />
+            ) : (
+              <FontAwesomeIcon icon={faLock} />
+            )}
+          </span>
         </div>
 
         {canModifyPost && (
@@ -523,10 +527,10 @@ const Post = ({ postId,refreshPosts }) => {
             onChange={(e) => setComment(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
           />
-          <button 
-              className="p-emoji-button"
-              onClick={() => setShowCommentEmojiPicker(!showCommentEmojiPicker)}
-            >
+          <button
+            className="p-emoji-button"
+            onClick={() => setShowCommentEmojiPicker(!showCommentEmojiPicker)}
+          >
             <FontAwesomeIcon icon={faSmile} />
           </button>
           {showCommentEmojiPicker && (

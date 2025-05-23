@@ -5,6 +5,7 @@ services:
     restart: always
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+  
   kafka:
     image: confluentinc/cp-kafka:latest
     restart: always
@@ -40,50 +41,77 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
 
   auth-service:
-    build: ./AuthService
+    image: ${DOCKERHUB_USERNAME}/hsocial-auth-service:latest
     container_name: AuthService
     ports:
       - "8081:8081"
     depends_on:
       - rabbitmq
+      - redis
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
 
   user-service:
-    build: ./UserService
+    image: ${DOCKERHUB_USERNAME}/hsocial-user-service:latest
     container_name: UserService
     ports:
       - "8085:8085"
     depends_on:
       - rabbitmq
+      - redis
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq 
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
 
   noti-service:
-    build: ./NotiService
+    image: ${DOCKERHUB_USERNAME}/hsocial-noti-service:latest
     container_name: NotiService
     ports:
       - "8084:8084"
     depends_on:
       - rabbitmq
+      - redis
+      - kafka
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
 
   chat-service:
-    build: ./ChatService
+    image: ${DOCKERHUB_USERNAME}/hsocial-chat-service:latest
     container_name: ChatService
     ports:
       - "8082:8082"
+    depends_on:
+      - rabbitmq
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+
   post-service:
-    build: ./PostService
+    image: ${DOCKERHUB_USERNAME}/hsocial-post-service:latest
     container_name: PostService
     ports:
       - "8083:8083"
+    depends_on:
+      - kafka
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+  gateway-service:
+    image: ${DOCKERHUB_USERNAME}/hsocial-gateway-service:latest
+    container_name: GatewayService
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - user-service
+      - post-service
+      - chat-service
+      - noti-service
+
 volumes:
   redis-data:
