@@ -20,13 +20,11 @@ import {
   Send as SendIcon,
   Person as PersonIcon,
   QuestionAnswer as QuestionIcon,
-  Home as HomeIcon, 
+  Home as HomeIcon,
+  Language,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-// THAY THẾ BẰNG API KEY GEMINI CỦA BẠN
-// Bạn nên lưu API key trong file .env để bảo mật
-// Ví dụ: REACT_APP_GEMINI_API_KEY=YOUR_ACTUAL_API_KEY
 const GEMINI_API_KEY =
   process.env.REACT_APP_GEMINI_API_KEY ||
   "AIzaSyCpMl_mk29YqWOvBhusgF_8l9z7e0ctwhI"; // <-- THAY KEY CỦA BẠN VÀO ĐÂY
@@ -66,11 +64,11 @@ const PREDEFINED_QUESTIONS = [
     icon: "💬",
   },
 ];
-
 const ChatBot = () => {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
+      language: "vi",
       content:
         "Chào bạn! Tôi là HBot - trợ lý AI của mạng xã hội HSocial. Bạn có thể chọn một câu hỏi bên dưới hoặc đặt câu hỏi riêng.",
     },
@@ -90,10 +88,10 @@ const ChatBot = () => {
 
   // Cập nhật hàm handleSend
 
-   const goToHome = () => {
-    navigate('/home');
+  const goToHome = () => {
+    navigate("/home");
   };
-  
+
   const handleSend = async (questionText = input) => {
     if (!questionText.trim()) return;
 
@@ -294,7 +292,14 @@ const ChatBot = () => {
         flexDirection: "column",
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
         <IconButton
           onClick={goToHome}
           title="Trở về trang chủ"
@@ -310,10 +315,15 @@ const ChatBot = () => {
         >
           <HomeIcon />
         </IconButton>
-        
+
         <Typography
           variant="h4"
-          sx={{ fontWeight: "bold", color: "#1976d2", textAlign: "center", flex: 1 }}
+          sx={{
+            fontWeight: "bold",
+            color: "#1976d2",
+            textAlign: "center",
+            flex: 1,
+          }}
         >
           Trợ lý AI HSocial
         </Typography>

@@ -2,6 +2,7 @@ package vn.edu.iuh.fit.services;
 
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import vn.edu.iuh.fit.dtos.FriendRequest;
 import vn.edu.iuh.fit.models.FriendStatus;
@@ -12,6 +13,7 @@ import vn.edu.iuh.fit.repositories.UserFriendRepositories;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +22,135 @@ public class UserFriendService {
     private UserFriendRepositories userFriendRepositories;
     @Autowired
     private UserDetailRepositories userDetailRepositories;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+//    public List<Map<String, Object>> suggestFriends(int userId) {
+//        //lấy ds bạn bè của mình
+//        UserFriend myListFriend = userFriendRepositories.findByUserId(userId);
+//        if (myListFriend == null) return new ArrayList<>();
+//        List<Integer> myFriends = myListFriend.getFriends().stream()
+//                .filter(f -> f.getFriendStatus() == FriendStatus.ACCEPTED)
+//                .map(UserFriend.Friend::getFriendId)
+//                .toList();
+//
+//        System.out.println("my friends: " + myFriends);
+//
+//        // Tập hợp để loại bỏ chính mình và bạn đã có
+//        Set<Integer> myFriendsSet = new HashSet<>(myFriends);
+//        myFriendsSet.add(userId);
+//        // Gợi ý bạn bè từ bạn của bạn
+//        Map<Integer, Integer> mutualFriendCounts = new HashMap<>();
+//
+//        // gọi UserDetailService lấy details từ danh sách gợi ý
+//        for (Integer friendId : myFriends) {
+//            UserFriend friendFriendList = userFriendRepositories.findByUserId(friendId);
+//            if (friendFriendList == null) continue;
+//
+//            for (UserFriend.Friend f : friendFriendList.getFriends()) {
+//                if (f.getFriendStatus() != FriendStatus.ACCEPTED) continue; //bỏ qua những document ko phai accepted
+//
+//                int suggestedId = f.getFriendId();
+//                if (!myFriendsSet.contains(suggestedId)) {
+//                    mutualFriendCounts.put(suggestedId, mutualFriendCounts.getOrDefault(suggestedId, 0) + 1);
+//                }
+//            }
+//        }
+//
+//        // Kết hợp với UserDetail để trả về thông tin đầy đủ
+//        List<Map<String, Object>> suggestions = new ArrayList<>();
+//
+//        for (Map.Entry<Integer, Integer> entry : mutualFriendCounts.entrySet()) {
+//            int suggestedId = entry.getKey();
+//            int mutual = entry.getValue();
+//
+//            UserDetail detail = userDetailRepositories.findById(suggestedId).orElse(null);
+//            if (detail != null) {
+//                Map<String, Object> data = new HashMap<>();
+//                data.put("userId", suggestedId);
+//                data.put("name", detail.getFullname());
+//                data.put("avatar", detail.getAvatar());
+//                data.put("mutualFriends", mutual);
+//                suggestions.add(data);
+//            }
+//        }
+//
+//        // Sắp xếp theo số lượng bạn chung giảm dần
+//        suggestions.sort((a, b) -> (int) b.get("mutualFriends") - (int) a.get("mutualFriends"));
+//
+//        return suggestions;
+//    }
+
+    public List<Map<String, Object>> suggestFriends(int userId) {
+        String redisKey = "suggestions:user:" + userId;
+
+        // 1. Kiểm tra Redis
+        Object cached = redisTemplate.opsForValue().get(redisKey);
+        if (cached != null) {
+            return (List<Map<String, Object>>) cached;
+        }
+
+        // 2. Nếu không có cache, tính toán như cũ
+        UserFriend myListFriend = userFriendRepositories.findByUserId(userId);
+        if (myListFriend == null) return new ArrayList<>();
+        List<Integer> myFriends = myListFriend.getFriends().stream()
+                .filter(f -> f.getFriendStatus() == FriendStatus.ACCEPTED)
+                .map(UserFriend.Friend::getFriendId)
+                .toList();
+
+        Set<Integer> myFriendsSet = new HashSet<>(myFriends);
+        myFriendsSet.add(userId);
+        Map<Integer, Integer> mutualFriendCounts = new HashMap<>();
+
+        for (Integer friendId : myFriends) {
+            UserFriend friendFriendList = userFriendRepositories.findByUserId(friendId);
+            if (friendFriendList == null) continue;
+
+            for (UserFriend.Friend f : friendFriendList.getFriends()) {
+                if (f.getFriendStatus() != FriendStatus.ACCEPTED) continue;
+
+                int suggestedId = f.getFriendId();
+                if (!myFriendsSet.contains(suggestedId)) {
+                    mutualFriendCounts.put(suggestedId, mutualFriendCounts.getOrDefault(suggestedId, 0) + 1);
+                }
+            }
+        }
+
+        List<Map<String, Object>> suggestions = new ArrayList<>();
+
+        for (Map.Entry<Integer, Integer> entry : mutualFriendCounts.entrySet()) {
+            int suggestedId = entry.getKey();
+            int mutual = entry.getValue();
+
+            UserDetail detail = userDetailRepositories.findById(suggestedId).orElse(null);
+            if (detail != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("userId", suggestedId);
+                data.put("name", detail.getFullname());
+                data.put("avatar", detail.getAvatar());
+                data.put("mutualFriends", mutual);
+                suggestions.add(data);
+            }
+        }
+
+        suggestions.sort((a, b) -> (int) b.get("mutualFriends") - (int) a.get("mutualFriends"));
+
+        // 3. Lưu vào Redis (cache trong 1 giờ)
+        redisTemplate.opsForValue().set(redisKey, suggestions, 1, TimeUnit.HOURS);
+
+        return suggestions;
+    }
+
+
+    public void removeSuggestion(int userId, int targetUserId) {
+        String redisKey = "suggestions:user:" + userId;
+        Object cached = redisTemplate.opsForValue().get(redisKey);
+        if (cached != null) {
+            List<Map<String, Object>> suggestions = (List<Map<String, Object>>) cached;
+            suggestions.removeIf(s -> ((int) s.get("userId")) == targetUserId);
+            redisTemplate.opsForValue().set(redisKey, suggestions, 1, TimeUnit.HOURS);
+        }
+    }
 
     public UserFriend getAllFriendsOfUser(int userId) {
         UserFriend userFriend = userFriendRepositories.findByUserId(userId);
@@ -33,7 +164,6 @@ public class UserFriendService {
         userFriend.setFriends(friends);
         return userFriend;
     }
-
     public List<Map<String, Object>> getAllFriendsWithFullNameOfUser(int userId) {
         UserFriend userFriend = userFriendRepositories.findByUserId(userId);
         if (userFriend == null) {
@@ -60,7 +190,6 @@ public class UserFriendService {
         }
         return result;
     }
-
     public UserFriend getListPendingOfUser(int userId) {
         UserFriend userFriend = userFriendRepositories.findByUserId(userId);
         if(userFriend == null) {
@@ -133,7 +262,6 @@ public class UserFriendService {
         }
         return userFriendRepositories.save(userFriend);
     }
-
     public boolean removeFriend(FriendRequest friendRequest) {
         UserFriend userFriend = userFriendRepositories.findByUserId(friendRequest.getUserId());
         UserFriend friendUser = userFriendRepositories.findByUserId(friendRequest.getFriendId());
@@ -163,61 +291,5 @@ public class UserFriendService {
             throw new RuntimeException("Không tìm thấy lời mời từ friendId: " + friendRequest.getFriendId());
         }
         return userFriendRepositories.save(userFriend);
-    }
-
-    public List<Map<String, Object>> suggestFriends(int userId) {
-        //lấy ds bạn bè của mình
-        UserFriend myListFriend = userFriendRepositories.findByUserId(userId);
-        if (myListFriend == null) return new ArrayList<>();
-        List<Integer> myFriends = myListFriend.getFriends().stream()
-                .filter(f -> f.getFriendStatus() == FriendStatus.ACCEPTED)
-                .map(UserFriend.Friend::getFriendId)
-                .toList();
-
-        System.out.println("my friends: " + myFriends);
-
-        // Tập hợp để loại bỏ chính mình và bạn đã có
-        Set<Integer> myFriendsSet = new HashSet<>(myFriends);
-        myFriendsSet.add(userId);
-        // Gợi ý bạn bè từ bạn của bạn
-        Map<Integer, Integer> mutualFriendCounts = new HashMap<>();
-
-        // gọi UserDetailService lấy details từ danh sách gợi ý
-        for (Integer friendId : myFriends) {
-            UserFriend friendFriendList = userFriendRepositories.findByUserId(friendId);
-            if (friendFriendList == null) continue;
-
-            for (UserFriend.Friend f : friendFriendList.getFriends()) {
-                if (f.getFriendStatus() != FriendStatus.ACCEPTED) continue; //bỏ qua những document ko phai accepted
-
-                int suggestedId = f.getFriendId();
-                if (!myFriendsSet.contains(suggestedId)) {
-                    mutualFriendCounts.put(suggestedId, mutualFriendCounts.getOrDefault(suggestedId, 0) + 1);
-                }
-            }
-        }
-
-        // Kết hợp với UserDetail để trả về thông tin đầy đủ
-        List<Map<String, Object>> suggestions = new ArrayList<>();
-
-        for (Map.Entry<Integer, Integer> entry : mutualFriendCounts.entrySet()) {
-            int suggestedId = entry.getKey();
-            int mutual = entry.getValue();
-
-            UserDetail detail = userDetailRepositories.findById(suggestedId).orElse(null);
-            if (detail != null) {
-                Map<String, Object> data = new HashMap<>();
-                data.put("userId", suggestedId);
-                data.put("name", detail.getFullname());
-                data.put("avatar", detail.getAvatar());
-                data.put("mutualFriends", mutual);
-                suggestions.add(data);
-            }
-        }
-
-        // Sắp xếp theo số lượng bạn chung giảm dần
-        suggestions.sort((a, b) -> (int) b.get("mutualFriends") - (int) a.get("mutualFriends"));
-
-        return suggestions;
     }
 }
