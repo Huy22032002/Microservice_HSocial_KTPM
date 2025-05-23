@@ -2,9 +2,9 @@ name: CI/CD Pipeline - AuthService
 
 on:
   push:
-    branches: [ main, master, production ]
+    branches: [ production ]
   pull_request:
-    branches: [ main, master, production ]
+    branches: [  production ]
   workflow_dispatch:
 
 jobs:
