@@ -3,7 +3,7 @@ import { fetchUserDetail } from "../api/userApi";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { fetchPostById } from "../api/postApi";
-import "../styles/post.css";
+import "../styles/Post.css";
 import {
   faThumbsUp,
   faShare,
@@ -201,8 +201,7 @@ const Post = ({ postId, refreshPosts }) => {
       const user = await fetchUserDetail(fetchedPost.userId);
       setPostUser(
         user || {
-          avatar:
-            "https://icons.veryicon.com/png/o/miscellaneous/rookie-official-icon-gallery/225-default-avatar.png",
+          avatar: require("../assets/default_avatar.png"),
           fullname: "Người dùng không xác định",
         }
       );
@@ -337,7 +336,7 @@ const Post = ({ postId, refreshPosts }) => {
   return (
     <div className="post-container">
       <div className="p-post-header">
-        <img src={postUser.avatar} alt="avatar" className="p-avatar" />
+        <img src={postUser.avatar || require('../assets/default_avatar.png')} alt="avatar" className="p-avatar" />
         <div className="p-post-user-info">
           <h3>{postUser.fullname}</h3>
           <span className="p-post-time">

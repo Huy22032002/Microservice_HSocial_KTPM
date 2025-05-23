@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import "../styles/PostHome.css";
@@ -714,10 +714,12 @@ const PostHome = () => {
 
   // useEffect lifecycle
   useEffect(() => {
-    fetchFriends();
-    fetchCurrentUser();
+    if (userId) {
+      fetchCurrentUser();
+      fetchFriends();
+      fetchSuggest();
+    }
     fetchStories();
-    fetchSuggest();
   }, [userId]);
 
   useEffect(() => {
@@ -744,22 +746,25 @@ const PostHome = () => {
         {/* Story section */}
         <div className="stories-container">
           {/* Create story card */}
-          <div
-            className="story-card create-story"
-            onClick={() => setShowStoryModal(true)}
-          >
-            <div className="story-create-overlay">
-              <div className="add-story-icon">
-                <FontAwesomeIcon icon={faPlus} />
+          {userId && (
+            <div
+              className="story-card create-story"
+              onClick={() => setShowStoryModal(true)}
+            >
+              <div className="story-create-overlay">
+                <div className="add-story-icon">
+                  <FontAwesomeIcon icon={faPlus} />
+                </div>
               </div>
+              <img
+                src={currentUser.avatar || require("../assets/default_avatar.png")}
+                alt="Your profile"
+                className="story-avatar"
+              />
+              <div className="story-footer">Tạo story</div>
             </div>
-            <img
-              src={currentUser.avatar || "https://via.placeholder.com/40"}
-              alt="Your profile"
-              className="story-avatar"
-            />
-            <div className="story-footer">Tạo story</div>
-          </div>
+          )}
+
           {/* Stories list */}
           {stories.map((story, index) => (
             <div
@@ -1141,7 +1146,7 @@ const PostHome = () => {
           <div className="post-form">
             <div className="post-form-header">
               <img
-                src={currentUser.avatar || "https://via.placeholder.com/40"}
+                src={currentUser.avatar || require("../assets/default_avatar.png")}
                 alt="User avatar"
                 className="user-avatar"
               />
@@ -1325,7 +1330,9 @@ const PostHome = () => {
         <div className="sidebar-section">
           <h3>Gợi ý kết bạn</h3>
           <div className="suggestion-list">
-            {suggestFriends.length > 0 ? (
+            {suggestFriends.length > 0 &&
+            userId &&
+            localStorage.getItem("token") ? (
               suggestFriends.map((s) => (
                 <div key={s.userId} className="suggestion-item">
                   <img

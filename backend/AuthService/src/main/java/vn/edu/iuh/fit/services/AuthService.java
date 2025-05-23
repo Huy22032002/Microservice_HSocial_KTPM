@@ -86,9 +86,9 @@ public ResponseEntity<?> login(String username, String password) {
         response.put("user", user);
 
         // Lưu thông tin user vào cache
-//        userCacheService.cacheUser(String.valueOf(user.getId()), user);
+        userCacheService.cacheUser(String.valueOf(user.getId()), user);
         // Lưu trạng thái online của user
-//        userCacheService.setUserOnlineStatus(String.valueOf(user.getId()), true);
+        userCacheService.setUserOnlineStatus(String.valueOf(user.getId()), true);
 
         return ResponseEntity.ok(response);
 
