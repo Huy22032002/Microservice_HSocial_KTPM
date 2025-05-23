@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-lastest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repo
@@ -43,7 +43,7 @@ jobs:
 
   build-docker-image:
     needs: build-and-test
-    runs-on: ubuntu-lasted
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repo
