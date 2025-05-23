@@ -43,7 +43,7 @@ jobs:
 
   build-docker-image:
     needs: build-and-test
-    runs-on: ubuntu-lastest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repo
